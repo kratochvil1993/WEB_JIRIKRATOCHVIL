@@ -149,11 +149,11 @@
   /* ---------------- Background: gradient tied to scroll progress ---------------- */
   var root = document.documentElement;
   var stops = [
-    { a: "#0ef", b: "#0a5f7a", angle: 135 }, // hero
+    { a: "#00eeff", b: "#0a5f7a", angle: 135 }, // hero
     { a: "#0ac8e0", b: "#2e6e8f", angle: 110 }, // web/eshop
     { a: "#0eb8d8", b: "#0a7a9a", angle: 150 }, // portréty
     { a: "#0adcc0", b: "#0a7a5a", angle: 120 }, // online marketing
-    { a: "#0ef", b: "#0a5f7a", angle: 135 }  // kontakt
+    { a: "#00eeff", b: "#0a5f7a", angle: 135 }  // kontakt
   ];
   function lerpColor(c1, c2, t) {
     var p1 = parseInt(c1.slice(1), 16), p2 = parseInt(c2.slice(1), 16);
