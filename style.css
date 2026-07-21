@@ -12,6 +12,8 @@
   --grad-a:#0ef;
   --grad-b:#0a5f7a;
   --grad-angle:135deg;
+  --glow-a:.5;
+  --glow-b:.5;
   font-size:16px;
 }
 *{box-sizing:border-box;}
@@ -55,18 +57,19 @@ a:hover{color:var(--purple);}
   position:absolute;
   border-radius:50%;
   filter:blur(90px);
-  opacity:.5;
-  will-change:transform;
+  will-change:transform,opacity;
 }
 #bg-blob-a{
   width:50vmax;height:50vmax;
   top:-10vmax;left:-10vmax;
   background:radial-gradient(circle at 30% 30%, var(--grad-a), transparent 70%);
+  opacity:var(--glow-a,.5);
 }
 #bg-blob-b{
   width:60vmax;height:60vmax;
   bottom:-20vmax;right:-15vmax;
   background:radial-gradient(circle at 70% 70%, var(--grad-b), transparent 70%);
+  opacity:var(--glow-b,.5);
 }
 #particle-canvas{
   position:fixed;

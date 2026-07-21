@@ -149,11 +149,11 @@
   /* ---------------- Background: gradient tied to scroll progress ---------------- */
   var root = document.documentElement;
   var stops = [
-    { a: "#00eeff", b: "#0a5f7a", angle: 135 }, // hero
-    { a: "#0ac8e0", b: "#2e6e8f", angle: 110 }, // web/eshop
-    { a: "#0eb8d8", b: "#0a7a9a", angle: 150 }, // portréty
-    { a: "#0adcc0", b: "#0a7a5a", angle: 120 }, // online marketing
-    { a: "#00eeff", b: "#0a5f7a", angle: 135 }  // kontakt
+    { a: "#00eeff", b: "#0a5f7a", angle: 135, glowA: .45, glowB: .30 }, // hero
+    { a: "#0ac8e0", b: "#2e6e8f", angle: 110, glowA: .70, glowB: .35 }, // web/eshop
+    { a: "#0eb8d8", b: "#0a7a9a", angle: 150, glowA: .50, glowB: .55 }, // portréty
+    { a: "#0adcc0", b: "#0a7a5a", angle: 120, glowA: .35, glowB: .70 }, // online marketing
+    { a: "#00eeff", b: "#0a5f7a", angle: 135, glowA: .45, glowB: .40 }  // kontakt
   ];
   function lerpColor(c1, c2, t) {
     var p1 = parseInt(c1.slice(1), 16), p2 = parseInt(c2.slice(1), 16);
@@ -162,6 +162,7 @@
     var r = Math.round(r1 + (r2 - r1) * t), g = Math.round(g1 + (g2 - g1) * t), b = Math.round(b1 + (b2 - b1) * t);
     return "rgb(" + r + "," + g + "," + b + ")";
   }
+  function lerpNum(n1, n2, t) { return n1 + (n2 - n1) * t; }
   ScrollTrigger.create({
     trigger: document.body,
     start: "top top",
@@ -174,6 +175,8 @@
       root.style.setProperty("--grad-a", lerpColor(from.a, to.a, t));
       root.style.setProperty("--grad-b", lerpColor(from.b, to.b, t));
       root.style.setProperty("--grad-angle", (from.angle + (to.angle - from.angle) * t) + "deg");
+      root.style.setProperty("--glow-a", lerpNum(from.glowA, to.glowA, t));
+      root.style.setProperty("--glow-b", lerpNum(from.glowB, to.glowB, t));
       currentSectionProgress = self.progress;
     }
   });
