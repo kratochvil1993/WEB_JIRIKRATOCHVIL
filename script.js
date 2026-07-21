@@ -314,10 +314,68 @@
   function revealOut(targets) {
     gsap.to(targets, { y: -30, opacity: 0, stagger: 0.08, duration: 0.5, ease: "power2.in", overwrite: "auto" });
   }
+  /* Pin-graphic line-art symbols (abstract SVG shapes) "draw themselves" via
+     stroke-dasharray/-dashoffset rather than GSAP's paid DrawSVGPlugin, which
+     isn't in the free cdnjs bundle this project uses. */
+  function prepSymbol(graphic) {
+    if (!graphic) return [];
+    var shapes = gsap.utils.toArray(graphic.querySelectorAll(".pin-symbol .pin-stroke"));
+    return shapes.map(function (el) {
+      var len = el.getTotalLength();
+      gsap.set(el, { strokeDasharray: len, strokeDashoffset: len });
+      return { el: el, len: len };
+    });
+  }
+  function drawSymbolIn(entries) {
+    entries.forEach(function (e) {
+      gsap.to(e.el, { strokeDashoffset: 0, duration: 1, ease: "power2.inOut", overwrite: "auto" });
+    });
+  }
+  function drawSymbolOut(entries) {
+    entries.forEach(function (e) {
+      gsap.set(e.el, { strokeDashoffset: e.len });
+    });
+  }
+  /* Small satellite "accent" dots pop in after the line-art draws, each with
+     a companion "halo" ring that pulses outward like a radar ping
+     (outside lowPower, where a static dot is simpler and cheaper). The dots'
+     one-shot pop-in uses GSAP; the halo's continuous pulse is a plain CSS
+     class toggle (see @keyframes pinHaloPulse in style.css) rather than an
+     infinitely-repeating GSAP tween, since that runs alongside ScrollTrigger's
+     pin scrub and the particle canvas's rAF loop on the same thread. */
+  function prepAccents(graphic) {
+    if (!graphic) return { dots: [], halos: [] };
+    var dots = gsap.utils.toArray(graphic.querySelectorAll(".pin-symbol .accent-dot"));
+    var halos = gsap.utils.toArray(graphic.querySelectorAll(".pin-symbol .accent-halo"));
+    gsap.set(dots, { opacity: 0, scale: 0.3, transformOrigin: "50% 50%" });
+    return { dots: dots, halos: halos };
+  }
+  function drawAccentsIn(accents) {
+    accents.dots.forEach(function (d, i) {
+      gsap.killTweensOf(d);
+      gsap.to(d, { opacity: 1, scale: 1, duration: 0.5, delay: 0.3 + i * 0.12, ease: "back.out(2)", overwrite: "auto" });
+    });
+    if (lowPower) return;
+    accents.halos.forEach(function (h, i) {
+      h.style.animationDelay = (0.6 + i * 0.25) + "s";
+      h.classList.add("pulsing");
+    });
+  }
+  function drawAccentsOut(accents) {
+    accents.dots.forEach(function (d) {
+      gsap.killTweensOf(d);
+      gsap.set(d, { opacity: 0, scale: 0.3 });
+    });
+    accents.halos.forEach(function (h) {
+      h.classList.remove("pulsing");
+    });
+  }
   function buildPinned(sectionId, panelSelector) {
     var section = document.getElementById(sectionId);
     var textEls = gsap.utils.toArray(panelSelector + " .fade-el");
     var graphic = section.querySelector(".pin-graphic");
+    var symbolEntries = prepSymbol(graphic);
+    var accentDots = prepAccents(graphic);
     gsap.set(textEls, { y: 40, opacity: 0 });
     if (graphic) gsap.set(graphic, { scale: 0.85, rotate: -6, opacity: 0 });
 
@@ -325,7 +383,10 @@
       textEls.concat(graphic ? [graphic] : []).forEach(function (el) {
         ScrollTrigger.create({
           trigger: el, start: "top 88%",
-          onEnter: function () { gsap.to(el, { y: 0, opacity: 1, scale: 1, rotate: 0, duration: 0.7, ease: "power2.out" }); },
+          onEnter: function () {
+            gsap.to(el, { y: 0, opacity: 1, scale: 1, rotate: 0, duration: 0.7, ease: "power2.out" });
+            if (el === graphic) { drawSymbolIn(symbolEntries); drawAccentsIn(accentDots); }
+          },
           once: true
         });
       });
@@ -339,10 +400,10 @@
       pin: true,
       invalidateOnRefresh: true,
       anticipatePin: 1,
-      onEnter: function () { revealIn(textEls); if (graphic) gsap.to(graphic, { opacity: 1, scale: 1, rotate: 0, duration: 0.8, ease: "power2.out" }); },
-      onEnterBack: function () { revealIn(textEls); if (graphic) gsap.to(graphic, { opacity: 1, scale: 1, rotate: 0, duration: 0.8, ease: "power2.out" }); },
-      onLeave: function () { revealOut(textEls); if (graphic) gsap.to(graphic, { opacity: 0, rotate: 4, duration: 0.5, ease: "power2.in" }); },
-      onLeaveBack: function () { revealOut(textEls); if (graphic) gsap.to(graphic, { opacity: 0, scale: 0.85, rotate: -6, duration: 0.5, ease: "power2.in" }); },
+      onEnter: function () { revealIn(textEls); if (graphic) gsap.to(graphic, { opacity: 1, scale: 1, rotate: 0, duration: 0.8, ease: "power2.out" }); drawSymbolIn(symbolEntries); drawAccentsIn(accentDots); },
+      onEnterBack: function () { revealIn(textEls); if (graphic) gsap.to(graphic, { opacity: 1, scale: 1, rotate: 0, duration: 0.8, ease: "power2.out" }); drawSymbolIn(symbolEntries); drawAccentsIn(accentDots); },
+      onLeave: function () { revealOut(textEls); if (graphic) gsap.to(graphic, { opacity: 0, rotate: 4, duration: 0.5, ease: "power2.in" }); drawSymbolOut(symbolEntries); drawAccentsOut(accentDots); },
+      onLeaveBack: function () { revealOut(textEls); if (graphic) gsap.to(graphic, { opacity: 0, scale: 0.85, rotate: -6, duration: 0.5, ease: "power2.in" }); drawSymbolOut(symbolEntries); drawAccentsOut(accentDots); },
       onUpdate: function (self) {
         if (graphic) gsap.set(graphic, { rotate: -6 + self.progress * 10 });
       }

@@ -288,14 +288,44 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
   background-size:32px 32px;
   mix-blend-mode:overlay;
 }
-.pin-graphic .glyph{
+.pin-graphic .pin-symbol{
   position:absolute;top:50%;left:50%;
   transform:translate(-50%,-50%);
-  font-family:monospace;
-  font-size:.85rem;
-  color:rgba(255,255,255,.5);
-  letter-spacing:.05em;
-  text-align:center;
+  width:160px;height:160px;
+  pointer-events:none;
+}
+.pin-graphic .pin-symbol svg{width:100%;height:100%;overflow:visible;}
+.pin-graphic .pin-symbol .pin-stroke{
+  fill:none;
+  stroke:url(#pinGrad);
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  opacity:.85;
+}
+.pin-graphic .pin-symbol .accent-dot{
+  fill:url(#pinGrad);
+  opacity:0;
+}
+.pin-graphic .pin-symbol .accent-halo{
+  fill:none;
+  stroke:url(#pinGrad);
+  stroke-width:1.5;
+  opacity:0;
+  transform-box:fill-box;
+  transform-origin:50% 50%;
+}
+/* CSS-driven (not GSAP) on purpose: a plain class toggle + native @keyframes
+   is far cheaper per-frame than an infinitely-repeating JS tween, which
+   matters here since it runs continuously alongside ScrollTrigger's pin
+   scrub and the particle canvas's rAF loop on the same thread. */
+.pin-graphic .pin-symbol .accent-halo.pulsing{
+  animation:pinHaloPulse 2.2s ease-out infinite;
+  will-change:transform,opacity;
+}
+@keyframes pinHaloPulse{
+  0%{opacity:.6;transform:scale(1);}
+  100%{opacity:0;transform:scale(2.4);}
 }
 
 /* feature cards (tilt/glow) */
