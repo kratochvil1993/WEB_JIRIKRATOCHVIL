@@ -15,7 +15,7 @@
   font-size:16px;
 }
 *{box-sizing:border-box;}
-html{scroll-behavior:smooth;}
+html{scroll-behavior:auto;}
 body{
   background:var(--bg);
   color:var(--fg);
@@ -271,6 +271,22 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
 
 /* Contact */
 #contact{padding:8rem 0;}
+.contact-card{text-align:center;padding:2.2rem 1.6rem;}
+.contact-card .icon{
+  width:38px;height:38px;
+  margin:0 auto 1.1rem;
+  background:none;
+  border-radius:0;
+  color:var(--purple);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.contact-card .icon svg{width:100%;height:100%;}
+.contact-card h4{margin-bottom:.4rem;}
+.contact-card p{color:var(--fg-dim);margin:0;}
+.contact-card p strong{color:var(--fg);}
+.small-meta{font-size:.85rem;display:inline-block;margin-top:.2rem;}
 .form-control-neon{
   background:rgba(255,255,255,.04);
   border:1px solid rgba(255,255,255,.1);
@@ -286,8 +302,6 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
 }
 .form-control-neon::placeholder{color:var(--fg-dim);}
 .form-label{color:var(--fg-dim);font-size:.9rem;margin-bottom:.4rem;}
-.contact-meta{color:var(--fg-dim);font-size:1.05rem;}
-.contact-meta strong{color:var(--fg);}
 .form-check-label{color:var(--fg-dim);font-size:.92rem;}
 .honeypot-field{position:absolute;left:-9999px;opacity:0;}
 

@@ -23,7 +23,7 @@ All internal references (`style.css`, `script.js`, `gdpr.html`) use relative pat
 
 ## Structure
 
-- `index.html` — the whole one-page site: fixed navbar, `#hero`, `#section-web` (web/e-shop pitch), `#section-portrait` (photography pitch), `#contact` (Netlify Forms contact form), footer.
+- `index.html` — the whole one-page site: fixed navbar, `#hero`, `#section-web` (web/e-shop pitch), `#section-portrait` (photography pitch), `#section-marketing` (Google Ads / online marketing pitch), `#contact` (Netlify Forms contact form), footer.
 - `gdpr.html` — standalone privacy-policy page, linked from the footer and from the contact form's consent checkbox.
 - `style.css` — single stylesheet. Defines CSS custom properties (`--purple`, `--magenta`, `--grad-a`, `--grad-b`, `--grad-angle`, etc.) that `script.js` mutates at runtime to drive the scroll-linked background gradient.
 - `script.js` — single vanilla-JS IIFE, no framework. See "Animation architecture" below.
@@ -44,7 +44,7 @@ Everything is driven by GSAP + ScrollTrigger plus one custom `<canvas>` particle
 - **Custom cursor** (`#cursor`): follows the pointer via `gsap.to`; disabled entirely on touch/coarse-pointer devices.
 - **Hero typewriter**: cycles through a `roles` array into `#roleText`.
 - **Scroll-linked gradient**: a `ScrollTrigger` on `document.body` lerps between color `stops` (one per section) and writes the result into the `--grad-a`/`--grad-b`/`--grad-angle` CSS vars consumed by `style.css`.
-- **Pinned "scrollytelling" sections** (`buildPinned()`): `#section-web` and `#section-portrait` get pinned via `ScrollTrigger` with `pin: true`; `.fade-el` text reveals on `onEnter`/`onLeave`, and `.pin-graphic` gets a scale/rotate tween. This is the most complex/fragile part of the file — changes to section markup must keep the `.fade-el` and `.pin-graphic` selectors intact or the reveal breaks silently.
-- **Particle canvas** (`#particle-canvas`): custom rAF loop, not GSAP. `sectionConfigs` defines per-section density/speed/hue/size (and whether particles draw connecting lines); the active config swaps based on which section is vertically centered in the viewport (`updateSectionByScroll`).
+- **Pinned "scrollytelling" sections** (`buildPinned()`): `#section-web`, `#section-portrait`, and `#section-marketing` get pinned via `ScrollTrigger` with `pin: true`; `.fade-el` text reveals on `onEnter`/`onLeave`, and `.pin-graphic` gets a scale/rotate tween. This is the most complex/fragile part of the file — changes to section markup must keep the `.fade-el` and `.pin-graphic` selectors intact or the reveal breaks silently.
+- **Particle canvas** (`#particle-canvas`): custom rAF loop, not GSAP. `sectionConfigs` defines per-section density/speed/hue/size (and whether particles draw connecting lines); the active config swaps based on which section is vertically centered in the viewport (`updateSectionByScroll`, which reads a matching `sections` id array — keep both arrays in the same order when adding/removing sections).
 - **`lowPower` flag** (`prefers-reduced-motion` or viewport ≤ 991px): disables/simplifies pinning, the custom cursor, particle link-lines, and card tilt. **Any animation change needs to be mirrored in both the normal and `lowPower` code paths** — mobile and reduced-motion users get a deliberately simpler experience, not just a slower one.
 - **Contact form**: plain Netlify Forms (`data-netlify="true"`, honeypot field `bot-field`). The only JS is disabling the submit button on submit — actual form handling/storage is entirely Netlify's, not this codebase's.

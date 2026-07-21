@@ -6,7 +6,7 @@
   var isMobile = window.matchMedia("(max-width: 991px)").matches;
   var lowPower = reduceMotion || isMobile;
 
-  gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
   /* ---------------- Navbar blur on scroll ---------------- */
   var navbar = document.getElementById("mainNav");
@@ -16,6 +16,49 @@
     onUpdate: function (self) {
       navbar.classList.toggle("scrolled", self.scroll() > 40);
     }
+  });
+
+  /* ---------------- Anchor nav: GSAP-driven scroll ----------------
+     CSS `scroll-behavior: smooth` fights with pinned ScrollTrigger sections
+     (the browser computes a fixed scroll distance up front, but pinning
+     resizes the page mid-scroll), so nav clicks land in a broken state
+     where pinned text never reveals. ScrollToPlugin is used instead, with
+     two pin-specific corrections below. */
+  document.querySelectorAll('a[href^="#"]').forEach(function (link) {
+    link.addEventListener("click", function (e) {
+      var id = link.getAttribute("href");
+      if (!id || id === "#") return;
+      var target = document.querySelector(id);
+      if (!target) return;
+      e.preventDefault();
+      /* Resolve to a fixed pixel offset up front rather than handing the
+         element itself to ScrollToPlugin: once scroll enters a pinned
+         section's active range the element is position:fixed, so its
+         live document-position collapses to "wherever scroll currently
+         is" and a live-tracked tween thinks it has already arrived,
+         stopping short (or, scrolling backward, overshooting straight to
+         the far end of the pin). For pinned targets, getBoundingClientRect
+         is also unreliable on its own: once scrolled past the pin's end,
+         the element's resting position reports at the pin's *end*, not
+         its start, because of how the pin-spacer reserves space. GSAP's
+         own ScrollTrigger.start is authoritative regardless of current
+         scroll/pin state, so prefer that when the target is pinned. */
+      var pinST = ScrollTrigger.getAll().filter(function (st) { return st.pin === target; })[0];
+      var y = pinST ? pinST.start : (target.getBoundingClientRect().top + window.scrollY);
+      /* +24 lands comfortably past the section's natural top rather than
+         exactly on it (harmless: the pinned range is 1600px long).
+         Pinned sections' ScrollTrigger only fires its onEnter/onEnterBack
+         reveal once scroll actually crosses the "top top" start
+         threshold; landing at/just-under progress 0 never crosses it,
+         leaving the pinned text/graphic hidden until the visitor
+         scrolled again by hand. */
+      gsap.to(window, {
+        duration: lowPower ? 0.01 : 1,
+        scrollTo: { y: y + 24 },
+        ease: "power2.inOut",
+        onComplete: function () { history.pushState(null, "", id); }
+      });
+    });
   });
 
   /* ---------------- Custom cursor ---------------- */
@@ -73,6 +116,7 @@
     { a: "#0ef", b: "#0a5f7a", angle: 135 }, // hero
     { a: "#0ac8e0", b: "#2e6e8f", angle: 110 }, // web/eshop
     { a: "#0eb8d8", b: "#0a7a9a", angle: 150 }, // portréty
+    { a: "#0adcc0", b: "#0a7a5a", angle: 120 }, // online marketing
     { a: "#0ef", b: "#0a5f7a", angle: 135 }  // kontakt
   ];
   function lerpColor(c1, c2, t) {
@@ -116,6 +160,7 @@
     { name: "hero", density: 0.00009, speed: 0.15, hue: [185, 195], size: [1, 2] },
     { name: "web", density: 0.00016, speed: 0.35, hue: [185, 200], size: [1, 3], linky: true },
     { name: "portrait", density: 0.00011, speed: 0.2, hue: [180, 195], size: [1.5, 3] },
+    { name: "marketing", density: 0.00014, speed: 0.3, hue: [160, 185], size: [1, 2.5], linky: true },
     { name: "contact", density: 0.00008, speed: 0.12, hue: [185, 195], size: [1, 2] }
   ];
   var activeConfig = sectionConfigs[0];
@@ -151,7 +196,7 @@
   window.addEventListener("mouseleave", function () { mouse.active = false; });
 
   function updateSectionByScroll() {
-    var sections = ["hero", "section-web", "section-portrait", "contact"];
+    var sections = ["hero", "section-web", "section-portrait", "section-marketing", "contact"];
     var mid = window.innerHeight / 2;
     var found = sectionConfigs[0];
     sections.forEach(function (id, idx) {
@@ -259,6 +304,7 @@
   }
   buildPinned("section-web", "#section-web");
   buildPinned("section-portrait", "#section-portrait");
+  buildPinned("section-marketing", "#section-marketing");
 
   /* Hero: odscrolluje/zmizí, jakmile se přiblíží sekce Web & e-shop */
   if (!lowPower) {
@@ -278,8 +324,20 @@
     document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
   }
 
-  /* ---------------- Contact section: normal fade-in ---------------- */
-  gsap.utils.toArray("#contact .fade-el, footer .fade-el").forEach(function (el) {
+  /* ---------------- Contact section: same reveal choreography as the pinned
+     sections (revealIn/stagger), but without pin: true — the section (3 info
+     cards + full form) runs taller than the viewport, so locking scroll here
+     would trap visitors with the submit button off-screen. */
+  var contactEls = gsap.utils.toArray("#contact .fade-el");
+  gsap.set(contactEls, { y: 40, opacity: 0 });
+  ScrollTrigger.create({
+    trigger: "#contact",
+    start: "top 70%",
+    onEnter: function () { revealIn(contactEls); },
+    onEnterBack: function () { revealIn(contactEls); }
+  });
+
+  gsap.utils.toArray("footer .fade-el").forEach(function (el) {
     gsap.from(el, {
       y: 30, opacity: 0, duration: 0.7, ease: "power2.out",
       scrollTrigger: { trigger: el, start: "top 85%" }
