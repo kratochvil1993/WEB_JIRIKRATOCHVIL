@@ -7,6 +7,12 @@
   var lowPower = reduceMotion || isMobile;
 
   gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+  /* Mobile browsers resize the viewport as the address bar hides/shows
+     mid-scroll; without this, ScrollTrigger recalculates every trigger's
+     start position on that resize, so a reveal that should already have
+     fired waits for the next scroll tick — cards stay hidden until you
+     scroll again. */
+  ScrollTrigger.config({ ignoreMobileResize: true });
 
   /* ---------------- Navbar blur on scroll ---------------- */
   var navbar = document.getElementById("mainNav");
