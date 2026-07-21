@@ -258,7 +258,22 @@
       while (particles.length > want) particles.pop();
     }
   }
-  window.addEventListener("scroll", updateSectionByScroll, { passive: true });
+  /* Raw "scroll" events can fire dozens of times per second during a fast
+     scroll/fling, and updateSectionByScroll's getBoundingClientRect reads
+     force a synchronous layout each time — unlike ScrollTrigger elsewhere
+     in this file, which batches its own scroll-driven reads/writes into a
+     single tick. Coalescing to at most one call per animation frame gives
+     it the same batching and removes the extra forced layouts. */
+  var sectionScrollQueued = false;
+  function queueSectionUpdate() {
+    if (sectionScrollQueued) return;
+    sectionScrollQueued = true;
+    requestAnimationFrame(function () {
+      sectionScrollQueued = false;
+      updateSectionByScroll();
+    });
+  }
+  window.addEventListener("scroll", queueSectionUpdate, { passive: true });
   updateSectionByScroll();
 
   function drawParticles() {
