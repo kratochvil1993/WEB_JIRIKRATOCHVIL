@@ -280,6 +280,11 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
              radial-gradient(50% 50% at 70% 70%, var(--grad-b), transparent 70%);
   filter:blur(30px);
 }
+.pin-graphic-photo img{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+}
 .pin-graphic .grid-lines{
   position:absolute;inset:0;
   background-image:
