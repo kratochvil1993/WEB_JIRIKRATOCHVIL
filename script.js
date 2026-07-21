@@ -408,6 +408,22 @@
     Object.keys(a).forEach(function (key) { out[key] = a[key] + (b[key] - a[key]) * t; });
     return out;
   }
+  /* Section-web pin-graphic: "code" crossfades into a page "wireframe" as the
+     pin scrubs. A single 0-1 progress drives both layers via opacity/blur —
+     crossfade happens over the middle stretch of the scrub so each layer
+     holds fully readable at the pin's ends, not mid-fade. */
+  function prepCodeMorph(graphic) {
+    if (!graphic) return null;
+    var morph = graphic.querySelector(".code-wire-morph");
+    if (!morph) return null;
+    return { code: morph.querySelector(".code-layer"), wire: morph.querySelector(".wireframe-layer") };
+  }
+  function updateCodeMorph(morph, progress) {
+    if (!morph) return;
+    var t = gsap.utils.clamp(0, 1, (progress - 0.2) / 0.6);
+    gsap.set(morph.code, { opacity: 1 - t, y: t * -14, filter: "blur(" + (t * 4) + "px)" });
+    gsap.set(morph.wire, { opacity: t, y: (1 - t) * 14, filter: "blur(" + ((1 - t) * 4) + "px)" });
+  }
   function updateCardStack(cards, progress) {
     var n = cards.length;
     if (!n) return;
@@ -430,17 +446,22 @@
     var cards = graphic ? gsap.utils.toArray(graphic.querySelectorAll(".photo-card")) : [];
     var symbolEntries = prepSymbol(graphic);
     var accentDots = prepAccents(graphic);
+    var codeMorph = prepCodeMorph(graphic);
     gsap.set(textEls, { y: 40, opacity: 0 });
     if (graphic) gsap.set(graphic, { scale: 0.85, rotate: -6, opacity: 0 });
     if (cards.length) {
       cards.forEach(function (card, i) { gsap.set(card, { zIndex: cards.length - i }); });
       updateCardStack(cards, 0);
     }
+    /* lowPower never scrubs, so settle on the finished wireframe rather than
+       showing the mid-transition crossfade frozen in place */
+    if (codeMorph) updateCodeMorph(codeMorph, lowPower ? 1 : 0);
 
     function enterGraphic(self) {
       if (!graphic) return;
       gsap.to(graphic, { opacity: 1, scale: 1, rotate: 0, duration: 0.8, ease: "power2.out" });
       if (cards.length) updateCardStack(cards, self.progress);
+      else if (codeMorph) updateCodeMorph(codeMorph, self.progress);
     }
 
     if (lowPower) {
@@ -470,6 +491,7 @@
       onLeaveBack: function () { revealOut(textEls); if (graphic) gsap.to(graphic, { opacity: 0, scale: 0.85, rotate: -6, duration: 0.5, ease: "power2.in" }); drawSymbolOut(symbolEntries); drawAccentsOut(accentDots); },
       onUpdate: function (self) {
         if (cards.length) { updateCardStack(cards, self.progress); }
+        else if (codeMorph) { updateCodeMorph(codeMorph, self.progress); }
         else if (graphic) { gsap.set(graphic, { rotate: -6 + self.progress * 10 }); }
       }
     });

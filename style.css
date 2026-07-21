@@ -343,6 +343,46 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
   100%{opacity:0;transform:scale(2.4);}
 }
 
+/* section-web only: "code" crossfades into a page "wireframe" as the pin scrubs,
+   both layers stacked absolutely and driven by opacity/blur (see updateCodeMorph in script.js) */
+.code-wire-morph{position:absolute;inset:14px;}
+.code-wire-morph .code-layer,
+.code-wire-morph .wireframe-layer{
+  position:absolute;inset:0;
+  border-radius:14px;
+  background:rgba(8,14,20,.55);
+  border:1px solid rgba(255,255,255,.08);
+  padding:1.1rem 1.3rem;
+  will-change:opacity,transform,filter;
+}
+.code-wire-morph .code-layer{
+  font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  font-size:.82rem;
+  line-height:2;
+}
+.code-wire-morph .code-line{white-space:nowrap;overflow:hidden;color:rgba(255,255,255,.55);}
+.code-wire-morph .code-line.indent{padding-left:1.4em;}
+.code-wire-morph .tok-kw{color:var(--magenta);}
+.code-wire-morph .tok-fn{color:var(--purple);}
+.code-wire-morph .tok-var{color:#fff;}
+.code-wire-morph .tok-tag{color:var(--purple);}
+.code-wire-morph .tok-op{color:rgba(255,255,255,.4);}
+.code-wire-morph .tok-punc{color:rgba(255,255,255,.35);}
+.code-wire-morph .tok-comment{color:rgba(255,255,255,.3);font-style:italic;}
+.code-wire-morph .wireframe-layer{display:flex;flex-direction:column;gap:.7rem;}
+.code-wire-morph .wf-topbar{display:flex;gap:6px;flex:0 0 auto;}
+.code-wire-morph .wf-topbar span{width:9px;height:9px;border-radius:50%;background:rgba(var(--magenta-rgb),.5);}
+.code-wire-morph .wf-hero{
+  flex:0 0 34%;
+  border-radius:8px;
+  background:linear-gradient(135deg, rgba(var(--purple-rgb),.28), rgba(var(--magenta-rgb),.14));
+  border:1px solid rgba(255,255,255,.08);
+}
+.code-wire-morph .wf-text{flex:0 0 auto;height:10px;border-radius:5px;background:rgba(255,255,255,.14);}
+.code-wire-morph .wf-cards{display:flex;gap:.6rem;flex:1;}
+.code-wire-morph .wf-cards span{flex:1;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);}
+.code-wire-morph .wf-btn{flex:0 0 auto;width:84px;height:26px;border-radius:6px;background:linear-gradient(90deg,var(--purple),var(--magenta));opacity:.85;}
+
 /* feature cards (tilt/glow) */
 .feature-card{
   position:relative;
