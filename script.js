@@ -89,7 +89,7 @@
          leaving the pinned text/graphic hidden until the visitor
          scrolled again by hand. */
       gsap.to(window, {
-        duration: lowPower ? 0.01 : 1,
+        duration: lowPower ? 0.01 : 0.6,
         scrollTo: { y: y + 24 },
         ease: "power2.inOut",
         onComplete: function () { history.pushState(null, "", id); }
