@@ -18,6 +18,10 @@
     }
   });
 
+  /* ---------------- Mobile nav collapse ---------------- */
+  var navMenuEl = document.getElementById("navMenu");
+  var navCollapse = navMenuEl ? new bootstrap.Collapse(navMenuEl, { toggle: false }) : null;
+
   /* ---------------- Anchor nav: GSAP-driven scroll ----------------
      CSS `scroll-behavior: smooth` fights with pinned ScrollTrigger sections
      (the browser computes a fixed scroll distance up front, but pinning
@@ -31,6 +35,7 @@
       var target = document.querySelector(id);
       if (!target) return;
       e.preventDefault();
+      if (navCollapse && navMenuEl.classList.contains("show")) navCollapse.hide();
       /* Resolve to a fixed pixel offset up front rather than handing the
          element itself to ScrollToPlugin: once scroll enters a pinned
          section's active range the element is position:fixed, so its
