@@ -6,6 +6,16 @@
   var isMobile = window.matchMedia("(max-width: 991px)").matches;
   var lowPower = reduceMotion || isMobile;
 
+  /* isMobile/lowPower are captured once above; every pin, the custom cursor,
+     and the particle cap are all built against that snapshot and never
+     revisited. Resizing across the 991px breakpoint (devtools responsive
+     mode, window snapping) would otherwise leave desktop/mobile animation
+     modes permanently mismatched with the current width, so reload instead
+     of trying to rebuild everything live. */
+  window.matchMedia("(max-width: 991px)").addEventListener("change", function () {
+    location.reload();
+  });
+
   gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
   /* Mobile browsers resize the viewport as the address bar hides/shows
      mid-scroll; without this, ScrollTrigger recalculates every trigger's
@@ -27,6 +37,21 @@
   /* ---------------- Mobile nav collapse ---------------- */
   var navMenuEl = document.getElementById("navMenu");
   var navCollapse = navMenuEl ? new bootstrap.Collapse(navMenuEl, { toggle: false }) : null;
+
+  /* ---------------- Go to top button ---------------- */
+  var toTopBtn = document.getElementById("toTop");
+  if (toTopBtn) {
+    ScrollTrigger.create({
+      start: 600,
+      end: 99999,
+      onUpdate: function (self) {
+        toTopBtn.classList.toggle("visible", self.scroll() > 600);
+      }
+    });
+    toTopBtn.addEventListener("click", function () {
+      gsap.to(window, { duration: lowPower ? 0.01 : 1, scrollTo: { y: 0 }, ease: "power2.inOut" });
+    });
+  }
 
   /* ---------------- Anchor nav: GSAP-driven scroll ----------------
      CSS `scroll-behavior: smooth` fights with pinned ScrollTrigger sections
