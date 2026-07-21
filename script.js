@@ -388,14 +388,60 @@
       h.classList.remove("pulsing");
     });
   }
+  /* Photo card stack (portrait section): N stacked photos fanned behind a
+     flat front card. A single 0-1 scalar drives all cards at once — card i
+     is "front" when active (progress * (n-1)) crosses i, entering from its
+     fanned rest pose over the unit before and exiting over the unit after,
+     so consecutive cards crossfade/swap in the same window. */
+  function cardStackedPose(i) {
+    var dir = i % 2 === 0 ? 1 : -1;
+    return { opacity: 1, y: 12 + i * 12, rotate: dir * (5 + i * 3), scale: 0.94 - i * 0.06 };
+  }
+  function cardFrontPose() {
+    return { opacity: 1, y: 0, rotate: 0, scale: 0.94 };
+  }
+  function cardExitPose() {
+    return { opacity: 0, y: -80, rotate: -12, scale: 0.86 };
+  }
+  function blendPose(a, b, t) {
+    var out = {};
+    Object.keys(a).forEach(function (key) { out[key] = a[key] + (b[key] - a[key]) * t; });
+    return out;
+  }
+  function updateCardStack(cards, progress) {
+    var n = cards.length;
+    if (!n) return;
+    var active = progress * Math.max(1, n - 1);
+    cards.forEach(function (card, i) {
+      var t = active - i;
+      var pose;
+      if (t <= -1) pose = cardStackedPose(i);
+      else if (t < 0) pose = blendPose(cardStackedPose(i), cardFrontPose(), t + 1);
+      else if (t < 1) pose = (i === n - 1) ? cardFrontPose() : blendPose(cardFrontPose(), cardExitPose(), t);
+      else pose = (i === n - 1) ? cardFrontPose() : cardExitPose();
+      gsap.set(card, pose);
+    });
+  }
+
   function buildPinned(sectionId, panelSelector) {
     var section = document.getElementById(sectionId);
     var textEls = gsap.utils.toArray(panelSelector + " .fade-el");
     var graphic = section.querySelector(".pin-graphic");
+    var cards = graphic ? gsap.utils.toArray(graphic.querySelectorAll(".photo-card")) : [];
     var symbolEntries = prepSymbol(graphic);
     var accentDots = prepAccents(graphic);
     gsap.set(textEls, { y: 40, opacity: 0 });
     if (graphic) gsap.set(graphic, { scale: 0.85, rotate: -6, opacity: 0 });
+    if (cards.length) {
+      cards.forEach(function (card, i) { gsap.set(card, { zIndex: cards.length - i }); });
+      updateCardStack(cards, 0);
+    }
+
+    function enterGraphic(self) {
+      if (!graphic) return;
+      gsap.to(graphic, { opacity: 1, scale: 1, rotate: 0, duration: 0.8, ease: "power2.out" });
+      if (cards.length) updateCardStack(cards, self.progress);
+    }
 
     if (lowPower) {
       textEls.concat(graphic ? [graphic] : []).forEach(function (el) {
@@ -418,12 +464,13 @@
       pin: true,
       invalidateOnRefresh: true,
       anticipatePin: 1,
-      onEnter: function () { revealIn(textEls); if (graphic) gsap.to(graphic, { opacity: 1, scale: 1, rotate: 0, duration: 0.8, ease: "power2.out" }); drawSymbolIn(symbolEntries); drawAccentsIn(accentDots); },
-      onEnterBack: function () { revealIn(textEls); if (graphic) gsap.to(graphic, { opacity: 1, scale: 1, rotate: 0, duration: 0.8, ease: "power2.out" }); drawSymbolIn(symbolEntries); drawAccentsIn(accentDots); },
+      onEnter: function (self) { revealIn(textEls); enterGraphic(self); drawSymbolIn(symbolEntries); drawAccentsIn(accentDots); },
+      onEnterBack: function (self) { revealIn(textEls); enterGraphic(self); drawSymbolIn(symbolEntries); drawAccentsIn(accentDots); },
       onLeave: function () { revealOut(textEls); if (graphic) gsap.to(graphic, { opacity: 0, rotate: 4, duration: 0.5, ease: "power2.in" }); drawSymbolOut(symbolEntries); drawAccentsOut(accentDots); },
       onLeaveBack: function () { revealOut(textEls); if (graphic) gsap.to(graphic, { opacity: 0, scale: 0.85, rotate: -6, duration: 0.5, ease: "power2.in" }); drawSymbolOut(symbolEntries); drawAccentsOut(accentDots); },
       onUpdate: function (self) {
-        if (graphic) gsap.set(graphic, { rotate: -6 + self.progress * 10 });
+        if (cards.length) { updateCardStack(cards, self.progress); }
+        else if (graphic) { gsap.set(graphic, { rotate: -6 + self.progress * 10 }); }
       }
     });
   }

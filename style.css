@@ -288,6 +288,13 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
   width:100%;height:100%;
   object-fit:cover;
 }
+.pin-graphic-cards .photo-card{
+  position:absolute;inset:0;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 20px 45px rgba(0,0,0,.35);
+  will-change:transform,opacity;
+}
 .pin-graphic .grid-lines{
   position:absolute;inset:0;
   background-image:
