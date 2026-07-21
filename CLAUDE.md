@@ -27,6 +27,7 @@ All internal references (`style.css`, `script.js`, `gdpr.html`) use relative pat
 - `gdpr.html` — standalone privacy-policy page, linked from the footer and from the contact form's consent checkbox.
 - `style.css` — single stylesheet. Defines CSS custom properties (`--purple`, `--magenta`, `--grad-a`, `--grad-b`, `--grad-angle`, etc.) that `script.js` mutates at runtime to drive the scroll-linked background gradient.
 - `script.js` — single vanilla-JS IIFE, no framework. See "Animation architecture" below.
+- `assets/logo.webp` — header logo, downloaded locally from `jirikratochvil.eu` (no longer loaded externally).
 - `_design/` — git-ignored Claude Design (claude.ai/design) handoff bundle; this is the canonical design source. If the design changes upstream, re-sync it via the `claude_design` MCP (`DesignSync` tool: `get_project` / `list_files` / `get_file` against the project id in `_design/README.md`), diff against the root files, then copy over.
 
 ## External dependencies (CDN only — no `node_modules`)
@@ -34,7 +35,6 @@ All internal references (`style.css`, `script.js`, `gdpr.html`) use relative pat
 - Bootstrap 5.3.3 (CSS + bundle JS), jsDelivr
 - GSAP 3.12.5 + ScrollTrigger, cdnjs
 - Google Fonts "Inter"
-- The header logo image is loaded from `https://www.jirikratochvil.eu/...` — it is intentionally external, not a local asset.
 
 ## Animation architecture (script.js)
 

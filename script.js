@@ -206,16 +206,25 @@
   });
   window.addEventListener("mouseleave", function () { mouse.active = false; });
 
+  var navLinks = document.querySelectorAll('.navbar-custom .nav-link[href^="#"]');
+  function updateActiveNavLink(sectionId) {
+    navLinks.forEach(function (link) {
+      link.classList.toggle("active", link.getAttribute("href") === "#" + sectionId);
+    });
+  }
+
   function updateSectionByScroll() {
     var sections = ["hero", "section-web", "section-portrait", "section-marketing", "contact"];
     var mid = window.innerHeight / 2;
     var found = sectionConfigs[0];
+    var foundId = sections[0];
     sections.forEach(function (id, idx) {
       var el = document.getElementById(id);
       if (!el) return;
       var r = el.getBoundingClientRect();
-      if (r.top <= mid && r.bottom >= mid) found = sectionConfigs[idx];
+      if (r.top <= mid && r.bottom >= mid) { found = sectionConfigs[idx]; foundId = id; }
     });
+    updateActiveNavLink(foundId);
     if (found !== activeConfig) {
       activeConfig = found;
       targetDensity = found.density;
@@ -225,6 +234,7 @@
     }
   }
   window.addEventListener("scroll", updateSectionByScroll, { passive: true });
+  updateSectionByScroll();
 
   function drawParticles() {
     ctx.clearRect(0, 0, W, H);
