@@ -1,0 +1,11 @@
+BEGIN:VCARD
+VERSION:3.0
+FN:Jiří Kratochvíl
+N:Kratochvíl;Jiří;;;
+EMAIL:info@jirikratochvil.eu
+TEL;TYPE=WORK,VOICE:+420728544881
+ADR;TYPE=WORK:;;;;;;
+ORG:
+TITLE:Web developer
+URL:www.jirikratochvil.eu
+END:VCARD
