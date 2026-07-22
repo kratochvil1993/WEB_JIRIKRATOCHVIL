@@ -1,367 +1,400 @@
 <!DOCTYPE html>
 <html lang="cs">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jiří Kratochvíl — Web developer &amp; fotograf portrétů</title>
-<meta name="description" content="Jiří Kratochvíl — tvorba webů a e-shopů na Shoptet, focení portrétů.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://jirikratochvil.eu/">
-<meta property="og:title" content="Jiří Kratochvíl — Web developer &amp; fotograf portrétů">
-<meta property="og:description" content="Tvorba webových stránek a e-shopů na Shoptet, online marketing a focení přirozených portrétů.">
-<meta property="og:image" content="https://jirikratochvil.eu/assets/images/og-image.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:locale" content="cs_CZ">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Jiří Kratochvíl — Web developer &amp; fotograf portrétů">
-<meta name="twitter:description" content="Tvorba webových stránek a e-shopů na Shoptet, online marketing a focení přirozených portrétů.">
-<meta name="twitter:image" content="https://jirikratochvil.eu/assets/images/og-image.jpg">
-<link rel="icon" type="image/png" href="assets/fav/favicon-96x96.png" sizes="96x96">
-<link rel="icon" type="image/svg+xml" href="assets/fav/favicon.svg">
-<link rel="shortcut icon" href="assets/fav/favicon.ico">
-<link rel="apple-touch-icon" sizes="180x180" href="assets/fav/apple-touch-icon.png">
-<meta name="apple-mobile-web-app-title" content="JK.EU">
-<link rel="manifest" href="assets/fav/site.webmanifest">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jiří Kratochvíl — Web developer &amp; fotograf portrétů</title>
+  <meta name="description" content="Jiří Kratochvíl — tvorba webů a e-shopů na Shoptet, focení portrétů.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jirikratochvil.eu/">
+  <meta property="og:title" content="Jiří Kratochvíl — Web developer &amp; fotograf portrétů">
+  <meta property="og:description"
+    content="Tvorba webových stránek a e-shopů na Shoptet, online marketing a focení přirozených portrétů.">
+  <meta property="og:image" content="https://jirikratochvil.eu/assets/images/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="cs_CZ">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Jiří Kratochvíl — Web developer &amp; fotograf portrétů">
+  <meta name="twitter:description"
+    content="Tvorba webových stránek a e-shopů na Shoptet, online marketing a focení přirozených portrétů.">
+  <meta name="twitter:image" content="https://jirikratochvil.eu/assets/images/og-image.jpg">
+  <link rel="icon" type="image/png" href="assets/fav/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/svg+xml" href="assets/fav/favicon.svg">
+  <link rel="shortcut icon" href="assets/fav/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/fav/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="JK.EU">
+  <link rel="manifest" href="assets/fav/site.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<div id="bg-layer">
-  <div id="bg-gradient"></div>
-  <div id="bg-blob-a"></div>
-  <div id="bg-blob-b"></div>
-</div>
-<canvas id="particle-canvas"></canvas>
-<div id="bg-noise"></div>
-<div id="cursor"></div>
-
-<nav class="navbar navbar-expand-lg navbar-dark navbar-custom" id="mainNav">
-  <div class="container d-flex justify-content-between align-items-center">
-    <a class="brand d-flex align-items-center gap-2" href="#hero">
-      <img src="assets/logo.webp" alt="Jiří Kratochvíl" class="brand-logo" style="filter:brightness(10);">
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Otevřít menu">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse flex-grow-0" id="navMenu">
-      <div class="d-flex flex-column flex-lg-row">
-        <a class="nav-link" href="#hero">Úvod</a>
-        <a class="nav-link" href="#section-web">Web &amp; e-shop</a>
-        <a class="nav-link" href="#section-portrait">Portréty</a>
-        <a class="nav-link" href="#section-marketing">Online marketing</a>
-        <a class="nav-link" href="#contact">Kontakt</a>
-      </div>
-    </div>
+  <div id="bg-layer">
+    <div id="bg-gradient"></div>
+    <div id="bg-blob-a"></div>
+    <div id="bg-blob-b"></div>
   </div>
-</nav>
+  <canvas id="particle-canvas"></canvas>
+  <div id="bg-noise"></div>
+  <div id="cursor"></div>
 
-<section id="hero">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-9">
-        <p class="eyebrow hero-name">Jiří Kratochvíl</p>
-        <h1 class="hero-name">Web developer &amp; fotograf portrétů</h1>
-        <div class="role-line"><span id="roleText">Jsem</span><span class="caret">&nbsp;</span></div>
-        <p class="lead-text">Specializuji se na tvorbu webových stránek, e-shopů na platformě Shoptet a focení smyslných a přirozených portrétů.</p>
-        <div class="hero-contact d-flex flex-wrap align-items-center gap-3">
-          <a class="social-ico" href="tel:+420728544881" aria-label="Telefon">
-            <i class="bi bi-telephone"></i>
-          </a>
-          <a class="social-ico" href="mailto:info@jirikratochvil.eu" aria-label="E-mail">
-            <i class="bi bi-envelope"></i>
-          </a>
-          <a class="social-ico" href="https://www.linkedin.com/in/ji%C5%99%C3%AD-kratochv%C3%ADl-a61a87208" target="_blank" rel="noopener" aria-label="LinkedIn">
-            <i class="bi bi-linkedin"></i>
-          </a>
-          <a class="btn-vcard" href="vizitka.vcf" download="Jiri-Kratochvil.vcf">
-            <i class="bi bi-person-vcard"></i> Vizitka
-          </a>
-        </div>
-        <a href="#contact" class="btn-neon">Napsat mi</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="section-web" class="pin-section">
-  <div class="container pin-panel">
-    <div class="row align-items-center g-5">
-      <div class="col-lg-6">
-        <p class="eyebrow fade-el">Weby &amp; e-shopy</p>
-        <h2 class="fade-el">Vytvořím vám <span class="gradient-text">web nebo e-shop</span></h2>
-        <p class="fade-el">Navrhnu a naprogramuju vám web nebo e-shop na míru — od grafického návrhu přes vlastní kód až po nasazení a spuštění. Specializuju se na e-shopy na platformě Shoptet, kde kromě designu řeším i kompletní technické nastavení obchodu.</p>
-        <p class="fade-el">Web nestavím z šablony — návrh vychází z vaší značky a cílové skupiny, ne z hotové kostry. Výsledkem je stránka, která vypadá jinak než konkurence a funguje přesně tak, jak potřebujete.</p>
-        <div class="row g-3 mt-3">
-          <div class="col-6 col-md-4">
-            <div class="feature-card fade-el">
-              <div class="icon"><i class="bi bi-lightning-charge-fill"></i></div>
-              <h4>Rychlost</h4>
-              <p>Optimalizace pro výkon.</p>
-            </div>
-          </div>
-          <div class="col-6 col-md-4">
-            <div class="feature-card fade-el">
-              <div class="icon"><i class="bi bi-phone"></i></div>
-              <h4>Responzivita</h4>
-              <p>Funguje na všech zařízeních.</p>
-            </div>
-          </div>
-          <div class="col-6 col-md-4">
-            <div class="feature-card fade-el">
-              <div class="icon"><i class="bi bi-cart3"></i></div>
-              <h4>Shoptet e-shopy</h4>
-              <p>Nastavení i design obchodu.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-6">
-        <div class="pin-graphic pin-graphic-code fade-el">
-          <div class="blob"></div>
-          <div class="grid-lines"></div>
-          <div class="code-wire-morph">
-            <div class="code-layer">
-              <div class="code-line"><span class="tok-kw">const</span> <span class="tok-var">shop</span> <span class="tok-op">=</span> <span class="tok-fn">createStore</span><span class="tok-punc">();</span></div>
-              <div class="code-line" style="width:82%"><span class="tok-kw">function</span> <span class="tok-fn">render</span><span class="tok-punc">()</span> <span class="tok-punc">{</span></div>
-              <div class="code-line indent" style="width:66%"><span class="tok-kw">return</span> <span class="tok-tag">&lt;Header /&gt;</span></div>
-              <div class="code-line indent" style="width:74%"><span class="tok-tag">&lt;Hero /&gt;</span></div>
-              <div class="code-line indent" style="width:58%"><span class="tok-tag">&lt;Products /&gt;</span></div>
-              <div class="code-line indent" style="width:70%"><span class="tok-tag">&lt;Footer /&gt;</span></div>
-              <div class="code-line" style="width:14%"><span class="tok-punc">}</span></div>
-              <div class="code-line" style="width:48%"><span class="tok-comment">// deploy ↑</span></div>
-            </div>
-            <div class="wireframe-layer">
-              <div class="wf-topbar"><span></span><span></span><span></span></div>
-              <div class="wf-hero"></div>
-              <div class="wf-text" style="width:70%"></div>
-              <div class="wf-text" style="width:45%"></div>
-              <div class="wf-cards"><span></span><span></span><span></span></div>
-              <div class="wf-btn"></div>
-            </div>
-          </div>
+  <nav class="navbar navbar-expand-lg navbar-dark navbar-custom" id="mainNav">
+    <div class="container d-flex justify-content-between align-items-center">
+      <a class="brand d-flex align-items-center gap-2" href="#hero">
+        <img src="assets/logo.webp" alt="Jiří Kratochvíl" class="brand-logo" style="filter:brightness(10);">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+        aria-controls="navMenu" aria-expanded="false" aria-label="Otevřít menu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse flex-grow-0" id="navMenu">
+        <div class="d-flex flex-column flex-lg-row">
+          <a class="nav-link" href="#hero">Úvod</a>
+          <a class="nav-link" href="#section-web">Web &amp; e-shop</a>
+          <a class="nav-link" href="#section-portrait">Portréty</a>
+          <a class="nav-link" href="#section-marketing">Online marketing</a>
+          <a class="nav-link" href="#contact">Kontakt</a>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </nav>
 
-<section id="section-portrait" class="pin-section">
-  <div class="container pin-panel">
-    <div class="row align-items-center g-5">
-      <div class="col-lg-6 order-lg-2">
-        <p class="eyebrow fade-el">Portrétní fotografie</p>
-        <h2 class="fade-el">Vyfotím vám <span class="gradient-text">portrét</span></h2>
-        <p class="fade-el">Portrétům se věnuji řadu let a soustředím se na to, aby fotografie vypadala přirozeně — ne jako pózovaná fotka z legitimace. Cílem je zachytit vaši osobnost, ne jen podobu.</p>
-        <p class="fade-el">Fotky využijete na LinkedIn, web, sociální sítě nebo jen tak pro sebe. Focení probíhá v přirozeném prostředí a bez zbytečného tlaku před objektivem — a na výsledku je to vidět.</p>
-        <a href="https://jkratochvil.com" target="_blank" rel="noopener" class="btn-neon fade-el">Portfolio fotografií</a>
-      </div>
-      <div class="col-lg-6 order-lg-1">
-        <div class="pin-graphic pin-graphic-photo pin-graphic-cards fade-el">
-          <div class="photo-card"><img src="assets/images/portrait.webp" alt="Portrétní fotografie od Jiřího Kratochvíla" loading="lazy"></div>
-          <div class="photo-card"><img src="assets/images/20220702-IMG_0998.webp" alt="Portrétní fotografie od Jiřího Kratochvíla" loading="lazy"></div>
-          <div class="photo-card"><img src="assets/images/20250223-IMG_6958.webp" alt="Portrétní fotografie od Jiřího Kratochvíla" loading="lazy"></div>
+  <section id="hero">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-9">
+          <p class="eyebrow hero-name">Jiří Kratochvíl</p>
+          <h1 class="hero-name">Web developer &amp; fotograf portrétů</h1>
+          <div class="role-line"><span id="roleText">Jsem</span><span class="caret">&nbsp;</span></div>
+          <p class="lead-text">Specializuji se na tvorbu webových stránek, e-shopů na platformě Shoptet a focení
+            smyslných a přirozených portrétů.</p>
+          <div class="hero-contact d-flex flex-wrap align-items-center gap-3">
+            <a class="social-ico" href="tel:+420728544881" aria-label="Telefon">
+              <i class="bi bi-telephone"></i>
+            </a>
+            <a class="social-ico" href="mailto:info@jirikratochvil.eu" aria-label="E-mail">
+              <i class="bi bi-envelope"></i>
+            </a>
+            <a class="social-ico" href="https://www.linkedin.com/in/ji%C5%99%C3%AD-kratochv%C3%ADl-a61a87208"
+              target="_blank" rel="noopener" aria-label="LinkedIn">
+              <i class="bi bi-linkedin"></i>
+            </a>
+            <a class="btn-vcard" href="vizitka.vcf" download="Jiri-Kratochvil.vcf">
+              <i class="bi bi-person-vcard"></i> Vizitka
+            </a>
+          </div>
+          <a href="#contact" class="btn-neon">Napsat mi</a>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="section-marketing" class="pin-section">
-  <div class="container pin-panel">
-    <div class="row align-items-center g-5">
-      <div class="col-lg-6">
-        <p class="eyebrow fade-el">Online marketing</p>
-        <h2 class="fade-el">Přivedu vám <span class="gradient-text">zákazníky přes Google Ads</span></h2>
-        <p class="fade-el">Kvalitní web nebo e-shop je jen první krok — bez cíleného marketingu ho ale najde jen málokdo. Nastavím a spravuji vám PPC kampaně v Google Ads (vyhledávací síť, Shopping, remarketing), aby přiváděly reálné poptávky a objednávky, ne jen kliky.</p>
-        <p class="fade-el">Kampaně pravidelně vyhodnocuji a optimalizuji podle dat, ne podle pocitu. Uvidíte přesně, kolik vás stojí získání zákazníka a kde se vám investice do reklamy vrací.</p>
-        <div class="row g-3 mt-3">
-          <div class="col-6 col-md-4">
-            <div class="feature-card fade-el">
-              <div class="icon"><i class="bi bi-megaphone-fill"></i></div>
-              <h4>Nastavení kampaní</h4>
-              <p>Vyhledávání, Shopping i remarketing.</p>
+  <section id="section-web" class="pin-section">
+    <div class="container pin-panel">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+          <p class="eyebrow fade-el">Weby &amp; e-shopy</p>
+          <h2 class="fade-el">Vytvořím vám <span class="gradient-text">web nebo e-shop</span></h2>
+          <p class="fade-el">Navrhnu a naprogramuju vám web nebo e-shop na míru — od grafického návrhu přes vlastní kód
+            až po nasazení a spuštění. Specializuju se na e-shopy na platformě Shoptet, kde kromě designu řeším i
+            kompletní technické nastavení obchodu.</p>
+          <p class="fade-el">Web nestavím z šablony — návrh vychází z vaší značky a cílové skupiny, ne z hotové kostry.
+            Výsledkem je stránka, která vypadá jinak než konkurence a funguje přesně tak, jak potřebujete.</p>
+          <div class="row g-3 mt-3">
+            <div class="col-6 col-md-4">
+              <div class="feature-card fade-el">
+                <div class="icon"><i class="bi bi-lightning-charge-fill"></i></div>
+                <h4>Rychlost</h4>
+                <p>Optimalizace pro výkon.</p>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="feature-card fade-el">
+                <div class="icon"><i class="bi bi-phone"></i></div>
+                <h4>Responzivita</h4>
+                <p>Funguje na všech zařízeních.</p>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="feature-card fade-el">
+                <div class="icon"><i class="bi bi-cart3"></i></div>
+                <h4>Shoptet e-shopy</h4>
+                <p>Nastavení i design obchodu.</p>
+              </div>
             </div>
           </div>
-          <div class="col-6 col-md-4">
-            <div class="feature-card fade-el">
-              <div class="icon"><i class="bi bi-graph-up-arrow"></i></div>
-              <h4>Optimalizace</h4>
-              <p>Pravidelné ladění podle výkonu a dat.</p>
-            </div>
-          </div>
-          <div class="col-6 col-md-4">
-            <div class="feature-card fade-el">
-              <div class="icon"><i class="bi bi-bar-chart-line-fill"></i></div>
-              <h4>Reporting</h4>
-              <p>Přehledné výsledky a návratnost investic.</p>
+        </div>
+        <div class="col-lg-6">
+          <div class="pin-graphic pin-graphic-code fade-el">
+            <div class="blob"></div>
+            <div class="grid-lines"></div>
+            <div class="code-wire-morph">
+              <div class="code-layer">
+                <div class="code-line"><span class="tok-kw">const</span> <span class="tok-var">shop</span> <span
+                    class="tok-op">=</span> <span class="tok-fn">createStore</span><span class="tok-punc">();</span>
+                </div>
+                <div class="code-line" style="width:82%"><span class="tok-kw">function</span> <span
+                    class="tok-fn">render</span><span class="tok-punc">()</span> <span class="tok-punc">{</span></div>
+                <div class="code-line indent" style="width:66%"><span class="tok-kw">return</span> <span
+                    class="tok-tag">&lt;Header /&gt;</span></div>
+                <div class="code-line indent" style="width:74%"><span class="tok-tag">&lt;Hero /&gt;</span></div>
+                <div class="code-line indent" style="width:58%"><span class="tok-tag">&lt;Products /&gt;</span></div>
+                <div class="code-line indent" style="width:70%"><span class="tok-tag">&lt;Footer /&gt;</span></div>
+                <div class="code-line" style="width:14%"><span class="tok-punc">}</span></div>
+                <div class="code-line" style="width:48%"><span class="tok-comment">// deploy ↑</span></div>
+              </div>
+              <div class="wireframe-layer">
+                <div class="wf-topbar"><span></span><span></span><span></span></div>
+                <div class="wf-hero"></div>
+                <div class="wf-text" style="width:70%"></div>
+                <div class="wf-text" style="width:45%"></div>
+                <div class="wf-cards"><span></span><span></span><span></span></div>
+                <div class="wf-btn"></div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="col-lg-6">
-        <div class="pin-graphic fade-el">
-          <div class="blob"></div>
-          <div class="grid-lines"></div>
-          <div class="serp-dash-morph">
-            <div class="serp-layer">
-              <div class="serp-search"><i class="bi bi-search"></i><span>dárky s dopravou zdarma</span></div>
-              <div class="serp-ad">
-                <div class="serp-ad-meta"><span class="serp-ad-badge">Reklama</span><span class="serp-ad-url">vas-eshop.cz</span></div>
-                <div class="serp-ad-title">Dárky s dopravou zdarma – Váš e-shop</div>
-                <div class="serp-ad-desc">Doručení do 24 hodin. Tisíce spokojených zákazníků.</div>
-                <div class="serp-ad-rating">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
-                  <span>4,8 · 312 recenzí</span>
+    </div>
+  </section>
+
+  <section id="section-portrait" class="pin-section">
+    <div class="container pin-panel">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6 order-lg-2">
+          <p class="eyebrow fade-el">Portrétní fotografie</p>
+          <h2 class="fade-el">Vyfotím vám <span class="gradient-text">portrét</span></h2>
+          <p class="fade-el">Portrétům se věnuji řadu let a soustředím se na to, aby fotografie vypadala přirozeně — ne
+            jako pózovaná fotka z legitimace. Cílem je zachytit vaši osobnost, ne jen podobu.</p>
+          <p class="fade-el">Fotky využijete na LinkedIn, web, sociální sítě nebo jen tak pro sebe. Focení probíhá v
+            přirozeném prostředí a bez zbytečného tlaku před objektivem — a na výsledku je to vidět.</p>
+          <a href="https://jkratochvil.com" target="_blank" rel="noopener" class="btn-neon fade-el">Portfolio
+            fotografií</a>
+        </div>
+        <div class="col-lg-6 order-lg-1">
+          <div class="pin-graphic pin-graphic-photo pin-graphic-cards fade-el">
+            <div class="photo-card"><img src="assets/images/portrait.webp"
+                alt="Portrétní fotografie od Jiřího Kratochvíla" loading="lazy"></div>
+            <div class="photo-card"><img src="assets/images/20220702-IMG_0998.webp"
+                alt="Portrétní fotografie od Jiřího Kratochvíla" loading="lazy"></div>
+            <div class="photo-card"><img src="assets/images/20250223-IMG_6958.webp"
+                alt="Portrétní fotografie od Jiřího Kratochvíla" loading="lazy"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="section-marketing" class="pin-section">
+    <div class="container pin-panel">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+          <p class="eyebrow fade-el">Online marketing</p>
+          <h2 class="fade-el">Přivedu vám <span class="gradient-text">zákazníky přes Google Ads</span></h2>
+          <p class="fade-el">Kvalitní web nebo e-shop je jen první krok — bez cíleného marketingu ho ale najde jen
+            málokdo. Nastavím a spravuji vám PPC kampaně v Google Ads (vyhledávací síť, Shopping, remarketing), aby
+            přiváděly reálné poptávky a objednávky, ne jen kliky.</p>
+          <p class="fade-el">Kampaně pravidelně vyhodnocuji a optimalizuji podle dat, ne podle pocitu. Uvidíte přesně,
+            kolik vás stojí získání zákazníka a kde se vám investice do reklamy vrací.</p>
+          <div class="row g-3 mt-3">
+            <div class="col-6 col-md-4">
+              <div class="feature-card fade-el">
+                <div class="icon"><i class="bi bi-megaphone-fill"></i></div>
+                <h4>Nastavení kampaní</h4>
+                <p>Vyhledávání, Shopping i remarketing.</p>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="feature-card fade-el">
+                <div class="icon"><i class="bi bi-graph-up-arrow"></i></div>
+                <h4>Optimalizace</h4>
+                <p>Pravidelné ladění podle výkonu a dat.</p>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="feature-card fade-el">
+                <div class="icon"><i class="bi bi-bar-chart-line-fill"></i></div>
+                <h4>Reporting</h4>
+                <p>Přehledné výsledky a návratnost investic.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="pin-graphic fade-el">
+            <div class="blob"></div>
+            <div class="grid-lines"></div>
+            <div class="serp-dash-morph">
+              <div class="serp-layer">
+                <div class="serp-search"><i class="bi bi-search"></i><span>dárky s dopravou zdarma</span></div>
+                <div class="serp-ad">
+                  <div class="serp-ad-meta"><span class="serp-ad-badge">Reklama</span><span
+                      class="serp-ad-url">vas-eshop.cz</span></div>
+                  <div class="serp-ad-title">Dárky s dopravou zdarma – Váš e-shop</div>
+                  <div class="serp-ad-desc">Doručení do 24 hodin. Tisíce spokojených zákazníků.</div>
+                  <div class="serp-ad-rating">
+                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                      class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                    <span>4,8 · 312 recenzí</span>
+                  </div>
+                </div>
+              </div>
+              <div class="dash-layer">
+                <div class="dash-topbar"><span>Kampaň · Vyhledávací síť</span><span class="dash-trend"><i
+                      class="bi bi-arrow-up-right"></i>+142 %</span></div>
+                <div class="dash-chart">
+                  <span class="dash-bar" data-h="28"></span>
+                  <span class="dash-bar" data-h="42"></span>
+                  <span class="dash-bar" data-h="38"></span>
+                  <span class="dash-bar" data-h="64"></span>
+                  <span class="dash-bar" data-h="58"></span>
+                  <span class="dash-bar" data-h="82"></span>
+                  <span class="dash-bar" data-h="100"></span>
+                </div>
+                <div class="dash-stats">
+                  <div class="dash-stat"><span class="dash-stat-label">CTR</span><span class="dash-stat-value"
+                      data-target="4.8" data-suffix="%">0%</span></div>
+                  <div class="dash-stat"><span class="dash-stat-label">ROAS</span><span class="dash-stat-value"
+                      data-target="6.2" data-suffix="×">0×</span></div>
                 </div>
               </div>
             </div>
-            <div class="dash-layer">
-              <div class="dash-topbar"><span>Kampaň · Vyhledávací síť</span><span class="dash-trend"><i class="bi bi-arrow-up-right"></i>+142 %</span></div>
-              <div class="dash-chart">
-                <span class="dash-bar" data-h="28"></span>
-                <span class="dash-bar" data-h="42"></span>
-                <span class="dash-bar" data-h="38"></span>
-                <span class="dash-bar" data-h="64"></span>
-                <span class="dash-bar" data-h="58"></span>
-                <span class="dash-bar" data-h="82"></span>
-                <span class="dash-bar" data-h="100"></span>
-              </div>
-              <div class="dash-stats">
-                <div class="dash-stat"><span class="dash-stat-label">CTR</span><span class="dash-stat-value" data-target="4.8" data-suffix="%">0%</span></div>
-                <div class="dash-stat"><span class="dash-stat-label">ROAS</span><span class="dash-stat-value" data-target="6.2" data-suffix="×">0×</span></div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="contact" class="section-pad">
-  <div class="container">
-    <div class="text-center mx-auto mb-5" style="max-width:640px;">
-      <p class="eyebrow fade-el">Kontakt</p>
-      <h2 class="fade-el">Kontaktujte <span class="gradient-text">mě</span></h2>
-    </div>
-    <div class="row g-4 mb-5">
-      <div class="col-md-4">
-        <div class="feature-card contact-card fade-el h-100">
-          <div class="icon">
-            <i class="bi bi-telephone"></i>
+  <section id="contact" class="section-pad">
+    <div class="container">
+      <div class="text-center mx-auto mb-5" style="max-width:640px;">
+        <p class="eyebrow fade-el">Kontakt</p>
+        <h2 class="fade-el">Kontaktujte <span class="gradient-text">mě</span></h2>
+      </div>
+      <div class="row g-4 mb-5">
+        <div class="col-md-4">
+          <div class="feature-card contact-card fade-el h-100">
+            <div class="icon">
+              <i class="bi bi-telephone"></i>
+            </div>
+            <h4>Telefon</h4>
+            <p><a href="tel:+420728544881">+420 728 544 881</a></p>
           </div>
-          <h4>Telefon</h4>
-          <p><a href="tel:+420728544881">+420 728 544 881</a></p>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card contact-card fade-el h-100">
+            <div class="icon">
+              <i class="bi bi-envelope"></i>
+            </div>
+            <h4>E-mail</h4>
+            <p><a href="mailto:info@jirikratochvil.eu">info@jirikratochvil.eu</a></p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card contact-card fade-el h-100">
+            <div class="icon">
+              <i class="bi bi-bank"></i>
+            </div>
+            <h4>Obchodní údaje</h4>
+            <p>IČ: <strong>17870267</strong><br><span class="small-meta">DS: <strong>rdtxzgn</strong></span></p>
+          </div>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="feature-card contact-card fade-el h-100">
-          <div class="icon">
-            <i class="bi bi-envelope"></i>
-          </div>
-          <h4>E-mail</h4>
-          <p><a href="mailto:info@jirikratochvil.eu">info@jirikratochvil.eu</a></p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="feature-card contact-card fade-el h-100">
-          <div class="icon">
-            <i class="bi bi-bank"></i>
-          </div>
-          <h4>Obchodní údaje</h4>
-          <p>IČ: <strong>17870267</strong><br><span class="small-meta">DS: <strong>rdtxzgn</strong></span></p>
-        </div>
-      </div>
-    </div>
-    <div class="row justify-content-center">
-      <div class="col-lg-9">
-        <h3 class="fade-el mb-4 text-center">Máte otázku? Napište mi!</h3>
-        <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="contactForm" class="fade-el">
-          <input type="hidden" name="form-name" value="contact">
-          <p class="honeypot-field"><label>Nevyplňujte: <input name="bot-field"></label></p>
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label" for="name">Jméno</label>
-              <input class="form-control form-control-neon" type="text" id="name" name="name" required>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label" for="company">Společnost (nepovinné)</label>
-              <input class="form-control form-control-neon" type="text" id="company" name="company">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label" for="email">E-mail</label>
-              <input class="form-control form-control-neon" type="email" id="email" name="email" required>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label" for="phone">Telefon (nepovinné)</label>
-              <input class="form-control form-control-neon" type="tel" id="phone" name="phone">
-            </div>
-            <div class="col-12">
-              <label class="form-label" for="message">Zpráva</label>
-              <textarea class="form-control form-control-neon" id="message" name="message" rows="4" required></textarea>
-            </div>
-            <div class="col-12">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="gdprCheck" name="gdpr" required>
-                <label class="form-check-label" for="gdprCheck">
-                  Souhlasím se zpracováním osobních údajů. <a href="gdpr.html">Více informací</a>.
-                </label>
+      <div class="row justify-content-center">
+        <div class="col-lg-9">
+          <h3 class="fade-el mb-4 text-center">Máte otázku? Napište mi!</h3>
+          <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="contactForm"
+            class="fade-el">
+            <input type="hidden" name="form-name" value="contact">
+            <p class="honeypot-field"><label>Nevyplňujte: <input name="bot-field"></label></p>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label" for="name">Jméno</label>
+                <input class="form-control form-control-neon" type="text" id="name" name="name" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="company">Společnost (nepovinné)</label>
+                <input class="form-control form-control-neon" type="text" id="company" name="company">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="email">E-mail</label>
+                <input class="form-control form-control-neon" type="email" id="email" name="email" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="phone">Telefon (nepovinné)</label>
+                <input class="form-control form-control-neon" type="tel" id="phone" name="phone">
+              </div>
+              <div class="col-12">
+                <label class="form-label" for="message">Zpráva</label>
+                <textarea class="form-control form-control-neon" id="message" name="message" rows="4"
+                  required></textarea>
+              </div>
+              <div class="col-12">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="gdprCheck" name="gdpr" required>
+                  <label class="form-check-label" for="gdprCheck">
+                    Souhlasím se zpracováním osobních údajů. <a href="gdpr.html">Více informací</a>.
+                  </label>
+                </div>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn-neon border-0">Odeslat</button>
               </div>
             </div>
-            <div class="col-12">
-              <button type="submit" class="btn-neon border-0">Odeslat</button>
-            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="row g-4 align-items-start">
+        <div class="col-md-4 fade-el">
+          <div class="brand mb-2">Jiří<span style="color:var(--magenta)">.</span>Kratochvíl</div>
+          <div class="footer-contact">
+            <a href="tel:+420728544881"><i class="bi bi-telephone"></i>+420 728 544 881</a>
+            <a href="mailto:info@jirikratochvil.eu"><i class="bi bi-envelope"></i>info@jirikratochvil.eu</a>
           </div>
-        </form>
+        </div>
+        <div class="col-md-4 fade-el footer-nav">
+          <p class="footer-nav-title">Sekce webu</p>
+          <ul>
+            <li><a href="#section-web">Web &amp; e-shop</a></li>
+            <li><a href="#section-portrait">Portréty</a></li>
+            <li><a href="#section-marketing">Online marketing</a></li>
+            <li><a href="#contact">Kontakt</a></li>
+          </ul>
+        </div>
+        <div class="col-md-4 fade-el text-md-end">
+          <div class="d-flex gap-3 justify-content-md-end">
+            <a class="social-ico" href="https://www.instagram.com/ochmi" target="_blank" rel="noopener"
+              aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+            <a class="social-ico" href="https://www.linkedin.com/in/ji%C5%99%C3%AD-kratochv%C3%ADl-a61a87208"
+              target="_blank" rel="noopener" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+          </div>
+          <p class="mt-3 mb-0" style="font-size:.85rem;">&copy; 2026 Jiří Kratochvíl &middot; <a
+              href="gdpr.html">GDPR</a></p>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </footer>
 
-<footer>
-  <div class="container">
-    <div class="row g-4 align-items-start">
-      <div class="col-md-4 fade-el">
-        <div class="brand mb-2">Jiří<span style="color:var(--magenta)">.</span>Kratochvíl</div>
-        <div class="footer-contact">
-          <a href="tel:+420728544881"><i class="bi bi-telephone"></i>+420 728 544 881</a>
-          <a href="mailto:info@jirikratochvil.eu"><i class="bi bi-envelope"></i>info@jirikratochvil.eu</a>
-        </div>
-        <a href="gdpr.html">Zpracování osobních údajů (GDPR)</a>
-      </div>
-      <div class="col-md-4 fade-el footer-nav">
-        <p class="footer-nav-title">Sekce webu</p>
-        <ul>
-          <li><a href="#section-web">Web &amp; e-shop</a></li>
-          <li><a href="#section-portrait">Portréty</a></li>
-          <li><a href="#section-marketing">Online marketing</a></li>
-          <li><a href="#contact">Kontakt</a></li>
-        </ul>
-      </div>
-      <div class="col-md-4 fade-el text-md-end">
-        <div class="d-flex gap-3 justify-content-md-end">
-          <a class="social-ico" href="https://www.instagram.com/ochmi" target="_blank" rel="noopener" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-          <a class="social-ico" href="https://www.linkedin.com/in/ji%C5%99%C3%AD-kratochv%C3%ADl-a61a87208" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
-        </div>
-        <p class="mt-3 mb-0" style="font-size:.85rem;">&copy; 2026 Jiří Kratochvíl &middot; <a href="gdpr.html">GDPR</a></p>
-      </div>
-    </div>
-  </div>
-</footer>
+  <button id="toTop" class="to-top" aria-label="Nahoru">
+    <i class="bi bi-arrow-up"></i>
+  </button>
 
-<button id="toTop" class="to-top" aria-label="Nahoru">
-  <i class="bi bi-arrow-up"></i>
-</button>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
-<script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+  <script src="script.js"></script>
 </body>
+
 </html>
