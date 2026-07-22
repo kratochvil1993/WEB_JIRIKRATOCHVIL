@@ -146,6 +146,81 @@
     if (heroTl.progress() < 1) heroTl.progress(1);
   }, 1600);
 
+  /* ---------------- Hero graphic: type-in code, then loop between two code variants ----------------
+     Time-based, not scroll-driven (hero isn't pinned). Hidden on mobile via
+     the `d-none d-lg-block` wrapper in the markup (same 991px cutoff as
+     `isMobile`), so skip building it there entirely.
+     Every .code-line across both variants already declares its final width
+     via inline style (as in the other pin-graphics' code mockups); each
+     line's width is captured once up front, then every reveal — the
+     initial load AND every loop swap, not just the first — resets that
+     variant's lines to width:0 and re-tweens them up to their captured
+     width, staggered per line, so both variants "type in" the same way
+     every time they appear (not just a plain opacity crossfade). Text
+     content itself is never touched, so syntax-highlighting spans stay
+     intact throughout.
+     On desktop with prefers-reduced-motion: skip the typing/loop entirely,
+     leaving variant A at its final (already-full-width) resting state —
+     same "pause, stop, hide" rationale as the card-autoplay gate below. */
+  var heroTypeStagger = 0.16, heroTypeDuration = 0.45, heroHold = 3.5;
+  var heroVariants = [
+    { el: document.querySelector(".hero-code-a"), lines: gsap.utils.toArray(".hero-code-a .code-line") },
+    { el: document.querySelector(".hero-code-b"), lines: gsap.utils.toArray(".hero-code-b .code-line") }
+  ].filter(function (v) { return v.el && v.lines.length; });
+  heroVariants.forEach(function (v) {
+    v.widths = v.lines.map(function (el) { return el.style.width; });
+    /* total time for the staggered width tween below to fully finish:
+       last line's start offset plus its own duration. */
+    v.typeDuration = (v.lines.length - 1) * heroTypeStagger + heroTypeDuration;
+  });
+
+  function typeInHeroVariant(v, fromLoad) {
+    gsap.set(v.lines, { width: 0 });
+    if (!fromLoad) gsap.set(v.el, { opacity: 1, y: 0, filter: "blur(0px)" });
+    gsap.to(v.lines, {
+      width: function (i) { return v.widths[i]; },
+      duration: heroTypeDuration, stagger: heroTypeStagger, ease: "power1.inOut"
+    });
+  }
+
+  function swapHeroCode(fromIndex) {
+    var toIndex = (fromIndex + 1) % heroVariants.length;
+    var to = heroVariants[toIndex];
+    gsap.to(heroVariants[fromIndex].el, {
+      opacity: 0, y: -14, filter: "blur(4px)", duration: 0.7, ease: "power2.inOut",
+      onComplete: function () {
+        typeInHeroVariant(to);
+        gsap.delayedCall(to.typeDuration + heroHold, function () { swapHeroCode(toIndex); });
+      }
+    });
+  }
+
+  if (heroVariants.length > 1 && !isMobile && !reduceMotion) {
+    gsap.delayedCall(0.5, function () {
+      var first = heroVariants[0];
+      typeInHeroVariant(first, true);
+      gsap.delayedCall(first.typeDuration + heroHold, function () { swapHeroCode(0); });
+    });
+  }
+
+  /* Camera-iris badge: kept for potential reuse, disabled for now per
+     request to just cycle the two code variants above instead. The
+     matching markup is commented out in index.html (search
+     "hero-iris-layer") — uncomment both to bring it back as a third state
+     in the loop. */
+  // var heroIrisLayer = document.querySelector(".hero-iris-layer");
+  // var heroIrisBlades = gsap.utils.toArray(".hero-iris-blade");
+  // if (heroIrisBlades.length && !isMobile && !reduceMotion) {
+  //   gsap.to(heroIrisBlades, {
+  //     rotation: "+=22",
+  //     transformOrigin: "100px 100px",
+  //     duration: 1.7,
+  //     ease: "sine.inOut",
+  //     yoyo: true,
+  //     repeat: -1
+  //   });
+  // }
+
   /* ---------------- Background: gradient tied to scroll progress ---------------- */
   var root = document.documentElement;
   var stops = [

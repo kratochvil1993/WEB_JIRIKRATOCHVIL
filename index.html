@@ -117,8 +117,8 @@
 
   <section id="hero">
     <div class="container">
-      <div class="row">
-        <div class="col-lg-9">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-7">
           <p class="eyebrow hero-name">Jiří Kratochvíl</p>
           <h1 class="hero-name">Web developer &amp;<br>fotograf</h1>
           <div class="role-line"><span id="roleText">Jsem</span><span class="caret">&nbsp;</span></div>
@@ -140,6 +140,91 @@
             </a>
           </div>
           <a href="#contact" class="btn-neon">Zanechat zprávu</a>
+        </div>
+        <div class="col-lg-5 d-none d-lg-block">
+          <div class="pin-graphic hero-graphic">
+            <div class="blob"></div>
+            <div class="grid-lines"></div>
+            <div class="hero-morph">
+              <div class="hero-code-lines hero-code-a">
+                <div class="code-line" style="width:74%"><span class="tok-kw">const</span> <span
+                    class="tok-var">jiri</span> <span class="tok-op">=</span> <span
+                    class="tok-fn">createDev</span><span class="tok-punc">();</span></div>
+                <div class="code-line" style="width:62%"><span class="tok-kw">function</span> <span
+                    class="tok-fn">buildWeb</span><span class="tok-punc">()</span> <span class="tok-punc">{</span>
+                </div>
+                <div class="code-line indent" style="width:70%"><span class="tok-kw">return</span> <span
+                    class="tok-tag">&lt;Web responsive /&gt;</span></div>
+                <div class="code-line" style="width:10%"><span class="tok-punc">}</span></div>
+                <div class="code-line" style="width:66%"><span class="tok-kw">function</span> <span
+                    class="tok-fn">buildShop</span><span class="tok-punc">()</span> <span class="tok-punc">{</span>
+                </div>
+                <div class="code-line indent" style="width:86%"><span class="tok-kw">return</span> <span
+                    class="tok-tag">&lt;Shop platform="Shoptet" /&gt;</span></div>
+                <div class="code-line" style="width:10%"><span class="tok-punc">}</span></div>
+                <div class="code-line" style="width:54%"><span class="tok-kw">function</span> <span
+                    class="tok-fn">focus</span><span class="tok-punc">()</span> <span class="tok-punc">{</span></div>
+                <div class="code-line indent" style="width:76%"><span class="tok-kw">return</span> <span
+                    class="tok-tag">&lt;Foto natural light /&gt;</span></div>
+                <div class="code-line" style="width:10%"><span class="tok-punc">}</span></div>
+                <div class="code-line" style="width:58%"><span class="tok-comment">// web, e-shop i
+                    portrét</span></div>
+              </div>
+              <div class="hero-code-lines hero-code-b">
+                <div class="code-line" style="width:68%"><span class="tok-kw">const</span> <span
+                    class="tok-var">shop</span> <span class="tok-op">=</span> <span class="tok-kw">new</span> <span
+                    class="tok-fn">Shoptet</span><span class="tok-punc">();</span></div>
+                <div class="code-line" style="width:82%"><span class="tok-var">shop</span><span
+                    class="tok-punc">.</span><span class="tok-fn">nastav</span><span class="tok-punc">({ </span><span
+                    class="tok-var">platby</span><span class="tok-punc">, </span><span
+                    class="tok-var">doprava</span><span class="tok-punc"> });</span></div>
+                <div class="code-line" style="width:60%"><span class="tok-kw">function</span> <span
+                    class="tok-fn">marketing</span><span class="tok-punc">()</span> <span class="tok-punc">{</span>
+                </div>
+                <div class="code-line indent" style="width:72%"><span class="tok-kw">return</span> <span
+                    class="tok-tag">&lt;GoogleAds roas="6.2x" /&gt;</span></div>
+                <div class="code-line" style="width:10%"><span class="tok-punc">}</span></div>
+                <div class="code-line" style="width:64%"><span class="tok-kw">function</span> <span
+                    class="tok-fn">optimalizuj</span><span class="tok-punc">()</span> <span class="tok-punc">{</span>
+                </div>
+                <div class="code-line indent" style="width:68%"><span class="tok-kw">return</span> <span
+                    class="tok-tag">&lt;Kampan dataDriven /&gt;</span></div>
+                <div class="code-line" style="width:10%"><span class="tok-punc">}</span></div>
+                <div class="code-line" style="width:40%"><span class="tok-var">shop</span><span
+                    class="tok-punc">.</span><span class="tok-fn">spustit</span><span class="tok-punc">();</span>
+                </div>
+                <div class="code-line" style="width:46%"><span class="tok-comment">// e-shop je live</span></div>
+              </div>
+              <!-- Camera-iris badge: kept for potential reuse elsewhere, disabled for now
+                   per request to just keep the two code variants cycling. Re-enabling also
+                   needs the matching JS block in script.js (search "hero-iris-layer").
+              <div class="hero-iris-layer" aria-hidden="true">
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                  <circle class="hero-iris-ring" cx="100" cy="100" r="72" />
+                  <g transform="rotate(0 100 100)">
+                    <path class="hero-iris-blade" d="M100,100 L96,42 L128,50 L118,78 Z" />
+                  </g>
+                  <g transform="rotate(60 100 100)">
+                    <path class="hero-iris-blade" d="M100,100 L96,42 L128,50 L118,78 Z" />
+                  </g>
+                  <g transform="rotate(120 100 100)">
+                    <path class="hero-iris-blade" d="M100,100 L96,42 L128,50 L118,78 Z" />
+                  </g>
+                  <g transform="rotate(180 100 100)">
+                    <path class="hero-iris-blade" d="M100,100 L96,42 L128,50 L118,78 Z" />
+                  </g>
+                  <g transform="rotate(240 100 100)">
+                    <path class="hero-iris-blade" d="M100,100 L96,42 L128,50 L118,78 Z" />
+                  </g>
+                  <g transform="rotate(300 100 100)">
+                    <path class="hero-iris-blade" d="M100,100 L96,42 L128,50 L118,78 Z" />
+                  </g>
+                  <circle class="hero-iris-center" cx="100" cy="100" r="7" />
+                </svg>
+              </div>
+              -->
+            </div>
+          </div>
         </div>
       </div>
     </div>

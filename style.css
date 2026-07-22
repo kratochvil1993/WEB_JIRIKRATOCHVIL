@@ -229,6 +229,59 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
 #hero p.lead-text{max-width:640px;font-size:1.2rem;margin-top:1.2rem;}
 #hero .hero-contact{margin-top:1.8rem;}
 #hero .social-ico,#hero .btn-vcard{font-size:1.05rem;}
+
+/* Hero graphic: a single panel that types out a code snippet once on load,
+   then loops between two code variants (A/B), crossfading between them —
+   time-based (see script.js), not tied to scroll like the pinned sections'
+   morphs. A third "iris" variant existed here (camera-aperture SVG,
+   .hero-iris-layer/.hero-iris-blade/etc. below) and is kept styled but
+   unused — its markup is commented out in index.html; re-enable there and
+   in script.js (search "hero-iris-layer") if it's wanted again later. */
+.pin-graphic.hero-graphic{height:420px;}
+.hero-morph{
+  position:absolute;inset:14px;
+  border-radius:14px;
+  background:rgba(8,14,20,.55);
+  border:1px solid rgba(255,255,255,.08);
+  overflow:hidden;
+}
+.hero-morph .hero-code-lines,
+.hero-morph .hero-iris-layer{
+  position:absolute;inset:0;
+  will-change:opacity,filter,transform;
+}
+.hero-code-lines{
+  padding:1.1rem 1.3rem;
+  font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  font-size:.82rem;
+  line-height:2;
+}
+.hero-code-lines.hero-code-b{opacity:0;}
+.hero-code-lines .code-line{white-space:nowrap;overflow:hidden;color:rgba(255,255,255,.55);}
+.hero-code-lines .code-line.indent{padding-left:1.4em;}
+.hero-code-lines .tok-kw{color:var(--magenta);}
+.hero-code-lines .tok-fn{color:var(--purple);}
+.hero-code-lines .tok-var{color:#fff;}
+.hero-code-lines .tok-tag{color:var(--purple);}
+.hero-code-lines .tok-op{color:rgba(255,255,255,.4);}
+.hero-code-lines .tok-punc{color:rgba(255,255,255,.35);}
+.hero-code-lines .tok-comment{color:rgba(255,255,255,.3);font-style:italic;}
+.hero-iris-layer{
+  opacity:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.hero-iris-layer svg{width:75%;max-width:300px;height:auto;overflow:visible;}
+.hero-iris-ring{fill:none;stroke:rgba(255,255,255,.15);stroke-width:2;}
+.hero-iris-blade{
+  fill:rgba(var(--purple-rgb),.4);
+  stroke:var(--purple);
+  stroke-width:1.5;
+  stroke-linejoin:round;
+  filter:drop-shadow(0 0 4px rgba(var(--purple-rgb),.5));
+}
+.hero-iris-center{fill:var(--magenta);}
 .btn-vcard{
   display:inline-flex;
   align-items:center;
