@@ -450,25 +450,38 @@
             <p class="honeypot-field"><label>Nevyplňujte: <input name="bot-field"></label></p>
             <div class="row g-3">
               <div class="col-md-6">
-                <label class="form-label" for="name">Jméno</label>
-                <input class="form-control form-control-neon" type="text" id="name" name="name" required>
+                <div class="form-floating">
+                  <input class="form-control form-control-neon" type="text" id="name" name="name" placeholder=" "
+                    required>
+                  <label for="name">Jméno</label>
+                </div>
               </div>
               <div class="col-md-6">
-                <label class="form-label" for="company">Společnost (nepovinné)</label>
-                <input class="form-control form-control-neon" type="text" id="company" name="company">
+                <div class="form-floating">
+                  <input class="form-control form-control-neon" type="text" id="company" name="company"
+                    placeholder=" ">
+                  <label for="company">Společnost (nepovinné)</label>
+                </div>
               </div>
               <div class="col-md-6">
-                <label class="form-label" for="email">E-mail</label>
-                <input class="form-control form-control-neon" type="email" id="email" name="email" required>
+                <div class="form-floating">
+                  <input class="form-control form-control-neon" type="email" id="email" name="email" placeholder=" "
+                    required>
+                  <label for="email">E-mail</label>
+                </div>
               </div>
               <div class="col-md-6">
-                <label class="form-label" for="phone">Telefon (nepovinné)</label>
-                <input class="form-control form-control-neon" type="tel" id="phone" name="phone">
+                <div class="form-floating">
+                  <input class="form-control form-control-neon" type="tel" id="phone" name="phone" placeholder=" ">
+                  <label for="phone">Telefon (nepovinné)</label>
+                </div>
               </div>
               <div class="col-12">
-                <label class="form-label" for="message">Zpráva</label>
-                <textarea class="form-control form-control-neon" id="message" name="message" rows="4"
-                  required></textarea>
+                <div class="form-floating">
+                  <textarea class="form-control form-control-neon" id="message" name="message" placeholder=" "
+                    required></textarea>
+                  <label for="message">Zpráva</label>
+                </div>
               </div>
               <div class="col-12">
                 <div class="form-check">
