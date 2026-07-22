@@ -113,10 +113,10 @@
   var roleEl = document.getElementById("roleText");
   var roles = ["Web Developer", "Tvůrce E-shopů", "Fotograf Portrétů", "Tvůrce Kampaní"];
   function typewriter() {
-    if (lowPower) { roleEl.textContent = "Jsem " + roles[0]; return; }
+    if (lowPower) { roleEl.textContent = roles[0]; return; }
     var i = 0;
     function loop() {
-      var word = "Jsem " + roles[i % roles.length];
+      var word = roles[i % roles.length];
       var tl = gsap.timeline({ onComplete: loop });
       var chars = { n: 0 };
       tl.to(chars, {

@@ -212,6 +212,8 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
   font-size:clamp(2.6rem,6vw,4.6rem);
   margin-bottom:.5rem;
 }
+#hero .hero-name-accent{color:var(--purple);}
+#hero .role-line .role-word{color:var(--purple);}
 #hero .role-line{
   font-size:clamp(1.6rem,3.4vw,2.4rem);
   font-weight:700;
@@ -494,7 +496,7 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
 /* feature cards (tilt/glow) */
 .feature-card{
   position:relative;
-  padding:1.8rem 1.6rem;
+  padding:1.2rem 1.1rem;
   border-radius:18px;
   background:rgba(255,255,255,.03);
   border:1px solid rgba(255,255,255,.07);
@@ -663,7 +665,7 @@ footer::after{
 }
 @media (max-width:767.98px){
   .section-pad,#contact{padding:5rem 0;}
-  .feature-card{padding:1.4rem 1.1rem;}
+  .feature-card{padding:1.1rem .9rem;}
   #hero p.lead-text{font-size:1.05rem;}
 }
 @media (max-width:420px){

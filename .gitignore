@@ -1,6 +1,9 @@
 # Claude Design handoff bundle (design source, not part of the published site)
 _design/
 
+# Internal notes/docs (not part of the published site)
+_docs/
+
 # Netlify CLI local state
 .netlify/
 
