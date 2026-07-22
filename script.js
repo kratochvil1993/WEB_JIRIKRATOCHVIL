@@ -403,6 +403,32 @@
   function cardExitPose() {
     return { opacity: 0, y: -80, rotate: -12, scale: 0.86 };
   }
+  /* Mobile has no scroll-scrub to drive updateCardStack, so the fanned photos
+     would otherwise sit frozen on card 0 forever. Autoplay rotates the "front"
+     slot on a timer instead: whichever card is `offset` steps behind the
+     current front (cyclically) gets that offset's stacked pose, so the deck
+     keeps its fanned look while cycling through every photo. zIndex is
+     reassigned each tick (front on top, deeper offsets below) since a fixed
+     stacking order would let a "behind" card cover the new front card. */
+  function startCardAutoplay(cards, interval) {
+    var n = cards.length;
+    if (n < 2) return;
+    var front = 0;
+    function applyPoses(idx) {
+      cards.forEach(function (card, i) {
+        var offset = (i - idx + n) % n;
+        gsap.set(card, { zIndex: n - offset });
+        var pose = offset === 0 ? cardFrontPose() : cardStackedPose(offset - 1);
+        pose.duration = 0.9; pose.ease = "power2.inOut"; pose.overwrite = "auto";
+        gsap.to(card, pose);
+      });
+    }
+    applyPoses(front);
+    setInterval(function () {
+      front = (front + 1) % n;
+      applyPoses(front);
+    }, interval || 3200);
+  }
   function blendPose(a, b, t) {
     var out = {};
     Object.keys(a).forEach(function (key) { out[key] = a[key] + (b[key] - a[key]) * t; });
@@ -453,9 +479,7 @@
       cards.forEach(function (card, i) { gsap.set(card, { zIndex: cards.length - i }); });
       updateCardStack(cards, 0);
     }
-    /* lowPower never scrubs, so settle on the finished wireframe rather than
-       showing the mid-transition crossfade frozen in place */
-    if (codeMorph) updateCodeMorph(codeMorph, lowPower ? 1 : 0);
+    if (codeMorph) updateCodeMorph(codeMorph, 0);
 
     function enterGraphic(self) {
       if (!graphic) return;
@@ -464,13 +488,33 @@
       else if (codeMorph) updateCodeMorph(codeMorph, self.progress);
     }
 
+    /* lowPower never scrubs the pin, so there's no continuous scroll progress
+       to drive the code→wireframe morph. Play it once, time-based, the first
+       time the graphic scrolls into view — otherwise mobile visitors only
+       ever saw the finished wireframe appear with no animation at all. */
+    function playCodeMorphOnce() {
+      if (!codeMorph) return;
+      var proxy = { t: 0 };
+      gsap.to(proxy, {
+        t: 1, duration: 1.1, ease: "power2.inOut",
+        onUpdate: function () { updateCodeMorph(codeMorph, proxy.t); }
+      });
+    }
+
     if (lowPower) {
       textEls.concat(graphic ? [graphic] : []).forEach(function (el) {
         ScrollTrigger.create({
           trigger: el, start: "top 88%",
           onEnter: function () {
             gsap.to(el, { y: 0, opacity: 1, scale: 1, rotate: 0, duration: 0.7, ease: "power2.out" });
-            if (el === graphic) { drawSymbolIn(symbolEntries); drawAccentsIn(accentDots); }
+            if (el === graphic) {
+              drawSymbolIn(symbolEntries); drawAccentsIn(accentDots); playCodeMorphOnce();
+              /* gated on isMobile (not the broader lowPower/reduceMotion flag): a visitor
+                 with prefers-reduced-motion on desktop shouldn't get an unrequested
+                 auto-rotating carousel, per WCAG's "pause, stop, hide" guidance on
+                 auto-updating content. */
+              if (cards.length && isMobile && !reduceMotion) startCardAutoplay(cards);
+            }
           },
           once: true
         });
