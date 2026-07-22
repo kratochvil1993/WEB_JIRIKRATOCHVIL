@@ -487,7 +487,7 @@
      stacking order would let a "behind" card cover the new front card. */
   function startCardAutoplay(cards, interval) {
     var n = cards.length;
-    if (n < 2) return;
+    if (n < 2) return null;
     var front = 0;
     function applyPoses(idx) {
       cards.forEach(function (card, i) {
@@ -499,7 +499,7 @@
       });
     }
     applyPoses(front);
-    setInterval(function () {
+    return setInterval(function () {
       front = (front + 1) % n;
       applyPoses(front);
     }, interval || 3200);
@@ -595,10 +595,13 @@
     }
 
     /* lowPower never scrubs the pin, so there's no continuous scroll progress
-       to drive the code→wireframe / SERP→dashboard morphs. Play them once,
-       time-based, the first time the graphic scrolls into view — otherwise
-       mobile visitors only ever saw the finished state appear with no
-       animation at all. */
+       to drive the code→wireframe / SERP→dashboard morphs. On mobile (not
+       just reduced-motion desktop), yoyo them back and forth continuously
+       while the graphic is in view — a single one-shot play looked "dead"
+       next to the portrait section's card autoplay, which keeps cycling
+       indefinitely. Same "pause, stop, hide" gate as the card autoplay below:
+       only auto-loop when isMobile && !reduceMotion; a reduced-motion visitor
+       (mobile or desktop) gets a single one-shot reveal instead. */
     function playCodeMorphOnce() {
       if (!codeMorph) return;
       var proxy = { t: 0 };
@@ -615,23 +618,74 @@
         onUpdate: function () { updateSerpMorph(serpMorph, proxy.t); }
       });
     }
+    function startCodeMorphLoop() {
+      if (!codeMorph) return null;
+      var proxy = { t: 0 };
+      return gsap.to(proxy, {
+        t: 1, duration: 1.3, ease: "power1.inOut", yoyo: true, repeat: -1, repeatDelay: 0.8,
+        onUpdate: function () { updateCodeMorph(codeMorph, proxy.t); }
+      });
+    }
+    function startSerpMorphLoop() {
+      if (!serpMorph) return null;
+      var proxy = { t: 0 };
+      return gsap.to(proxy, {
+        t: 1, duration: 1.3, ease: "power1.inOut", yoyo: true, repeat: -1, repeatDelay: 0.8,
+        onUpdate: function () { updateSerpMorph(serpMorph, proxy.t); }
+      });
+    }
 
     if (lowPower) {
+      /* Unlike the desktop pin (whose scrub loops continuously while pinned),
+         mobile has no pin at all — each section only gets a single scroll pass.
+         Resetting on onLeave/onLeaveBack and replaying on onEnter/onEnterBack
+         keeps the reveal alive across repeated scroll-throughs, and the loop
+         tweens/interval below keep it animating continuously for as long as
+         the graphic stays in view. */
+      var autoplayInterval = null;
+      var codeLoopTween = null;
+      var serpLoopTween = null;
+      function enterEl(el) {
+        gsap.to(el, { y: 0, opacity: 1, scale: 1, rotate: 0, duration: 0.7, ease: "power2.out", overwrite: "auto" });
+        if (el === graphic) {
+          drawSymbolIn(symbolEntries); drawAccentsIn(accentDots);
+          /* gated on isMobile (not the broader lowPower/reduceMotion flag): a visitor
+             with prefers-reduced-motion on desktop shouldn't get an unrequested
+             auto-rotating carousel, per WCAG's "pause, stop, hide" guidance on
+             auto-updating content. */
+          if (cards.length && isMobile && !reduceMotion && !autoplayInterval) {
+            autoplayInterval = startCardAutoplay(cards, 1500);
+          }
+          if (codeMorph) {
+            if (isMobile && !reduceMotion) { if (!codeLoopTween) codeLoopTween = startCodeMorphLoop(); }
+            else playCodeMorphOnce();
+          }
+          if (serpMorph) {
+            if (isMobile && !reduceMotion) { if (!serpLoopTween) serpLoopTween = startSerpMorphLoop(); }
+            else playSerpMorphOnce();
+          }
+        }
+      }
+      function leaveEl(el) {
+        gsap.set(el, { y: 40, opacity: 0 });
+        if (el === graphic) {
+          gsap.set(el, { scale: 0.85, rotate: -6 });
+          drawSymbolOut(symbolEntries); drawAccentsOut(accentDots);
+          if (autoplayInterval) { clearInterval(autoplayInterval); autoplayInterval = null; }
+          if (codeLoopTween) { codeLoopTween.kill(); codeLoopTween = null; }
+          if (serpLoopTween) { serpLoopTween.kill(); serpLoopTween = null; }
+          if (codeMorph) updateCodeMorph(codeMorph, 0);
+          if (serpMorph) updateSerpMorph(serpMorph, 0);
+          if (cards.length) updateCardStack(cards, 0);
+        }
+      }
       textEls.concat(graphic ? [graphic] : []).forEach(function (el) {
         ScrollTrigger.create({
-          trigger: el, start: "top 88%",
-          onEnter: function () {
-            gsap.to(el, { y: 0, opacity: 1, scale: 1, rotate: 0, duration: 0.7, ease: "power2.out" });
-            if (el === graphic) {
-              drawSymbolIn(symbolEntries); drawAccentsIn(accentDots); playCodeMorphOnce(); playSerpMorphOnce();
-              /* gated on isMobile (not the broader lowPower/reduceMotion flag): a visitor
-                 with prefers-reduced-motion on desktop shouldn't get an unrequested
-                 auto-rotating carousel, per WCAG's "pause, stop, hide" guidance on
-                 auto-updating content. */
-              if (cards.length && isMobile && !reduceMotion) startCardAutoplay(cards, 1500);
-            }
-          },
-          once: true
+          trigger: el, start: "top 88%", end: "bottom 12%",
+          onEnter: function () { enterEl(el); },
+          onEnterBack: function () { enterEl(el); },
+          onLeave: function () { leaveEl(el); },
+          onLeaveBack: function () { leaveEl(el); }
         });
       });
       return;
