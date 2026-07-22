@@ -111,7 +111,7 @@
 
   /* ---------------- Hero typewriter + entrance ---------------- */
   var roleEl = document.getElementById("roleText");
-  var roles = ["Web Developer", "Tvůrce E-shopů", "Fotograf Portrétů"];
+  var roles = ["Web Developer", "Tvůrce E-shopů", "Fotograf Portrétů", "Tvůrce Kampaní"];
   function typewriter() {
     if (lowPower) { roleEl.textContent = "Jsem " + roles[0]; return; }
     var i = 0;
