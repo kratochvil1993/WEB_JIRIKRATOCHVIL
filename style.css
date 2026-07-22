@@ -163,12 +163,16 @@ a:hover{color:var(--purple);}
   .navbar-custom .nav-link.active::after{left:.2rem;right:.2rem;}
 }
 .navbar-custom .navbar-toggler{
+  -webkit-appearance:none;
+  appearance:none;
   border:1px solid rgba(255,255,255,.15);
   padding:.4rem .6rem;
   border-radius:8px;
+  background-color:transparent;
 }
 .navbar-custom .navbar-toggler:focus{box-shadow:0 0 0 .2rem rgba(var(--magenta-rgb),.25);}
 @media (max-width:991.98px){
+  .navbar-custom .container{padding-left:16px;padding-right:16px;}
   .navbar-custom .navbar-collapse{
     margin-top:14px;
     padding:.6rem 1.2rem 1rem;
