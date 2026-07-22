@@ -450,6 +450,34 @@
     gsap.set(morph.code, { opacity: 1 - t, y: t * -14, filter: "blur(" + (t * 4) + "px)" });
     gsap.set(morph.wire, { opacity: t, y: (1 - t) * 14, filter: "blur(" + ((1 - t) * 4) + "px)" });
   }
+  /* Section-marketing pin-graphic: same crossfade timing as the section-web
+     code→wireframe morph above, but the "after" layer is an analytics
+     dashboard whose bar heights and stat counters are also driven straight
+     off progress so they land at their final values exactly as the dashboard
+     finishes fading in. */
+  function prepSerpMorph(graphic) {
+    if (!graphic) return null;
+    var morph = graphic.querySelector(".serp-dash-morph");
+    if (!morph) return null;
+    return {
+      serp: morph.querySelector(".serp-layer"),
+      dash: morph.querySelector(".dash-layer"),
+      bars: gsap.utils.toArray(morph.querySelectorAll(".dash-bar")),
+      stats: gsap.utils.toArray(morph.querySelectorAll(".dash-stat-value"))
+    };
+  }
+  function updateSerpMorph(morph, progress) {
+    if (!morph) return;
+    var t = gsap.utils.clamp(0, 1, (progress - 0.2) / 0.6);
+    gsap.set(morph.serp, { opacity: 1 - t, y: t * -14, filter: "blur(" + (t * 4) + "px)" });
+    gsap.set(morph.dash, { opacity: t, y: (1 - t) * 14, filter: "blur(" + ((1 - t) * 4) + "px)" });
+    morph.bars.forEach(function (bar) {
+      gsap.set(bar, { height: (t * parseFloat(bar.dataset.h)) + "%" });
+    });
+    morph.stats.forEach(function (stat) {
+      stat.textContent = (t * parseFloat(stat.dataset.target)).toFixed(1) + stat.dataset.suffix;
+    });
+  }
   function updateCardStack(cards, progress) {
     var n = cards.length;
     if (!n) return;
@@ -473,6 +501,7 @@
     var symbolEntries = prepSymbol(graphic);
     var accentDots = prepAccents(graphic);
     var codeMorph = prepCodeMorph(graphic);
+    var serpMorph = prepSerpMorph(graphic);
     gsap.set(textEls, { y: 40, opacity: 0 });
     if (graphic) gsap.set(graphic, { scale: 0.85, rotate: -6, opacity: 0 });
     if (cards.length) {
@@ -480,24 +509,35 @@
       updateCardStack(cards, 0);
     }
     if (codeMorph) updateCodeMorph(codeMorph, 0);
+    if (serpMorph) updateSerpMorph(serpMorph, 0);
 
     function enterGraphic(self) {
       if (!graphic) return;
       gsap.to(graphic, { opacity: 1, scale: 1, rotate: 0, duration: 0.8, ease: "power2.out" });
       if (cards.length) updateCardStack(cards, self.progress);
       else if (codeMorph) updateCodeMorph(codeMorph, self.progress);
+      else if (serpMorph) updateSerpMorph(serpMorph, self.progress);
     }
 
     /* lowPower never scrubs the pin, so there's no continuous scroll progress
-       to drive the code→wireframe morph. Play it once, time-based, the first
-       time the graphic scrolls into view — otherwise mobile visitors only
-       ever saw the finished wireframe appear with no animation at all. */
+       to drive the code→wireframe / SERP→dashboard morphs. Play them once,
+       time-based, the first time the graphic scrolls into view — otherwise
+       mobile visitors only ever saw the finished state appear with no
+       animation at all. */
     function playCodeMorphOnce() {
       if (!codeMorph) return;
       var proxy = { t: 0 };
       gsap.to(proxy, {
         t: 1, duration: 1.1, ease: "power2.inOut",
         onUpdate: function () { updateCodeMorph(codeMorph, proxy.t); }
+      });
+    }
+    function playSerpMorphOnce() {
+      if (!serpMorph) return;
+      var proxy = { t: 0 };
+      gsap.to(proxy, {
+        t: 1, duration: 1.1, ease: "power2.inOut",
+        onUpdate: function () { updateSerpMorph(serpMorph, proxy.t); }
       });
     }
 
@@ -508,7 +548,7 @@
           onEnter: function () {
             gsap.to(el, { y: 0, opacity: 1, scale: 1, rotate: 0, duration: 0.7, ease: "power2.out" });
             if (el === graphic) {
-              drawSymbolIn(symbolEntries); drawAccentsIn(accentDots); playCodeMorphOnce();
+              drawSymbolIn(symbolEntries); drawAccentsIn(accentDots); playCodeMorphOnce(); playSerpMorphOnce();
               /* gated on isMobile (not the broader lowPower/reduceMotion flag): a visitor
                  with prefers-reduced-motion on desktop shouldn't get an unrequested
                  auto-rotating carousel, per WCAG's "pause, stop, hide" guidance on
@@ -536,6 +576,7 @@
       onUpdate: function (self) {
         if (cards.length) { updateCardStack(cards, self.progress); }
         else if (codeMorph) { updateCodeMorph(codeMorph, self.progress); }
+        else if (serpMorph) { updateSerpMorph(serpMorph, self.progress); }
         else if (graphic) { gsap.set(graphic, { rotate: -6 + self.progress * 10 }); }
       }
     });
