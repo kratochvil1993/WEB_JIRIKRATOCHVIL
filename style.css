@@ -193,6 +193,7 @@ section{position:relative;z-index:1;}
   margin-bottom:1rem;
 }
 h1,h2,h3{font-weight:800;letter-spacing:-0.02em;text-wrap:pretty;}
+section h2{font-size:clamp(2rem,1.4rem + 2.5vw,3rem);}
 .gradient-text{
   background:linear-gradient(90deg,var(--purple),var(--magenta));
   -webkit-background-clip:text;
