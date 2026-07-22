@@ -738,11 +738,17 @@
     onEnterBack: function () { revealIn(contactEls); }
   });
 
-  gsap.utils.toArray("footer .fade-el").forEach(function (el) {
-    gsap.from(el, {
-      y: 30, opacity: 0, duration: 0.7, ease: "power2.out",
-      scrollTrigger: { trigger: el, start: "top 85%" }
-    });
+  /* Trigger off the footer itself, not each column: a per-column trigger
+     ("top 85%" of that column's own position) can never fire for the last
+     column, since the page runs out of scrollable space before its top
+     reaches 85% of the viewport — leaving it stuck at opacity 0. */
+  var footerEls = gsap.utils.toArray("footer .fade-el");
+  gsap.set(footerEls, { y: 30, opacity: 0 });
+  ScrollTrigger.create({
+    trigger: "footer",
+    start: "top 85%",
+    onEnter: function () { revealIn(footerEls); },
+    onEnterBack: function () { revealIn(footerEls); }
   });
 
   /* ---------------- Feature card tilt/glow ---------------- */
