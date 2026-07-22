@@ -553,7 +553,7 @@
                  with prefers-reduced-motion on desktop shouldn't get an unrequested
                  auto-rotating carousel, per WCAG's "pause, stop, hide" guidance on
                  auto-updating content. */
-              if (cards.length && isMobile && !reduceMotion) startCardAutoplay(cards);
+              if (cards.length && isMobile && !reduceMotion) startCardAutoplay(cards, 1500);
             }
           },
           once: true
