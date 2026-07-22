@@ -274,6 +274,7 @@
     { name: "web", density: 0.00016, speed: 0.35, hue: [185, 200], size: [1, 3], linky: true },
     { name: "marketing", density: 0.00014, speed: 0.3, hue: [160, 185], size: [1, 2.5], linky: true },
     { name: "portrait", density: 0.00011, speed: 0.2, hue: [180, 195], size: [1.5, 3] },
+    { name: "values", density: 0.0001, speed: 0.18, hue: [180, 195], size: [1, 2.2] },
     { name: "contact", density: 0.00008, speed: 0.12, hue: [185, 195], size: [1, 2] }
   ];
   var activeConfig = sectionConfigs[0];
@@ -316,7 +317,7 @@
   }
 
   function updateSectionByScroll() {
-    var sections = ["hero", "section-web", "section-marketing", "section-portrait", "contact"];
+    var sections = ["hero", "section-web", "section-marketing", "section-portrait", "section-values", "contact"];
     var mid = window.innerHeight / 2;
     var found = sectionConfigs[0];
     var foundId = sections[0];
@@ -675,6 +676,53 @@
   window.addEventListener("load", function () { ScrollTrigger.refresh(); });
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+  }
+
+  /* ---------------- Values section: pinned like the other scrollytelling
+     sections above (same pin/end/anticipatePin shape as buildPinned), but
+     instead of a graphic morph the pin scrubs which of the 4 cards is
+     "active" — it grows/lifts continuously as scroll progress passes its
+     slot, then hands off to the next one. Kept separate from buildPinned()
+     since there's no text/graphic split here, just one reveal batch.
+     lowPower never pins (mirrors buildPinned's lowPower branch): cards
+     reveal once on enter and sit statically highlighted, no scrub. */
+  var valuesSection = document.getElementById("section-values");
+  var valuesCards = gsap.utils.toArray("#valuesGrid .value-card");
+  var valuesEls = gsap.utils.toArray("#section-values .fade-el");
+  gsap.set(valuesEls, { y: 40, opacity: 0 });
+
+  function updateValuesCards(progress) {
+    var n = valuesCards.length;
+    if (!n) return;
+    var active = progress * (n - 1);
+    valuesCards.forEach(function (card, i) {
+      var closeness = 1 - gsap.utils.clamp(0, 1, Math.abs(active - i));
+      card.classList.toggle("is-active", closeness > 0.5);
+      gsap.set(card, { scale: 1 + closeness * 0.08, y: closeness * -10 });
+    });
+  }
+
+  if (lowPower) {
+    ScrollTrigger.create({
+      trigger: valuesSection, start: "top 80%",
+      onEnter: function () { revealIn(valuesEls); },
+      once: true
+    });
+    valuesCards.forEach(function (card) { card.classList.add("is-active"); });
+  } else {
+    ScrollTrigger.create({
+      trigger: valuesSection,
+      start: "top top",
+      end: "+=1400",
+      pin: true,
+      invalidateOnRefresh: true,
+      anticipatePin: 1,
+      onEnter: function (self) { revealIn(valuesEls); updateValuesCards(self.progress); },
+      onEnterBack: function (self) { revealIn(valuesEls); updateValuesCards(self.progress); },
+      onLeave: function () { revealOut(valuesEls); },
+      onLeaveBack: function () { revealOut(valuesEls); },
+      onUpdate: function (self) { updateValuesCards(self.progress); }
+    });
   }
 
   /* ---------------- Contact section: same reveal choreography as the pinned
