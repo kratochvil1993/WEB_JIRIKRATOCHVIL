@@ -535,6 +535,7 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
 
 /* Values section (scroll-scrubbed highlight) */
 .value-card{text-align:center;transition:border-color .4s ease,box-shadow .4s ease;}
+.value-card-inner{will-change:transform;}
 .value-card .icon{margin:0 auto 1rem;}
 .value-card.is-active{border-color:rgba(var(--magenta-rgb),.5);box-shadow:0 0 40px rgba(var(--magenta-rgb),.16);}
 

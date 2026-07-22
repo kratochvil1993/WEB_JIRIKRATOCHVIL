@@ -745,6 +745,14 @@
   var valuesEls = gsap.utils.toArray("#section-values .fade-el");
   gsap.set(valuesEls, { y: 40, opacity: 0 });
 
+  /* The scrubbed "lift" (scale/y) is written to an inner wrapper, never to
+     the .value-card itself — that outer element is also a `fade-el` that
+     revealIn/revealOut tween on entrance/exit, and both systems fighting
+     over the same y meant the "closest" card could visibly lift into place
+     before its own entrance had even started (or finished). Splitting the
+     two onto separate elements (outer = entrance, inner = scrub) matches
+     how the other pinned sections already keep those roles apart (their
+     pin-graphic's inner morph/stack layers aren't `fade-el` either). */
   function updateValuesCards(progress) {
     var n = valuesCards.length;
     if (!n) return;
@@ -752,7 +760,7 @@
     valuesCards.forEach(function (card, i) {
       var closeness = 1 - gsap.utils.clamp(0, 1, Math.abs(active - i));
       card.classList.toggle("is-active", closeness > 0.5);
-      gsap.set(card, { scale: 1 + closeness * 0.08, y: closeness * -10 });
+      gsap.set(card.querySelector(".value-card-inner"), { scale: 1 + closeness * 0.08, y: closeness * -10 });
     });
   }
 
