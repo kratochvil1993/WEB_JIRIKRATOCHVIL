@@ -130,7 +130,7 @@ a:hover{color:var(--purple);}
   color:var(--fg);
 }
 .navbar-custom .brand-logo{
-  height:68px;
+  height:70px;
   width:auto;
   transition:height .3s ease;
 }

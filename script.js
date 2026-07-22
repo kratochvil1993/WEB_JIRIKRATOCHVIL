@@ -226,8 +226,8 @@
   var stops = [
     { a: "#00eeff", b: "#0a5f7a", angle: 135, glowA: .45, glowB: .30 }, // hero
     { a: "#0ac8e0", b: "#2e6e8f", angle: 110, glowA: .70, glowB: .35 }, // web/eshop
-    { a: "#0eb8d8", b: "#0a7a9a", angle: 150, glowA: .50, glowB: .55 }, // portréty
     { a: "#0adcc0", b: "#0a7a5a", angle: 120, glowA: .35, glowB: .70 }, // online marketing
+    { a: "#0eb8d8", b: "#0a7a9a", angle: 150, glowA: .50, glowB: .55 }, // portréty
     { a: "#00eeff", b: "#0a5f7a", angle: 135, glowA: .45, glowB: .40 }  // kontakt
   ];
   function lerpColor(c1, c2, t) {
@@ -239,9 +239,8 @@
   }
   function lerpNum(n1, n2, t) { return n1 + (n2 - n1) * t; }
   ScrollTrigger.create({
-    trigger: document.body,
-    start: "top top",
-    end: "bottom bottom",
+    start: 0,
+    end: "max",
     onUpdate: function (self) {
       var p = self.progress * (stops.length - 1);
       var idx = Math.min(Math.floor(p), stops.length - 2);
@@ -273,8 +272,8 @@
   var sectionConfigs = [
     { name: "hero", density: 0.00009, speed: 0.15, hue: [185, 195], size: [1, 2] },
     { name: "web", density: 0.00016, speed: 0.35, hue: [185, 200], size: [1, 3], linky: true },
-    { name: "portrait", density: 0.00011, speed: 0.2, hue: [180, 195], size: [1.5, 3] },
     { name: "marketing", density: 0.00014, speed: 0.3, hue: [160, 185], size: [1, 2.5], linky: true },
+    { name: "portrait", density: 0.00011, speed: 0.2, hue: [180, 195], size: [1.5, 3] },
     { name: "contact", density: 0.00008, speed: 0.12, hue: [185, 195], size: [1, 2] }
   ];
   var activeConfig = sectionConfigs[0];
@@ -317,7 +316,7 @@
   }
 
   function updateSectionByScroll() {
-    var sections = ["hero", "section-web", "section-portrait", "section-marketing", "contact"];
+    var sections = ["hero", "section-web", "section-marketing", "section-portrait", "contact"];
     var mid = window.innerHeight / 2;
     var found = sectionConfigs[0];
     var foundId = sections[0];
@@ -657,8 +656,8 @@
     });
   }
   buildPinned("section-web", "#section-web");
-  buildPinned("section-portrait", "#section-portrait");
   buildPinned("section-marketing", "#section-marketing");
+  buildPinned("section-portrait", "#section-portrait");
 
   /* Hero: odscrolluje/zmizí, jakmile se přiblíží sekce Web & e-shop */
   if (!lowPower) {
