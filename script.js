@@ -760,7 +760,13 @@
     valuesCards.forEach(function (card, i) {
       var closeness = 1 - gsap.utils.clamp(0, 1, Math.abs(active - i));
       card.classList.toggle("is-active", closeness > 0.5);
-      gsap.set(card.querySelector(".value-card-inner"), { scale: 1 + closeness * 0.08, y: closeness * -10 });
+      /* Scale the whole card (box + contents) as one unit from its center —
+         a separate, larger scale on the inner wrapper plus a `y` lift used
+         to look "more dynamic" but actually just pushed the text toward the
+         top edge as the box grew around it. `scale` alone on the outer
+         element never conflicts with revealIn/revealOut, which only tween
+         y/opacity, so no split is needed here (unlike `y`, see comment above). */
+      gsap.set(card, { scale: 1 + closeness * 0.08 });
     });
   }
 
