@@ -251,6 +251,7 @@
       root.style.setProperty("--grad-angle", (from.angle + (to.angle - from.angle) * t) + "deg");
       root.style.setProperty("--glow-a", lerpNum(from.glowA, to.glowA, t));
       root.style.setProperty("--glow-b", lerpNum(from.glowB, to.glowB, t));
+      root.style.setProperty("--scroll-progress", self.progress);
       currentSectionProgress = self.progress;
     }
   });

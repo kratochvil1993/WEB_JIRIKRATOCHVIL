@@ -14,6 +14,7 @@
   --grad-angle:135deg;
   --glow-a:.5;
   --glow-b:.5;
+  --scroll-progress:0;
   font-size:16px;
 }
 *{box-sizing:border-box;}
@@ -123,6 +124,25 @@ a:hover{color:var(--purple);}
   border-bottom:1px solid rgba(var(--magenta-rgb),.15);
   padding:10px 0;
 }
+/* Scroll-progress line: overlays the faint border-bottom above and fills
+   left-to-right as the page scrolls, using the same --scroll-progress var
+   the background gradient is driven by (see script.js). Kept a plain CSS
+   var read (no transition) so it tracks the scroll position 1:1 instead of
+   lagging behind it. */
+.navbar-custom::after{
+  content:"";
+  position:absolute;
+  left:0;bottom:-1px;
+  width:100%;height:1px;
+  transform:scaleX(var(--scroll-progress));
+  transform-origin:left center;
+  background:var(--magenta);
+  box-shadow:0 0 6px rgba(var(--magenta-rgb),.7);
+  opacity:0;
+  transition:opacity .35s ease;
+  pointer-events:none;
+}
+.navbar-custom.scrolled::after{opacity:1;}
 .navbar-custom .brand{
   font-weight:700;
   font-size:1.15rem;
