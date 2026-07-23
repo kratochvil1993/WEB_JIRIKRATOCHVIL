@@ -89,11 +89,14 @@ a:hover{color:var(--purple);}
 
 /* Fade the glow layers back to flat --bg at the very top/bottom edge so
    they blend into the Safari chrome, which theme-color can only fill
-   with a flat color, not a gradient. */
+   with a flat color, not a gradient. The fade has to reach past the fixed
+   navbar's own height (~140-160px with the status bar), otherwise the
+   glow is already at full strength the moment it clears the navbar and
+   the hard edge just reappears below it instead of at the viewport edge. */
 @media (max-width:991px){
   #bg-layer,#particle-canvas{
-    -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 64px, #000 calc(100% - 64px), transparent 100%);
-    mask-image:linear-gradient(to bottom, transparent 0, #000 64px, #000 calc(100% - 64px), transparent 100%);
+    -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 180px, #000 calc(100% - 140px), transparent 100%);
+    mask-image:linear-gradient(to bottom, transparent 0, #000 180px, #000 calc(100% - 140px), transparent 100%);
   }
 }
 
