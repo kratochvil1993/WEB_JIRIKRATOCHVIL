@@ -367,11 +367,18 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
      <span class="pill-btn__icon pill-btn__icon--left" aria-hidden="true"><svg>…</svg></span>
      <span class="pill-btn__label">Text</span>
      <span class="pill-btn__icon pill-btn__icon--right" aria-hidden="true"><svg>…</svg></span>
-   </a> */
+   </a>
+   --btn-icon-size must equal the label's own rendered height (2× its
+   vertical padding + its line-height) or the round icon reads as smaller
+   than the pill next to it — most visible on touch devices, which never
+   trigger the hover state that otherwise distracts from the mismatch.
+   At the base font-size (16px, line-height 1.5 → 24px line box):
+   mobile 2*14px + 24px = 52px, desktop 2*16px + 24px = 56px. Recheck
+   these sums if the label's padding or font-size ever changes. */
 .pill-btn{
   --btn-bg:linear-gradient(90deg,var(--purple),var(--magenta));
   --btn-fg:#04141a;
-  --btn-icon-size:46px;
+  --btn-icon-size:52px;
   position:relative;
   display:inline-flex;
   align-items:center;
@@ -386,7 +393,7 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
   -webkit-tap-highlight-color:transparent;
 }
 @media (min-width:992px){
-  .pill-btn{--btn-icon-size:50px;}
+  .pill-btn{--btn-icon-size:56px;}
 }
 /* Overrides the site-wide `a:hover{color:var(--purple)}` rule (higher
    specificity than a bare .pill-btn), which was hijacking the label to
