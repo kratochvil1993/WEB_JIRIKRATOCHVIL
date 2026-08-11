@@ -137,6 +137,17 @@ a:hover{color:var(--purple);}
   border-bottom:1px solid rgba(var(--magenta-rgb),.15);
   padding:10px 0;
 }
+/* Weak-hardware desktops (see weakHardware in script.js): the navbar is
+   position:fixed with content scrolling underneath it at all times, so its
+   backdrop-filter has to recapture and reblur that content every single
+   scroll frame — one of the most GPU-expensive things a page can ask for.
+   A lighter blur plus a more opaque flat background keeps the same "frosted
+   glass" look at a fraction of the recompute cost. */
+html.weak-hw .navbar-custom.scrolled{
+  background:rgba(10,10,15,.8);
+  backdrop-filter:blur(6px) saturate(140%);
+  -webkit-backdrop-filter:blur(6px) saturate(140%);
+}
 /* Scroll-progress line: overlays the faint border-bottom above and fills
    left-to-right as the page scrolls, using the same --scroll-progress var
    the background gradient is driven by (see script.js). Kept a plain CSS

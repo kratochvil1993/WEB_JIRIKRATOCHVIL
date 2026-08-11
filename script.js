@@ -6,6 +6,24 @@
   var isMobile = window.matchMedia("(max-width: 991px)").matches;
   var lowPower = reduceMotion || isMobile;
 
+  /* Desktop-width machines with few CPU cores tend to pair with weak
+     integrated GPUs (older/budget laptops) — a real FPS benchmark would be
+     more accurate but has to run *after* the heavy stuff is already built
+     (there's no direct GPU-benchmark API), so it can only react to jank,
+     not prevent it. hardwareConcurrency is a synchronous, zero-delay proxy
+     available before anything is built. Deliberately kept separate from
+     lowPower (not merged into it): mobile's lowPower strips pinning/cursor
+     entirely, which is more than a merely underpowered desktop needs — this
+     tier keeps pinning, the custom cursor and tilt (the effects that define
+     the site), and only trims what profiling showed as actually expensive:
+     animated blur-radius tweens (can't be GPU-cached like a static blur,
+     unlike lowPower it doesn't disable filters wholesale) and particle/canvas
+     load. Any future animated-`filter` tween or particle-cap change should
+     be checked against `weakHardware` too, same as lowPower's own mirroring
+     rule below. */
+  var weakHardware = !lowPower && !!(navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
+  document.documentElement.classList.toggle("weak-hw", weakHardware);
+
   /* isMobile/lowPower are captured once above; every pin, the custom cursor,
      and the particle cap are all built against that snapshot and never
      revisited. Resizing across the 991px breakpoint (devtools responsive
@@ -139,7 +157,7 @@
     .from("#hero .hero-name", { y: 30, opacity: 0, duration: 0.7 })
     .from("#hero .role-line", { y: 30, opacity: 0, duration: 0.7 }, "-=0.4")
     .from("#hero .lead-text", { y: 30, opacity: 0, duration: 0.7 }, "-=0.4")
-    .from("#hero .btn-neon", { y: 20, opacity: 0, duration: 0.6 }, "-=0.3");
+    .from("#hero .pill-btn", { y: 20, opacity: 0, duration: 0.6 }, "-=0.3");
   /* safety net: if rAF is throttled (e.g. backgrounded/inactive tab), force-complete
      via setTimeout so hero content is never stuck invisible */
   setTimeout(function () {
@@ -186,13 +204,19 @@
   function swapHeroCode(fromIndex) {
     var toIndex = (fromIndex + 1) % heroVariants.length;
     var to = heroVariants[toIndex];
-    gsap.to(heroVariants[fromIndex].el, {
-      opacity: 0, y: -14, filter: "blur(4px)", duration: 0.7, ease: "power2.inOut",
+    /* filter (blur) omitted on weakHardware: unlike opacity/y, an animated
+       blur *radius* can't be cached by the compositor — it re-rasterizes
+       every frame of the tween, so this is one of the trims that actually
+       matters on weak GPUs. See the weakHardware comment near the top. */
+    var outVars = {
+      opacity: 0, y: -14, duration: 0.7, ease: "power2.inOut",
       onComplete: function () {
         typeInHeroVariant(to);
         gsap.delayedCall(to.typeDuration + heroHold, function () { swapHeroCode(toIndex); });
       }
-    });
+    };
+    if (!weakHardware) outVars.filter = "blur(4px)";
+    gsap.to(heroVariants[fromIndex].el, outVars);
   }
 
   if (heroVariants.length > 1 && !isMobile && !reduceMotion) {
@@ -300,7 +324,14 @@
     };
   }
 
-  var maxParticles = lowPower ? 35 : 140;
+  /* The connecting-line pass below is O(n²) in particle count (every particle
+     checks distance to every later particle), so it's the dominant cost of
+     this whole canvas on "linky" sections (web/marketing) — halving the cap
+     quarters that cost. weakHardware also shrinks the link radius itself
+     (LINK_DIST below), pruning even more pairs before they're drawn. */
+  var maxParticles = lowPower ? 35 : (weakHardware ? 70 : 140);
+  var LINK_DIST = weakHardware ? 70 : 90;
+  var LINK_DIST_SQ = LINK_DIST * LINK_DIST;
   function targetCount() { return Math.min(maxParticles, Math.round(W * H * targetDensity)); }
 
   for (var i = 0; i < targetCount(); i++) particles.push(makeParticle());
@@ -383,9 +414,14 @@
         for (var j = idx + 1; j < particles.length; j++) {
           var q = particles[j];
           var ddx = p.x - q.x, ddy = p.y - q.y;
-          var d = Math.sqrt(ddx * ddx + ddy * ddy);
-          if (d < 90) {
-            ctx.strokeStyle = "hsla(" + p.hue + ",45%,62%," + (0.12 * (1 - d / 90)) + ")";
+          var dSq = ddx * ddx + ddy * ddy;
+          /* Cheap squared-distance check first, so Math.sqrt only runs for
+             the (usually small) subset of pairs actually close enough to
+             draw — most pairs on a spread-out canvas are far apart and never
+             need the sqrt at all. */
+          if (dSq < LINK_DIST_SQ) {
+            var d = Math.sqrt(dSq);
+            ctx.strokeStyle = "hsla(" + p.hue + ",45%,62%," + (0.12 * (1 - d / LINK_DIST)) + ")";
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
@@ -523,8 +559,18 @@
   function updateCodeMorph(morph, progress) {
     if (!morph) return;
     var t = gsap.utils.clamp(0, 1, (progress - 0.2) / 0.6);
-    gsap.set(morph.code, { opacity: 1 - t, y: t * -14, filter: "blur(" + (t * 4) + "px)" });
-    gsap.set(morph.wire, { opacity: t, y: (1 - t) * 14, filter: "blur(" + ((1 - t) * 4) + "px)" });
+    var codeVars = { opacity: 1 - t, y: t * -14 };
+    var wireVars = { opacity: t, y: (1 - t) * 14 };
+    /* filter (blur) skipped on weakHardware: this runs on every scroll tick
+       while the pin is scrubbing, so an animated blur *radius* here is the
+       one most directly tied to visible scroll jank. See weakHardware
+       comment near the top of the file. */
+    if (!weakHardware) {
+      codeVars.filter = "blur(" + (t * 4) + "px)";
+      wireVars.filter = "blur(" + ((1 - t) * 4) + "px)";
+    }
+    gsap.set(morph.code, codeVars);
+    gsap.set(morph.wire, wireVars);
   }
   /* Section-marketing pin-graphic: same crossfade timing as the section-web
      code→wireframe morph above, but the "after" layer is an analytics
@@ -545,8 +591,15 @@
   function updateSerpMorph(morph, progress) {
     if (!morph) return;
     var t = gsap.utils.clamp(0, 1, (progress - 0.2) / 0.6);
-    gsap.set(morph.serp, { opacity: 1 - t, y: t * -14, filter: "blur(" + (t * 4) + "px)" });
-    gsap.set(morph.dash, { opacity: t, y: (1 - t) * 14, filter: "blur(" + ((1 - t) * 4) + "px)" });
+    var serpVars = { opacity: 1 - t, y: t * -14 };
+    var dashVars = { opacity: t, y: (1 - t) * 14 };
+    /* see updateCodeMorph's weakHardware comment: same reasoning applies here. */
+    if (!weakHardware) {
+      serpVars.filter = "blur(" + (t * 4) + "px)";
+      dashVars.filter = "blur(" + ((1 - t) * 4) + "px)";
+    }
+    gsap.set(morph.serp, serpVars);
+    gsap.set(morph.dash, dashVars);
     morph.bars.forEach(function (bar) {
       gsap.set(bar, { height: (t * parseFloat(bar.dataset.h)) + "%" });
     });
