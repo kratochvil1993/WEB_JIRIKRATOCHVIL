@@ -15,18 +15,29 @@ python3 -m http.server 8000
 # then open http://localhost:8000/index.html
 ```
 
+`index.html`, `gdpr.html`, and `sitemap.html` all load `script.min.js`/`style.min.css`, not `script.js`/`style.css` — after **any** edit to `script.js` or `style.css`, regenerate the matching minified file (requires Node, via `npx`, no local install needed):
+
+```bash
+npx terser@5 script.js --compress --mangle --comments false -o script.min.js
+npx clean-css-cli@5 -o style.min.css style.css
+```
+
+Commit the regenerated `script.min.js`/`style.min.css` along with the source change — there is no Netlify build step (see Deployment below), so the minified files are what actually ship. Forgetting this means the site keeps serving stale CSS/JS.
+
 ## Deployment
 
 Netlify, auto-deploy from the `main` branch on GitHub. `netlify.toml` sets `publish = "."` — **the entire repo root is what gets published**, so only files meant to be public should live there (this is why `_design/` is git-ignored rather than just left in place). Security headers (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`) are applied to all paths via `netlify.toml`.
 
-All internal references (`style.css`, `script.js`, `gdpr.html`) use relative paths — keep it that way for anything new so Netlify serves it correctly regardless of path depth.
+All internal references (`style.min.css`, `script.min.js`, `gdpr.html`) use relative paths — keep it that way for anything new so Netlify serves it correctly regardless of path depth.
 
 ## Structure
 
 - `index.html` — the whole one-page site: fixed navbar, `#hero`, `#section-web` (web/e-shop pitch), `#section-portrait` (photography pitch), `#section-marketing` (Google Ads / online marketing pitch), `#contact` (Netlify Forms contact form), footer.
 - `gdpr.html` — standalone privacy-policy page, linked from the footer and from the contact form's consent checkbox.
-- `style.css` — single stylesheet. Defines CSS custom properties (`--purple`, `--magenta`, `--grad-a`, `--grad-b`, `--grad-angle`, etc.) that `script.js` mutates at runtime to drive the scroll-linked background gradient.
-- `script.js` — single vanilla-JS IIFE, no framework. See "Animation architecture" below.
+- `style.css` — single stylesheet. Defines CSS custom properties (`--purple`, `--magenta`, `--grad-a`, `--grad-b`, `--grad-angle`, etc.) that `script.js` mutates at runtime to drive the scroll-linked background gradient. This is the file to edit.
+- `style.min.css` — generated from `style.css` via the `npx clean-css-cli` command above (see Commands). This is what all three HTML pages actually `<link>`; it's committed to git since there's no Netlify build step. Never hand-edit it.
+- `script.js` — single vanilla-JS IIFE, no framework. This is the file to edit. See "Animation architecture" below.
+- `script.min.js` — generated from `script.js` via the `npx terser` command above (see Commands). This is what `index.html` actually `<script src>`s; it's committed to git since there's no Netlify build step. Never hand-edit it.
 - `assets/logo.webp` — header logo, downloaded locally from `jirikratochvil.eu` (no longer loaded externally).
 - `_design/` — git-ignored Claude Design (claude.ai/design) handoff bundle; this is the canonical design source. If the design changes upstream, re-sync it via the `claude_design` MCP (`DesignSync` tool: `get_project` / `list_files` / `get_file` against the project id in `_design/README.md`), diff against the root files, then copy over.
 
