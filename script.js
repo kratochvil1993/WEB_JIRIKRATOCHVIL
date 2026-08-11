@@ -24,6 +24,18 @@
   var weakHardware = !lowPower && !!(navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
   document.documentElement.classList.toggle("weak-hw", weakHardware);
 
+  /* Visible in the browser console for anyone (dev, or a visitor asked to
+     "check what mode you're getting") diagnosing performance — the three
+     tiers above collapse into one boolean each, so without this the actual
+     detected state isn't inspectable from outside the closure. */
+  console.log(
+    "[perf] mode: " + (lowPower ? (isMobile ? "mobile (lowPower)" : "reduced-motion (lowPower)") : (weakHardware ? "weak-hardware (mid-tier)" : "full performance")) +
+    "  isMobile=" + isMobile +
+    " reduceMotion=" + reduceMotion +
+    " hardwareConcurrency=" + (navigator.hardwareConcurrency || "n/a") +
+    " weakHardware=" + weakHardware
+  );
+
   /* isMobile/lowPower are captured once above; every pin, the custom cursor,
      and the particle cap are all built against that snapshot and never
      revisited. Resizing across the 991px breakpoint (devtools responsive
