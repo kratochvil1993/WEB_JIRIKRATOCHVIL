@@ -335,23 +335,102 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
   transition:border-color .2s ease,color .2s ease;
 }
 .btn-vcard:hover{border-color:var(--magenta);color:var(--fg);}
-.btn-neon{
-  display:inline-block;
+/* ---------- Pill button with sliding icon ---------- */
+/* Reusable CTA: [round arrow icon] [pill label] with a second arrow icon
+   hidden behind the label's right edge. On hover the left icon shrinks away,
+   the label slides left to fill that space, and the right icon grows in
+   from scale(0), rotating into an "external link" arrow. Colors are CSS
+   vars (--btn-bg/--btn-fg) so the component can be restyled per instance
+   without touching this block — defaults match the old .btn-neon look
+   (bright gradient pill, near-black icons/text). Markup:
+   <a class="pill-btn" href="…">
+     <span class="pill-btn__icon pill-btn__icon--left" aria-hidden="true"><svg>…</svg></span>
+     <span class="pill-btn__label">Text</span>
+     <span class="pill-btn__icon pill-btn__icon--right" aria-hidden="true"><svg>…</svg></span>
+   </a> */
+.pill-btn{
+  --btn-bg:linear-gradient(90deg,var(--purple),var(--magenta));
+  --btn-fg:#04141a;
+  --btn-icon-size:46px;
+  position:relative;
+  display:inline-flex;
+  align-items:center;
   margin-top:2rem;
-  padding:.9rem 2rem;
-  border-radius:999px;
-  background:linear-gradient(90deg,var(--purple),var(--magenta));
-  color:#04141a;
-  font-weight:700;
   border:none;
-  box-shadow:0 0 0 rgba(var(--magenta-rgb),0);
-  transition:box-shadow .3s ease,transform .3s ease;
+  background:none;
+  padding:0;
+  font:inherit;
+  font-weight:700;
+  color:var(--btn-fg);
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
 }
-.btn-neon:hover{
-  color:#04141a;
-  box-shadow:0 0 30px rgba(var(--purple-rgb),.55);
-  transform:translateY(-2px);
+@media (min-width:992px){
+  .pill-btn{--btn-icon-size:50px;}
 }
+/* Overrides the site-wide `a:hover{color:var(--purple)}` rule (higher
+   specificity than a bare .pill-btn), which was hijacking the label to
+   cyan-on-cyan on hover and making the text unreadable. */
+.pill-btn:hover,
+.pill-btn:focus-visible{
+  color:var(--btn-fg);
+}
+.pill-btn__icon{
+  position:relative;
+  flex:0 0 auto;
+  width:var(--btn-icon-size);
+  height:var(--btn-icon-size);
+  border-radius:50%;
+  background:var(--btn-bg);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:2;
+  transition:transform .3s ease;
+}
+.pill-btn__icon svg{
+  width:42%;
+  height:42%;
+  color:var(--btn-fg);
+}
+.pill-btn__icon--right{
+  position:absolute;
+  top:50%;
+  right:0;
+  z-index:3;
+  transform:translateY(-50%) scale(0) rotate(0deg);
+}
+.pill-btn__label{
+  position:relative;
+  z-index:1;
+  background:var(--btn-bg);
+  border-radius:999px;
+  padding:14px 20px;
+  transition:transform .3s ease,box-shadow .3s ease;
+}
+@media (min-width:992px){
+  .pill-btn__label{padding:16px 24px;}
+}
+.pill-btn:hover .pill-btn__icon--left,
+.pill-btn:focus-visible .pill-btn__icon--left{
+  transform:scale(0);
+}
+.pill-btn:hover .pill-btn__label,
+.pill-btn:focus-visible .pill-btn__label{
+  transform:translateX(calc(-1 * var(--btn-icon-size)));
+  box-shadow:0 0 30px rgba(var(--purple-rgb),.35);
+}
+.pill-btn:hover .pill-btn__icon--right,
+.pill-btn:focus-visible .pill-btn__icon--right{
+  transform:translateY(-50%) scale(1) rotate(-45deg);
+}
+@media (prefers-reduced-motion: reduce){
+  .pill-btn__icon,.pill-btn__label{transition:none;}
+}
+.pill-btn:disabled{opacity:.55;cursor:not-allowed;}
+.pill-btn:disabled:hover .pill-btn__label{transform:none;box-shadow:none;}
+.pill-btn:disabled:hover .pill-btn__icon--left{transform:none;}
+.pill-btn:disabled:hover .pill-btn__icon--right{transform:translateY(-50%) scale(0) rotate(0deg);}
 
 /* Pinned scrollytelling sections */
 .pin-section{

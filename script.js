@@ -841,7 +841,11 @@
   if (form) {
     form.addEventListener("submit", function () {
       var btn = form.querySelector("button[type=submit]");
-      if (btn) { btn.disabled = true; btn.textContent = "Odesílám…"; }
+      if (btn) {
+        btn.disabled = true;
+        var label = btn.querySelector(".pill-btn__label") || btn;
+        label.textContent = "Odesílám…";
+      }
     });
   }
 })();
