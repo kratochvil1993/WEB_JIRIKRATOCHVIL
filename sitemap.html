@@ -6,6 +6,20 @@
 <meta name="theme-color" content="#0a0a0f">
 <meta name="color-scheme" content="dark">
 <title>Mapa webu — Jiří Kratochvíl</title>
+<meta name="description" content="Mapa webu jirikratochvil.eu — přehled všech stránek a sekcí.">
+<link rel="canonical" href="https://jirikratochvil.eu/sitemap.html">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jirikratochvil.eu/sitemap.html">
+<meta property="og:title" content="Mapa webu — Jiří Kratochvíl">
+<meta property="og:description" content="Mapa webu jirikratochvil.eu — přehled všech stránek a sekcí.">
+<meta property="og:image" content="https://jirikratochvil.eu/assets/images/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="cs_CZ">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Mapa webu — Jiří Kratochvíl">
+<meta name="twitter:description" content="Mapa webu jirikratochvil.eu — přehled všech stránek a sekcí.">
+<meta name="twitter:image" content="https://jirikratochvil.eu/assets/images/og-image.jpg">
 <link rel="icon" type="image/png" href="assets/fav/favicon-96x96.png" sizes="96x96">
 <link rel="icon" type="image/svg+xml" href="assets/fav/favicon.svg">
 <link rel="shortcut icon" href="assets/fav/favicon.ico">
@@ -21,20 +35,26 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "Mapa webu",
-  "url": "https://jirikratochvil.eu/sitemap.html",
-  "inLanguage": "cs",
-  "isPartOf": {
-    "@type": "WebSite",
-    "name": "Jiří Kratochvíl",
-    "url": "https://jirikratochvil.eu/"
-  },
-  "about": {
-    "@type": "Person",
-    "name": "Jiří Kratochvíl",
-    "url": "https://jirikratochvil.eu/"
-  }
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://jirikratochvil.eu/sitemap.html#webpage",
+      "name": "Mapa webu",
+      "url": "https://jirikratochvil.eu/sitemap.html",
+      "inLanguage": "cs",
+      "isPartOf": { "@id": "https://jirikratochvil.eu/#website" },
+      "about": { "@id": "https://jirikratochvil.eu/#person" },
+      "breadcrumb": { "@id": "https://jirikratochvil.eu/sitemap.html#breadcrumb" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://jirikratochvil.eu/sitemap.html#breadcrumb",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Domů", "item": "https://jirikratochvil.eu/" },
+        { "@type": "ListItem", "position": 2, "name": "Mapa webu" }
+      ]
+    }
+  ]
 }
 </script>
 </head>
