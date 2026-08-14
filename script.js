@@ -143,7 +143,11 @@
   var roleEl = document.getElementById("roleText");
   var roles = ["Web Developer", "Tvůrce E-shopů", "Fotograf Portrétů", "Tvůrce Kampaní"];
   function typewriter() {
-    if (lowPower) { roleEl.textContent = roles[0]; return; }
+    /* Only reduced-motion users get the static word — mobile (isMobile-driven
+       lowPower) still gets the full typewriter cycle: it's a lightweight
+       text tween, not in the same cost class as pinning/particles/cursor
+       that lowPower otherwise strips. */
+    if (reduceMotion) { roleEl.textContent = roles[0]; return; }
     var i = 0;
     function loop() {
       var word = roles[i % roles.length];
