@@ -36,7 +36,7 @@ Pick the resize width from where the image actually renders (2x its CSS display 
 
 ## Deployment
 
-Netlify, auto-deploy from the `main` branch on GitHub. `netlify.toml` sets `publish = "."` — **the entire repo root is what gets published**, so only files meant to be public should live there (this is why `_design/` is git-ignored rather than just left in place). Security headers (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`) are applied to all paths via `netlify.toml`.
+Netlify, auto-deploy from the `main` branch on GitHub. `netlify.toml` sets `publish = "."` — **the entire repo root is what gets published**, so only files meant to be public should live there (this is why `_design/` is git-ignored rather than just left in place). Security headers (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`) are applied to all paths via `netlify.toml`. `assets/vendor/*` additionally gets a one-year immutable `Cache-Control` there — those files never change in place, so treat a library version bump as replacing the files wholesale, not patching them.
 
 All internal references (`style.min.css`, `script.min.js`, `gdpr.html`) use relative paths — keep it that way for anything new so Netlify serves it correctly regardless of path depth.
 
