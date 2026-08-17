@@ -51,17 +51,24 @@ All internal references (`style.min.css`, `script.min.js`, `gdpr.html`) use rela
 - `script.js` — single vanilla-JS IIFE, no framework. This is the file to edit. See "Animation architecture" below.
 - `script.min.js` — generated from `script.js` via the `npx terser` command above (see Commands). This is what `index.html` actually `<script src>`s; it's committed to git since there's no Netlify build step. Never hand-edit it.
 - `assets/logo.webp` — header logo, downloaded locally from `jirikratochvil.eu` (no longer loaded externally).
+- `assets/vendor/` — vendored third-party libraries (Bootstrap, Bootstrap Icons, GSAP), see "External dependencies" below.
 - `_design/` — git-ignored Claude Design (claude.ai/design) handoff bundle; this is the canonical design source. If the design changes upstream, re-sync it via the `claude_design` MCP (`DesignSync` tool: `get_project` / `list_files` / `get_file` against the project id in `_design/README.md`), diff against the root files, then copy over.
 
 ## Structured data (SEO)
 
 `index.html` carries the canonical JSON-LD `@graph` (in `<head>`): `Person` (`#person`), `WebSite` (`#website`), `WebPage` (`#webpage`), and one `Service` node per pitch section (`#service-web`, `#service-portrait`, `#service-marketing`). `gdpr.html` and `sitemap.html` each have their own minimal JSON-LD block, but it must reference the shared entities by `@id` (e.g. `"isPartOf": { "@id": "https://jirikratochvil.eu/#website" }`) rather than re-declaring `WebSite`/`Person` inline — inline duplicates create disconnected entities in Google's graph instead of reinforcing the same ones. Each secondary page's JSON-LD is itself an `@graph` of its own `WebPage` node (with its own `@id`) plus a `BreadcrumbList`. If a new top-level page is added, give it the same treatment: page-specific `meta description`/`canonical`/`og:*`/`twitter:*` tags (index.html's are the template) and a JSON-LD `@graph` that links into `#person`/`#website` by `@id` instead of duplicating them.
 
-## External dependencies (CDN only — no `node_modules`)
+## External dependencies
 
-- Bootstrap 5.3.3 (CSS + bundle JS), jsDelivr
-- GSAP 3.12.5 + ScrollTrigger, cdnjs
-- Google Fonts "Inter"
+Vendored locally in `assets/vendor/` (no `node_modules`, no package manager — files are committed as-downloaded and never hand-edited):
+
+- Bootstrap 5.3.3 (CSS + bundle JS) — `assets/vendor/bootstrap/`
+- Bootstrap Icons 1.11.3 (CSS + `fonts/*.woff2`/`.woff`) — `assets/vendor/bootstrap-icons/`
+- GSAP 3.12.5 + ScrollTrigger + ScrollToPlugin — `assets/vendor/gsap/`
+
+Only Google Fonts "Inter" is still loaded from a CDN (`fonts.googleapis.com`/`fonts.gstatic.com`) — intentional, since self-hosting fonts means manually tracking font-face updates and Google's CDN is fast/well-cached anyway.
+
+To upgrade a vendored library, re-download the matching version's files from jsDelivr/cdnjs into the same `assets/vendor/*` paths and commit them — don't switch back to a `<script src="https://…">`/`<link href="https://…">` CDN reference for these three.
 
 ## Animation architecture (script.js)
 
