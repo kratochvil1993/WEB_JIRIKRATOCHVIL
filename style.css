@@ -745,10 +745,9 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
   font-size:.68rem;
   line-height:1.3;
   color:var(--fg-dim);
-  text-align:right;
 }
 .cookie-consent[hidden]{display:none;}
-.cookie-consent p{margin:0;}
+.cookie-consent p{margin:0;text-align:left;font-size:inherit;line-height:inherit;}
 .cookie-consent a{color:var(--purple);text-decoration:underline;}
 .cookie-consent-btns{display:flex;gap:.4rem;}
 .cookie-consent-btns button{
