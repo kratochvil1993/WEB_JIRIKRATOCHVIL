@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Static one-page site for Jiří Kratochvíl — web/e-shop developer and portrait photographer. Content is in Czech (`lang="cs"`). Pure HTML/CSS/JS, no framework, no build tools, no package manager.
 
+## Git workflow
+
+Commit and push are two separate approvals — never assume one implies the other. Commit directly to `main` (no feature branches) when asked to commit, but do **not** run `git push` unless explicitly told to push (e.g. "pushni") — a push to `origin/main` triggers an immediate Netlify deploy, so it needs its own go-ahead even right after a commit was requested.
+
 ## Commands
 
 There is no build, lint, or test tooling in this repo. To preview locally, serve the root over HTTP (opening `index.html` via `file://` breaks relative fetches/CORS for some assets):
