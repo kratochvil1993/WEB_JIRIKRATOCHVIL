@@ -749,7 +749,7 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
 .cookie-consent[hidden]{display:none;}
 .cookie-consent p{margin:0;text-align:left;font-size:inherit;line-height:inherit;}
 .cookie-consent a{color:var(--purple);text-decoration:underline;}
-.cookie-consent-btns{display:flex;gap:.4rem;}
+.cookie-consent-btns{display:flex;gap:.4rem;align-self:stretch;justify-content:center;}
 .cookie-consent-btns button{
   border:1px solid rgba(255,255,255,.15);
   background:transparent;
