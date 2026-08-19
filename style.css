@@ -738,7 +738,7 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
   gap:.4rem;
   padding:.55rem .65rem .55rem .8rem;
   border-radius:12px;
-  background:rgba(10,10,15,.94);
+  background:rgba(10,10,15,.62);
   backdrop-filter:blur(10px);
   border:1px solid rgba(var(--magenta-rgb),.25);
   font-size:.68rem;
