@@ -764,7 +764,7 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
 #cookie-accept{background:var(--magenta);border-color:var(--magenta);color:#04141a;}
 #cookie-accept:hover{filter:brightness(1.1);color:#04141a;}
 @media (max-width:480px){
-  .cookie-consent{left:.6rem;right:.6rem;bottom:.6rem;max-width:none;}
+  .cookie-consent{right:.6rem;bottom:.6rem;left:auto;width:auto;max-width:calc(100vw - 1.2rem);}
 }
 
 /* Footer */
