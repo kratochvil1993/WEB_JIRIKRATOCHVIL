@@ -6,6 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0a0a0f">
   <meta name="color-scheme" content="dark">
+  <!-- Google Consent Mode v2 — výchozí stav (musí být před GTM, viz cookie-consent.js) -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag("consent", "default", {
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      analytics_storage: "denied",
+      functionality_storage: "granted",
+      security_storage: "granted",
+      wait_for_update: 500
+    });
+  </script>
   <title>Jiří Kratochvíl — Web developer &amp; fotograf portrétů</title>
   <meta name="description" content="Jiří Kratochvíl — tvorba webů a e-shopů na Shoptet, focení portrétů.">
   <link rel="canonical" href="https://jirikratochvil.eu/">
@@ -644,7 +658,7 @@
               target="_blank" rel="noopener" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
           </div>
           <p class="mt-3 mb-0" style="font-size:.85rem;">&copy; 2026 Jiří Kratochvíl</p>
-          <p class="mb-0" style="font-size:.85rem;"><a href="gdpr.html">GDPR</a> &middot; <a href="sitemap.html">Sitemap</a></p>
+          <p class="mb-0" style="font-size:.85rem;"><a href="gdpr.html">GDPR</a> &middot; <a href="sitemap.html">Sitemap</a> &middot; <a href="#" id="cookie-settings">Cookies</a></p>
         </div>
       </div>
     </div>

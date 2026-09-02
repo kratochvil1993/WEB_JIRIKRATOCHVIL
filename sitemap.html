@@ -5,6 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0a0a0f">
 <meta name="color-scheme" content="dark">
+<!-- Google Consent Mode v2 — výchozí stav (musí být před GTM, viz cookie-consent.js) -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag("consent", "default", {
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+    analytics_storage: "denied",
+    functionality_storage: "granted",
+    security_storage: "granted",
+    wait_for_update: 500
+  });
+</script>
 <title>Mapa webu — Jiří Kratochvíl</title>
 <meta name="description" content="Mapa webu jirikratochvil.eu — přehled všech stránek a sekcí.">
 <link rel="canonical" href="https://jirikratochvil.eu/sitemap.html">
@@ -84,6 +98,8 @@
     <ul>
       <li><a href="gdpr.html">Zpracování osobních údajů (GDPR)</a></li>
     </ul>
+
+    <p class="mt-4 mb-0"><a href="#" id="cookie-settings">Cookies</a></p>
 
     <a href="index.html" class="back-link mt-4 d-inline-block">&larr; Zpět na hlavní stránku</a>
   </div>

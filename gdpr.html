@@ -5,6 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0a0a0f">
 <meta name="color-scheme" content="dark">
+<!-- Google Consent Mode v2 — výchozí stav (musí být před GTM, viz cookie-consent.js) -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag("consent", "default", {
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+    analytics_storage: "denied",
+    functionality_storage: "granted",
+    security_storage: "granted",
+    wait_for_update: 500
+  });
+</script>
 <title>Zpracování osobních údajů (GDPR) — Jiří Kratochvíl</title>
 <meta name="description" content="Zásady zpracování osobních údajů na webu jirikratochvil.eu — správce údajů, účel a doba zpracování, vaše práva podle GDPR.">
 <link rel="canonical" href="https://jirikratochvil.eu/gdpr.html">
@@ -98,10 +112,12 @@
     <p>Pokud se domníváte, že vaše údaje zpracováváme v rozporu se zákonem, máte právo podat stížnost u Úřadu pro ochranu osobních údajů (uoou.cz).</p>
 
     <h2 id="cookies">Cookies</h2>
-    <p>Web používá Google Tag Manager a Google Analytics k měření návštěvnosti — spustí se ale až po vašem souhlasu v cookie liště, ne automaticky. Souhlas můžete kdykoli odvolat vymazáním cookies v prohlížeči. Technické cookies mohou být využity i bez souhlasu, a to pouze pro zajištění základní funkčnosti formuláře a ochrany proti spamu.</p>
+    <p>Web používá Google Tag Manager a Google Analytics k měření návštěvnosti. Tyto nástroje se načítají hned při otevření stránky, ale bez vašeho souhlasu běží v režimu bez cookies (Google Consent Mode v2) — neukládají do prohlížeče žádné analytické ani reklamní cookies a Googlu odesílají jen omezené anonymní údaje bez identifikace vašeho zařízení. Analytické a reklamní cookies se aktivují teprve po vašem souhlasu v cookie liště. Souhlas můžete kdykoli odvolat vymazáním cookies a položky „cookieConsent“ z úložiště webu ve vašem prohlížeči. Technické cookies mohou být využity i bez souhlasu, a to pouze pro zajištění základní funkčnosti formuláře a ochrany proti spamu.</p>
 
     <h2>Kontakt</h2>
     <p>V případě dotazů ke zpracování osobních údajů nás kontaktujte na e-mailu <a href="mailto:info@jirikratochvil.eu">info@jirikratochvil.eu</a> nebo telefonu <a href="tel:+420728544881">+420 728 544 881</a>.</p>
+
+    <p class="mt-4 mb-0"><a href="#" id="cookie-settings">Cookies</a></p>
 
     <a href="index.html" class="back-link mt-4 d-inline-block">&larr; Zpět na hlavní stránku</a>
   </div>
