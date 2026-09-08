@@ -15,3 +15,17 @@
   for = "/assets/vendor/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Staré cesty z předchozí verze webu (viz Search Console 404), přesměrované
+# na dnešní ekvivalenty.
+[[redirects]]
+  from = "/cz/gdpr/"
+  to = "/gdpr.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/cz/sitemap-cz/"
+  to = "/sitemap.html"
+  status = 301
+  force = true
