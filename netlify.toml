@@ -16,6 +16,13 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# Hlavní stránka má jedinou adresu, shodnou s canonical a sitemapou.
+[[redirects]]
+  from = "/index.html"
+  to = "/"
+  status = 301
+  force = true
+
 # Staré cesty z předchozí verze webu (viz Search Console 404), přesměrované
 # na dnešní ekvivalenty.
 [[redirects]]
