@@ -264,7 +264,14 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
   min-height:100vh;
   display:flex;
   align-items:center;
+  overflow:clip; /* zvětšená grafika/zoom při pinu nesmí vytékat z hera */
 }
+/* Split nadpisů na písmena (script.js splitChars) — jen pro scroll scény (hero, kontakt) */
+.split-word{display:inline-block;white-space:nowrap;}
+.split-char{display:inline-block;will-change:transform,opacity;}
+/* gradient-text využívá background-clip:text, který se přes transformované
+   inline-block potomky neprojeví — gradient proto dostane každé písmeno zvlášť */
+.gradient-text .split-char{background:linear-gradient(90deg,var(--purple),var(--magenta));-webkit-background-clip:text;background-clip:text;color:transparent;}
 #hero h1{
   font-size:clamp(2.6rem,6vw,4.6rem);
   margin-bottom:.5rem;
@@ -466,7 +473,18 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
   align-items:center;
   overflow:hidden;
 }
-.pin-panel{width:100%;}
+.pin-panel{width:100%;position:relative;z-index:1;}
+/* Obří obrysový titulek v pozadí pinnuté sekce; script.js ho při pinu posouvá
+   horizontálně (parallax). Jen desktop — na mobilu/reduced-motion se skrývá. */
+.section-ghost{
+  position:absolute;inset:0;z-index:0;
+  display:flex;align-items:center;
+  white-space:nowrap;pointer-events:none;user-select:none;
+  font-size:clamp(10rem,24vw,24rem);font-weight:900;line-height:1;letter-spacing:-.04em;
+  color:transparent;-webkit-text-stroke:1.5px rgba(var(--purple-rgb),.09);
+  will-change:transform;
+}
+@media (max-width:991.98px),(prefers-reduced-motion:reduce){.section-ghost{display:none;}}
 .pin-graphic{
   position:relative;
   height:360px;
@@ -818,8 +836,11 @@ footer::after{
   right:1.5rem;
   bottom:1.5rem;
   width:46px;height:46px;
+  --ring-blue:#0ac8e0;
+  --ring-blue-hover:#0ef;
   border-radius:50%;
-  border:1px solid rgba(255,255,255,.15);
+  border:0;
+  padding:0;
   background:rgba(10,10,15,.55);
   backdrop-filter:blur(16px) saturate(140%);
   -webkit-backdrop-filter:blur(16px) saturate(140%);
@@ -832,14 +853,28 @@ footer::after{
   opacity:0;
   visibility:hidden;
   transform:translateY(10px);
-  transition:opacity .3s ease,transform .3s ease,visibility .3s,border-color .2s ease,color .2s ease;
+  transition:opacity .3s ease,transform .3s ease,visibility .3s,color .2s ease;
 }
+/* Progress ring: the track replaces the old 1px border, the bar fills
+   clockwise from 12 o'clock as the page scrolls (script.js sets
+   stroke-dashoffset directly — no CSS transition, it would lag the scroll). */
+.to-top-ring{
+  position:absolute;
+  inset:0;
+  width:100%;height:100%;
+  transform:rotate(-90deg);
+  pointer-events:none;
+}
+.to-top-ring circle{fill:none;stroke-width:2;}
+.ring-track{stroke:rgba(255,255,255,.15);}
+.ring-bar{stroke:var(--ring-blue);stroke-linecap:round;transition:stroke .2s ease;}
 .to-top.visible{
   opacity:1;
   visibility:visible;
   transform:translateY(0);
 }
-.to-top:hover{border-color:var(--magenta);color:var(--fg);}
+.to-top:hover{color:var(--fg);}
+.to-top:hover .ring-bar{stroke:var(--ring-blue-hover);}
 
 /* GDPR page */
 .gdpr-page section{padding:6rem 0;}

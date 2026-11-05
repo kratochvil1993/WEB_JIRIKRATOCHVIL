@@ -78,6 +78,24 @@
         toTopBtn.classList.toggle("visible", self.scroll() > 600);
       }
     });
+    /* Progress ring: fills clockwise with overall page scroll. "max" (not a
+       fixed end) so progress spans the real scrollable length, pin spacers
+       included; onRefresh keeps it right after load/resize. */
+    var ringBar = toTopBtn.querySelector(".ring-bar");
+    if (ringBar) {
+      var ringLen = 2 * Math.PI * ringBar.r.baseVal.value;
+      ringBar.style.strokeDasharray = ringLen;
+      var setRing = function (self) {
+        ringBar.style.strokeDashoffset = ringLen * (1 - self.progress);
+      };
+      setRing({ progress: 0 });
+      ScrollTrigger.create({
+        start: 0,
+        end: "max",
+        onUpdate: setRing,
+        onRefresh: setRing
+      });
+    }
     toTopBtn.addEventListener("click", function () {
       gsap.to(window, { duration: lowPower ? 0.01 : 1, scrollTo: { y: 0 }, ease: "power2.inOut" });
     });
@@ -402,11 +420,27 @@
   window.addEventListener("scroll", queueSectionUpdate, { passive: true });
   updateSectionByScroll();
 
+  /* Scroll-driven burst při odjezdu hera (0–1, plní ho buildHeroScroll):
+     částice se zrychlí a odtlačí od středu obrazovky. */
+  var heroFx = { burst: 0 };
+  /* Krátká vlna částic při vstupu do sekce (viz pulse()). Oddělená od heroFx,
+     aby gsap overwrite nezabil scrub tweeny hera. */
+  var pulseFx = { v: 0 };
+  function pulse() {
+    gsap.fromTo(pulseFx, { v: 0.8 }, { v: 0, duration: 1.5, ease: "power2.out", overwrite: true });
+  }
+
   function drawParticles() {
     ctx.clearRect(0, 0, W, H);
     var linky = activeConfig.linky && !lowPower;
+    var burst = heroFx.burst + pulseFx.v;
+    var boost = 1 + burst * 5;
     particles.forEach(function (p, idx) {
-      p.x += p.vx; p.y += p.vy;
+      if (burst > 0.001) {
+        p.vx += (p.x - W / 2) / W * burst * 0.12;
+        p.vy += (p.y - H / 2) / H * burst * 0.12;
+      }
+      p.x += p.vx * boost; p.y += p.vy * boost;
       if (mouse.active) {
         var dx = p.x - mouse.x, dy = p.y - mouse.y;
         var dist = Math.sqrt(dx * dx + dy * dy);
@@ -638,6 +672,48 @@
     });
   }
 
+  /* ---------------- "Epic" reveal choreography (jen desktop, !lowPower) ----------------
+     Každý typ prvku v pinnuté sekci se odkrývá jinak (wipe nadpisu, roztažený
+     eyebrow, blur-in odstavců, 3D naskočení karet, pop tlačítka) místo jednoho
+     generického fade-up. epicFrom() = výchozí skrytý stav, epicTo() = cílový.
+     Výstup (epicOut) odletí nahoru a po dokončení vrátí prvek do epicFrom(),
+     aby se při dalším vstupu efekt přehrál znovu. overwrite: true je tu
+     bezpečné — cílí jen na DOM prvky, ne na sdílené proxy objekty. */
+  var epicBlur = !weakHardware;
+  function epicFrom(el) {
+    if (el.classList.contains("value-card")) return { y: 90, rotationX: -40, opacity: 0, transformPerspective: 900 };
+    if (el.classList.contains("feature-card")) return { y: 70, rotationX: -35, scale: 0.85, opacity: 0, transformPerspective: 900 };
+    if (el.tagName === "H2") return { clipPath: "inset(0 100% 0 0)", x: -50, y: 0, opacity: 1 };
+    if (el.classList.contains("eyebrow")) return { x: -30, opacity: 0, letterSpacing: "0.45em" };
+    if (el.classList.contains("pill-btn")) return { y: 30, scale: 0.7, opacity: 0 };
+    return epicBlur ? { y: 40, opacity: 0, filter: "blur(8px)" } : { y: 40, opacity: 0 };
+  }
+  function epicTo(el) {
+    if (el.classList.contains("value-card")) return { y: 0, rotationX: 0, opacity: 1, duration: 0.9, ease: "back.out(1.4)" };
+    if (el.classList.contains("feature-card")) return { y: 0, rotationX: 0, scale: 1, opacity: 1, duration: 0.9, ease: "back.out(1.5)" };
+    if (el.tagName === "H2") return { clipPath: "inset(0 0% 0 0)", x: 0, duration: 1, ease: "power3.out" };
+    if (el.classList.contains("eyebrow")) return { x: 0, opacity: 1, letterSpacing: "0.15em", duration: 0.8, ease: "power3.out" };
+    if (el.classList.contains("pill-btn")) return { y: 0, scale: 1, opacity: 1, duration: 0.7, ease: "back.out(1.7)" };
+    return epicBlur
+      ? { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.8, ease: "power2.out", onComplete: function () { gsap.set(el, { clearProps: "filter" }); } }
+      : { y: 0, opacity: 1, duration: 0.8, ease: "power2.out" };
+  }
+  function epicInit(els) { els.forEach(function (el) { gsap.set(el, epicFrom(el)); }); }
+  function epicIn(els) {
+    els.forEach(function (el, i) {
+      var vars = epicTo(el);
+      vars.delay = i * 0.12;
+      vars.overwrite = true;
+      gsap.to(el, vars);
+    });
+  }
+  function epicOut(els) {
+    gsap.to(els, {
+      y: -30, opacity: 0, stagger: 0.06, duration: 0.5, ease: "power2.in", overwrite: true,
+      onComplete: function () { epicInit(els); }
+    });
+  }
+
   function buildPinned(sectionId, panelSelector) {
     var section = document.getElementById(sectionId);
     var textEls = gsap.utils.toArray(panelSelector + " .fade-el");
@@ -647,8 +723,22 @@
     var accentDots = prepAccents(graphic);
     var codeMorph = prepCodeMorph(graphic);
     var serpMorph = prepSerpMorph(graphic);
-    gsap.set(textEls, { y: 40, opacity: 0 });
-    if (graphic) gsap.set(graphic, { scale: 0.85, rotate: -6, opacity: 0 });
+    /* Grafika má sama třídu .fade-el, takže je v textEls — v desktop cestě ji
+       z epic choreografie vyjímám a řídím zvlášť (3D vlet ze své strany). */
+    var epicEls = textEls.filter(function (el) { return el !== graphic; });
+    var ghost = section.querySelector(".section-ghost");
+    var gdir = graphic && graphic.getBoundingClientRect().left > window.innerWidth / 2 ? 1 : -1;
+    function graphicFrom() {
+      return { opacity: 0, scale: 0.7, rotationY: gdir * 55, rotationX: 10, x: gdir * 120, transformPerspective: 1000 };
+    }
+    if (lowPower) {
+      gsap.set(textEls, { y: 40, opacity: 0 });
+      if (graphic) gsap.set(graphic, { scale: 0.85, rotate: -6, opacity: 0 });
+    } else {
+      epicInit(epicEls);
+      if (graphic) gsap.set(graphic, graphicFrom());
+      if (ghost) gsap.set(ghost, { xPercent: 10 });
+    }
     if (cards.length) {
       cards.forEach(function (card, i) { gsap.set(card, { zIndex: cards.length - i }); });
       updateCardStack(cards, 0);
@@ -658,7 +748,7 @@
 
     function enterGraphic(self) {
       if (!graphic) return;
-      gsap.to(graphic, { opacity: 1, scale: 1, rotate: 0, duration: 0.8, ease: "power2.out" });
+      gsap.to(graphic, { opacity: 1, scale: 1, rotationY: 0, rotationX: 0, x: 0, duration: 1.1, ease: "power3.out", overwrite: "auto" });
       if (cards.length) updateCardStack(cards, self.progress);
       else if (codeMorph) updateCodeMorph(codeMorph, self.progress);
       else if (serpMorph) updateSerpMorph(serpMorph, self.progress);
@@ -768,11 +858,20 @@
       pin: true,
       invalidateOnRefresh: true,
       anticipatePin: 1,
-      onEnter: function (self) { revealIn(textEls); enterGraphic(self); drawSymbolIn(symbolEntries); drawAccentsIn(accentDots); },
-      onEnterBack: function (self) { revealIn(textEls); enterGraphic(self); drawSymbolIn(symbolEntries); drawAccentsIn(accentDots); },
-      onLeave: function () { revealOut(textEls); if (graphic) gsap.to(graphic, { opacity: 0, rotate: 4, duration: 0.5, ease: "power2.in" }); drawSymbolOut(symbolEntries); drawAccentsOut(accentDots); },
-      onLeaveBack: function () { revealOut(textEls); if (graphic) gsap.to(graphic, { opacity: 0, scale: 0.85, rotate: -6, duration: 0.5, ease: "power2.in" }); drawSymbolOut(symbolEntries); drawAccentsOut(accentDots); },
+      onEnter: function (self) { epicIn(epicEls); enterGraphic(self); drawSymbolIn(symbolEntries); drawAccentsIn(accentDots); pulse(); },
+      onEnterBack: function (self) { epicIn(epicEls); enterGraphic(self); drawSymbolIn(symbolEntries); drawAccentsIn(accentDots); pulse(); },
+      onLeave: function () {
+        epicOut(epicEls);
+        if (graphic) gsap.to(graphic, { opacity: 0, scale: 1.15, rotationY: -gdir * 25, x: -gdir * 60, duration: 0.6, ease: "power2.in", overwrite: "auto" });
+        drawSymbolOut(symbolEntries); drawAccentsOut(accentDots);
+      },
+      onLeaveBack: function () {
+        epicOut(epicEls);
+        if (graphic) { var back = graphicFrom(); back.duration = 0.6; back.ease = "power2.in"; back.overwrite = "auto"; gsap.to(graphic, back); }
+        drawSymbolOut(symbolEntries); drawAccentsOut(accentDots);
+      },
       onUpdate: function (self) {
+        if (ghost) gsap.set(ghost, { xPercent: 10 - self.progress * 40 });
         if (cards.length) { updateCardStack(cards, self.progress); }
         else if (codeMorph) { updateCodeMorph(codeMorph, self.progress); }
         else if (serpMorph) { updateSerpMorph(serpMorph, self.progress); }
@@ -784,18 +883,115 @@
   buildPinned("section-marketing", "#section-marketing");
   buildPinned("section-portrait", "#section-portrait");
 
-  /* Hero: odscrolluje/zmizí, jakmile se přiblíží sekce Web & e-shop */
+  /* Hero: připnutá scrollytelling scéna (scrub, vázané na scroll, plně
+     reverzibilní). Hero se po dobu své vlastní výšky přišpendlí (pin bez
+     pinSpacing, takže nepřidává žádný scroll navíc) a během toho:
+       - nadpis h1 se po písmenech rozletí od středu (split na .split-char),
+       - role-line/lead odplují nahoru s blurem, kontakty a tlačítko dolů,
+       - graf s kódem se zvětší, natočí v 3D a "přeletí" přes obrazovku,
+       - celý obsah zoomuje dopředu a na konci zmizí do sekce Web & e-shop,
+       - částice na pozadí explodují od středu (heroFx.burst v drawParticles).
+     Timeline (scrub vyhlazený ručně přes gsap.to na progress) se staví až po
+     dokončení úvodní heroTl: obě animují y/opacity stejných prvků, takže by
+     si přepisovaly počáteční hodnoty.
+     lowPower (mobil / reduced-motion) dostává záměrně jen běžný scroll bez
+     pinu, rozpadu i blur efektů. */
+  function splitChars(h1) {
+    var chars = [];
+    h1.setAttribute("aria-label", h1.textContent.replace(/\s+/g, " ").trim());
+    (function walk(node) {
+      Array.prototype.slice.call(node.childNodes).forEach(function (child) {
+        if (child.nodeType === 3) {
+          var frag = document.createDocumentFragment();
+          child.textContent.split(/(\s+)/).forEach(function (part) {
+            if (!part) return;
+            if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(" ")); return; }
+            var word = document.createElement("span");
+            word.className = "split-word";
+            word.setAttribute("aria-hidden", "true");
+            part.split("").forEach(function (ch) {
+              var c = document.createElement("span");
+              c.className = "split-char";
+              c.textContent = ch;
+              word.appendChild(c);
+              chars.push(c);
+            });
+            frag.appendChild(word);
+          });
+          node.replaceChild(frag, child);
+        } else if (child.nodeType === 1 && child.tagName !== "BR") {
+          walk(child);
+        }
+      });
+    })(h1);
+    return chars;
+  }
+
+  function buildHeroScroll() {
+    var h1 = document.querySelector("#hero h1");
+    var chars = splitChars(h1);
+    var blur = weakHardware ? "blur(0px)" : "blur(10px)";
+    var tl = gsap.timeline({ paused: true, defaults: { ease: "power2.in" } });
+
+    /* písmena: odlétají od středu nadpisu, nahoru/dolů náhodně, s rotací */
+    var box = null;
+    function center(i) {
+      if (!box) box = h1.getBoundingClientRect();
+      var r = chars[i].getBoundingClientRect();
+      return { dx: (r.left + r.width / 2) - (box.left + box.width / 2),
+               dy: (r.top + r.height / 2) - (box.top + box.height / 2) };
+    }
+    tl.to(chars, {
+      x: function (i) { return center(i).dx * 1.2 + gsap.utils.random(-80, 80); },
+      y: function (i) { return center(i).dy * 1.2 + gsap.utils.random(-260, 120); },
+      rotation: function () { return gsap.utils.random(-140, 140); },
+      scale: function () { return gsap.utils.random(0.4, 1.8); },
+      opacity: 0,
+      duration: 0.6,
+      stagger: { amount: 0.15, from: "center" }
+    }, 0)
+      .to("#hero p.eyebrow", { y: -60, opacity: 0, duration: 0.35 }, 0)
+      .to("#hero .role-line", { y: -90, opacity: 0, filter: blur, duration: 0.45 }, 0.04)
+      .to("#hero .lead-text", { y: -70, opacity: 0, filter: blur, duration: 0.45 }, 0.08)
+      .to("#hero .hero-contact", { y: 90, opacity: 0, duration: 0.45 }, 0.04)
+      .to("#hero .pill-btn", { y: 120, opacity: 0, duration: 0.45 }, 0.08)
+      /* graf: zvětšení + 3D náklon + průlet přes obrazovku */
+      .to("#hero .hero-graphic", {
+        scale: 2.8, rotationY: -35, rotationX: 8, x: -80, transformPerspective: 900,
+        ease: "power1.in", duration: 0.85
+      }, 0)
+      .to("#hero .hero-graphic", { opacity: 0, ease: "power1.in", duration: 0.3 }, 0.6)
+      /* celý obsah: zoom dopředu a závěrečné zmizení */
+      .to("#hero > .container", { scale: 1.18, ease: "none", duration: 1 }, 0)
+      .to("#hero > .container", { opacity: 0, ease: "power1.in", duration: 0.2 }, 0.8)
+      /* částice: výbuch od středu a dozvuk */
+      .to(heroFx, { burst: 1, ease: "none", duration: 0.5 }, 0)
+      .to(heroFx, { burst: 0, ease: "none", duration: 0.5 }, 0.5);
+
+    heroScrollTl = tl;
+    /* hned srovnat s aktuální pozicí (reload uprostřed stránky), bez vyhlazení */
+    tl.progress(heroPin.progress);
+  }
+
+  /* Pin se vytváří synchronně (ne až po intru), jinak by se při reloadu
+     uprostřed stránky špatně spočítal stav hera. Timeline se k němu připojí
+     později v buildHeroScroll(); do té doby onUpdate nedělá nic. */
+  var heroScrollTl = null;
+  var heroPin = null;
   if (!lowPower) {
-    ScrollTrigger.create({
-      trigger: "#section-web",
-      start: "top bottom",
-      end: "top top",
-      scrub: true,
+    heroPin = ScrollTrigger.create({
+      trigger: "#hero",
+      start: "top top",
+      end: "+=100%",
+      pin: true,
+      pinSpacing: false, /* žádný extra prázdný scroll: sekce Web najede přesně tam, kde pin hera končí */
+      anticipatePin: 1,
       onUpdate: function (self) {
-        gsap.set("#hero > .container", { opacity: 1 - self.progress, y: self.progress * -60 });
+        if (heroScrollTl) gsap.to(heroScrollTl, { progress: self.progress, duration: 0.6, ease: "power3.out", overwrite: true });
       }
     });
   }
+  if (!lowPower) heroTl.eventCallback("onComplete", buildHeroScroll);
 
   window.addEventListener("load", function () { ScrollTrigger.refresh(); });
   if (document.fonts && document.fonts.ready) {
@@ -813,7 +1009,9 @@
   var valuesSection = document.getElementById("section-values");
   var valuesCards = gsap.utils.toArray("#valuesGrid .value-card");
   var valuesEls = gsap.utils.toArray("#section-values .fade-el");
-  gsap.set(valuesEls, { y: 40, opacity: 0 });
+  if (lowPower) gsap.set(valuesEls, { y: 40, opacity: 0 }); else epicInit(valuesEls);
+  var valuesGhost = document.querySelector("#section-values .section-ghost");
+  if (valuesGhost && !lowPower) gsap.set(valuesGhost, { xPercent: 10 });
 
   /* The scrubbed "lift" (scale/y) is written to an inner wrapper, never to
      the .value-card itself — that outer element is also a `fade-el` that
@@ -836,7 +1034,8 @@
          top edge as the box grew around it. `scale` alone on the outer
          element never conflicts with revealIn/revealOut, which only tween
          y/opacity, so no split is needed here (unlike `y`, see comment above). */
-      gsap.set(card, { scale: 1 + closeness * 0.08 });
+      gsap.set(card, { scale: 0.94 + closeness * 0.14 });
+      gsap.set(card.querySelector(".value-card-inner"), { opacity: 0.45 + closeness * 0.55 });
     });
   }
 
@@ -855,11 +1054,14 @@
       pin: true,
       invalidateOnRefresh: true,
       anticipatePin: 1,
-      onEnter: function (self) { revealIn(valuesEls); updateValuesCards(self.progress); },
-      onEnterBack: function (self) { revealIn(valuesEls); updateValuesCards(self.progress); },
-      onLeave: function () { revealOut(valuesEls); },
-      onLeaveBack: function () { revealOut(valuesEls); },
-      onUpdate: function (self) { updateValuesCards(self.progress); }
+      onEnter: function (self) { epicIn(valuesEls); updateValuesCards(self.progress); pulse(); },
+      onEnterBack: function (self) { epicIn(valuesEls); updateValuesCards(self.progress); pulse(); },
+      onLeave: function () { epicOut(valuesEls); },
+      onLeaveBack: function () { epicOut(valuesEls); },
+      onUpdate: function (self) {
+        if (valuesGhost) gsap.set(valuesGhost, { xPercent: 10 - self.progress * 40 });
+        updateValuesCards(self.progress);
+      }
     });
   }
 
@@ -867,13 +1069,28 @@
      sections (revealIn/stagger), but without pin: true — the section (3 info
      cards + full form) runs taller than the viewport, so locking scroll here
      would trap visitors with the submit button off-screen. */
+  /* Zrcadlo rozpadu nadpisu v hero: písmena "Kontaktujte mě" se při scrollu
+     (scrub) slétnou z náhodných pozic do slova. Jen desktop. */
+  var contactTitle = document.querySelector("#contact h2");
+  if (contactTitle && !lowPower) {
+    gsap.from(splitChars(contactTitle), {
+      x: function () { return gsap.utils.random(-260, 260); },
+      y: function () { return gsap.utils.random(-180, 180); },
+      rotation: function () { return gsap.utils.random(-120, 120); },
+      scale: function () { return gsap.utils.random(0.3, 1.8); },
+      opacity: 0,
+      ease: "power2.out",
+      stagger: { amount: 0.5, from: "random" },
+      scrollTrigger: { trigger: contactTitle, start: "top 95%", end: "top 50%", scrub: 0.6 }
+    });
+  }
   var contactEls = gsap.utils.toArray("#contact .fade-el");
   gsap.set(contactEls, { y: 40, opacity: 0 });
   ScrollTrigger.create({
     trigger: "#contact",
     start: "top 70%",
-    onEnter: function () { revealIn(contactEls); },
-    onEnterBack: function () { revealIn(contactEls); }
+    onEnter: function () { revealIn(contactEls); if (!lowPower) pulse(); },
+    onEnterBack: function () { revealIn(contactEls); if (!lowPower) pulse(); }
   });
 
   /* Trigger off the footer itself, not each column: a per-column trigger
