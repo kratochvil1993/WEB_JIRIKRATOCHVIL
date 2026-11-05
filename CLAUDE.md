@@ -55,7 +55,7 @@ All internal references (`style.min.css`, `script.min.js`, `gdpr.html`) use rela
 - `script.js` — single vanilla-JS IIFE, no framework. This is the file to edit. See "Animation architecture" below.
 - `script.min.js` — generated from `script.js` via the `npx terser` command above (see Commands). This is what `index.html` actually `<script src>`s; it's committed to git since there's no Netlify build step. Never hand-edit it.
 - `assets/logo.webp` — header logo, downloaded locally from `jirikratochvil.eu` (no longer loaded externally).
-- `assets/vendor/` — vendored third-party libraries (Bootstrap, Bootstrap Icons, GSAP), see "External dependencies" below.
+- `assets/vendor/` — vendored third-party library (GSAP only), see "External dependencies" below.
 - `_design/` — git-ignored Claude Design (claude.ai/design) handoff bundle; this is the canonical design source. If the design changes upstream, re-sync it via the `claude_design` MCP (`DesignSync` tool: `get_project` / `list_files` / `get_file` against the project id in `_design/README.md`), diff against the root files, then copy over.
 
 ## Structured data (SEO)
@@ -66,13 +66,13 @@ All internal references (`style.min.css`, `script.min.js`, `gdpr.html`) use rela
 
 Vendored locally in `assets/vendor/` (no `node_modules`, no package manager — files are committed as-downloaded and never hand-edited):
 
-- Bootstrap 5.3.3 (CSS + bundle JS) — `assets/vendor/bootstrap/`
-- Bootstrap Icons 1.11.3 (CSS + `fonts/*.woff2`/`.woff`) — `assets/vendor/bootstrap-icons/`
 - GSAP 3.12.5 + ScrollTrigger + ScrollToPlugin — `assets/vendor/gsap/`
+
+**No Bootstrap, no icon font.** Bootstrap and Bootstrap Icons were removed (~430 kB raw): the top of `style.css` holds a hand-trimmed layer with only what the pages use (reboot, `.container`/`.row`/`.col-*` grid, navbar, `.form-*`, a few `d-*`/`flex`/margin utilities) — if a template needs a new Bootstrap-style utility class, add it there. Icons are an inline SVG sprite (`<symbol id="bi-…">`, right after `<body>` in `index.html`) used as `<svg class="bi"><use href="#bi-name"/></svg>`; to add an icon, copy its `<path>` from the `bootstrap-icons` npm package (`icons/<name>.svg`) into a new `<symbol viewBox="0 0 16 16">`. The mobile menu's collapse is custom (`setNav()` in `script.js`, height animated with gsap), not Bootstrap's.
 
 Only Google Fonts "Inter" is still loaded from a CDN (`fonts.googleapis.com`/`fonts.gstatic.com`) — intentional, since self-hosting fonts means manually tracking font-face updates and Google's CDN is fast/well-cached anyway.
 
-To upgrade a vendored library, re-download the matching version's files from jsDelivr/cdnjs into the same `assets/vendor/*` paths and commit them — don't switch back to a `<script src="https://…">`/`<link href="https://…">` CDN reference for these three.
+To upgrade a vendored library, re-download the matching version's files from jsDelivr/cdnjs into the same `assets/vendor/*` paths and commit them — don't switch back to a `<script src="https://…">`/`<link href="https://…">` CDN reference for GSAP.
 
 ## Animation architecture (script.js)
 

@@ -8,7 +8,7 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-# Vendored third-party libs (Bootstrap, Bootstrap Icons, GSAP) never change in
+# Vendored third-party libs (GSAP) never change in
 # place — a version bump means new files in a new/updated path — so it's safe
 # to cache them for a year like jsDelivr/cdnjs used to.
 [[headers]]

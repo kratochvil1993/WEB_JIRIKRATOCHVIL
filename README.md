@@ -42,7 +42,7 @@ Bezpečnostní hlavičky (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer
 | `script.js` → `script.min.js` | vanilla-JS IIFE: GSAP + ScrollTrigger animace + částicový `<canvas>` |
 | `cookie-consent.js` | cookie lišta + GTM (GTM-MPVVNJCG) — GTM se injektuje až po souhlasu |
 | `robots.txt` / `sitemap.xml` | strojově čitelné, publikují se as-is |
-| `assets/vendor/` | vendorované knihovny (Bootstrap 5.3.3, Bootstrap Icons 1.11.3, GSAP 3.12.5) — commitnuté as-downloaded, needitovat |
+| `assets/vendor/` | vendorovaná knihovna GSAP 3.12.5 — commitnutá as-downloaded, needitovat (Bootstrap ani ikonový font už se nepoužívají; ikony jsou inline SVG sprite v `index.html`) |
 | `assets/images/`, `assets/fav/`, `assets/logo.webp` | obrázky, favicony, logo |
 | `_design/` | git-ignored Claude Design handoff (kanonický zdroj designu) |
 | `_docs/` | git-ignored interní poznámky |

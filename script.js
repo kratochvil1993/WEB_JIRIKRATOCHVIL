@@ -69,8 +69,37 @@
   });
 
   /* ---------------- Mobile nav collapse ---------------- */
+  /* Vlastní collapse (dřív Bootstrap): výška se animuje přes gsap, bez animace při reduced-motion. */
   var navMenuEl = document.getElementById("navMenu");
-  var navCollapse = navMenuEl ? new bootstrap.Collapse(navMenuEl, { toggle: false }) : null;
+  var navToggler = document.querySelector(".navbar-toggler");
+  var navOpen = false;
+  var navOnShow = null;
+  function setNav(open) {
+    if (!navMenuEl || open === navOpen) return;
+    navOpen = open;
+    if (navToggler) {
+      navToggler.setAttribute("aria-expanded", open ? "true" : "false");
+      navToggler.classList.toggle("collapsed", !open);
+    }
+    gsap.killTweensOf(navMenuEl);
+    var animate = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (open) {
+      navMenuEl.classList.add("show");
+      if (navOnShow) navOnShow();
+      if (animate) {
+        gsap.fromTo(navMenuEl, { height: 0, overflow: "hidden" },
+          { height: "auto", duration: 0.35, ease: "power2.out", clearProps: "height,overflow" });
+      }
+    } else if (animate) {
+      gsap.to(navMenuEl, {
+        height: 0, overflow: "hidden", duration: 0.3, ease: "power2.in",
+        onComplete: function () { navMenuEl.classList.remove("show"); gsap.set(navMenuEl, { clearProps: "height,overflow" }); }
+      });
+    } else {
+      navMenuEl.classList.remove("show");
+    }
+  }
+  if (navToggler) navToggler.addEventListener("click", function () { setNav(!navOpen); });
 
   /* ---------------- Go to top button ---------------- */
   var toTopBtn = document.getElementById("toTop");
@@ -118,7 +147,7 @@
       var target = document.querySelector(id);
       if (!target) return;
       e.preventDefault();
-      if (navCollapse && navMenuEl.classList.contains("show")) navCollapse.hide();
+      if (navOpen) setNav(false);
       /* Resolve to a fixed pixel offset up front rather than handing the
          element itself to ScrollToPlugin: once scroll enters a pinned
          section's active range the element is position:fixed, so its
@@ -1347,14 +1376,13 @@
     document.addEventListener("touchcancel", tapRelease, { passive: true });
   }
 
-  /* Mobilní menu: odkazy vlétnou postupně při otevření (Bootstrap collapse event) */
-  var navMenu = document.getElementById("navMenu");
-  if (navMenu && mobileFx) {
-    navMenu.addEventListener("show.bs.collapse", function () {
+  /* Mobilní menu: odkazy vlétnou postupně při otevření */
+  if (navMenuEl && mobileFx) {
+    navOnShow = function () {
       gsap.fromTo("#navMenu .nav-link", { x: -26, opacity: 0 }, {
         x: 0, opacity: 1, duration: 0.45, stagger: 0.07, delay: 0.12, ease: "power3.out", overwrite: true
       });
-    });
+    };
   }
 
   /* ---------------- Contact: kopírování, třes neplatných polí, odeslání bez přesměrování ----------------
@@ -1387,12 +1415,12 @@
   }
   document.querySelectorAll(".copy-btn").forEach(function (btn) {
     btn.addEventListener("click", function () {
-      var icon = btn.querySelector("i");
+      var icon = btn.querySelector("use");
       copyText(btn.dataset.copy).then(function () {
         showToast("Zkopírováno: " + btn.dataset.copy);
         btn.classList.add("is-copied");
-        if (icon) icon.className = "bi bi-check2";
-        setTimeout(function () { btn.classList.remove("is-copied"); if (icon) icon.className = "bi bi-clipboard"; }, 1600);
+        if (icon) icon.setAttribute("href", "#bi-check2");
+        setTimeout(function () { btn.classList.remove("is-copied"); if (icon) icon.setAttribute("href", "#bi-clipboard"); }, 1600);
       }).catch(function () { showToast("Kopírování se nezdařilo"); });
     });
   });
