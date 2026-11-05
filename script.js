@@ -631,7 +631,7 @@
     if (!graphic) return { dots: [], halos: [] };
     var dots = gsap.utils.toArray(graphic.querySelectorAll(".pin-symbol .accent-dot"));
     var halos = gsap.utils.toArray(graphic.querySelectorAll(".pin-symbol .accent-halo"));
-    gsap.set(dots, { opacity: 0, scale: 0.3, transformOrigin: "50% 50%" });
+    if (dots.length) gsap.set(dots, { opacity: 0, scale: 0.3, transformOrigin: "50% 50%" });
     return { dots: dots, halos: halos };
   }
   function drawAccentsIn(accents) {
@@ -892,7 +892,7 @@
     var plainEls = textEls.filter(function (el) { return mobH2.indexOf(el) < 0 && mobCards.indexOf(el) < 0; });
     if (lowPower) {
       gsap.set(plainEls, { y: 28, opacity: 0 });
-      gsap.set(mobCards, { y: 28, opacity: 0 });
+      if (mobCards.length) gsap.set(mobCards, { y: 28, opacity: 0 });
       if (graphic) gsap.set(graphic, { scale: 0.94, rotate: -2, opacity: 0 });
     } else {
       epicInit(epicEls);
@@ -1042,25 +1042,47 @@
       return;
     }
 
-    ScrollTrigger.create({
+    /* Viditelnost obsahu sekce (reveal) řídí tři triggery:
+       - preview: sekce přijíždí zespodu (její vršek je v ~55 % okna) → obsah se
+         odhalí už teď, ne až v pinu (jinak by pod odjíždějící předchozí sekcí
+         zela prázdná obrazovka). Sekce Web ho nemá: navazuje na pinnuté hero.
+       - pin: stejný reveal jako záloha (flag `shown` zabrání dvojímu přehrání)
+         + pulse částic.
+       - exit: sekce po konci pinu celá odjela nad okno → tichý reset bez
+         viditelné animace; při scrollu zpět se obsah přehraje dřív, než se
+         sekce dostane do pinu. Obsah po konci pinu NEmizí hned (dřív epicOut
+         na konci pinu = ~1 výška okna prázdného scrollu). */
+    var shown = false;
+    var preview = sectionId !== "section-web";
+    function showAll(self) {
+      if (shown) return;
+      shown = true;
+      epicIn(epicEls); enterGraphic(self); drawSymbolIn(symbolEntries); drawAccentsIn(accentDots);
+    }
+    function hideAnimated() {
+      shown = false;
+      epicOut(epicEls);
+      if (graphic) { var back = graphicFrom(); back.duration = 0.6; back.ease = "power2.in"; back.overwrite = "auto"; gsap.to(graphic, back); }
+      drawSymbolOut(symbolEntries); drawAccentsOut(accentDots);
+    }
+    function hideSilent() {
+      shown = false;
+      gsap.killTweensOf(epicEls);
+      epicInit(epicEls);
+      if (graphic) { gsap.killTweensOf(graphic); gsap.set(graphic, graphicFrom()); }
+      drawSymbolOut(symbolEntries); drawAccentsOut(accentDots);
+    }
+
+    var pinST = ScrollTrigger.create({
       trigger: section,
       start: "top top",
       end: "+=1600",
       pin: true,
       invalidateOnRefresh: true,
       anticipatePin: 1,
-      onEnter: function (self) { epicIn(epicEls); enterGraphic(self); drawSymbolIn(symbolEntries); drawAccentsIn(accentDots); pulse(); },
-      onEnterBack: function (self) { epicIn(epicEls); enterGraphic(self); drawSymbolIn(symbolEntries); drawAccentsIn(accentDots); pulse(); },
-      onLeave: function () {
-        epicOut(epicEls);
-        if (graphic) gsap.to(graphic, { opacity: 0, scale: 1.15, rotationY: -gdir * 25, x: -gdir * 60, duration: 0.6, ease: "power2.in", overwrite: "auto" });
-        drawSymbolOut(symbolEntries); drawAccentsOut(accentDots);
-      },
-      onLeaveBack: function () {
-        epicOut(epicEls);
-        if (graphic) { var back = graphicFrom(); back.duration = 0.6; back.ease = "power2.in"; back.overwrite = "auto"; gsap.to(graphic, back); }
-        drawSymbolOut(symbolEntries); drawAccentsOut(accentDots);
-      },
+      onEnter: function (self) { showAll(self); pulse(); },
+      onEnterBack: function (self) { showAll(self); pulse(); },
+      onLeaveBack: function () { if (!preview) hideAnimated(); },
       onUpdate: function (self) {
         if (ghost) gsap.set(ghost, { xPercent: 10 - self.progress * 40 });
         if (cards.length) { updateCardStack(cards, self.progress); }
@@ -1068,6 +1090,23 @@
         else if (serpMorph) { updateSerpMorph(serpMorph, self.progress); }
         else if (graphic) { gsap.set(graphic, { rotate: -6 + self.progress * 10 }); }
       }
+    });
+
+    if (preview) {
+      ScrollTrigger.create({
+        start: function () { return pinST.start - window.innerHeight * 0.55; },
+        end: function () { return pinST.start - window.innerHeight * 0.55 + 1; },
+        invalidateOnRefresh: true,
+        onEnter: function () { showAll(pinST); },
+        onLeaveBack: function () { hideAnimated(); }
+      });
+    }
+    ScrollTrigger.create({
+      start: function () { return pinST.end + section.offsetHeight; },
+      end: function () { return pinST.end + section.offsetHeight + 1; },
+      invalidateOnRefresh: true,
+      onEnter: hideSilent,
+      onLeaveBack: function () { showAll(pinST); }
     });
   }
   buildPinned("section-web", "#section-web");
@@ -1309,21 +1348,40 @@
       });
     }
   } else {
-    ScrollTrigger.create({
+    var valuesShown = false;
+    function valuesShow(self) {
+      if (valuesShown) return;
+      valuesShown = true;
+      epicIn(valuesEls); updateValuesCards(self.progress);
+    }
+    var valuesST = ScrollTrigger.create({
       trigger: valuesSection,
       start: "top top",
       end: "+=1400",
       pin: true,
       invalidateOnRefresh: true,
       anticipatePin: 1,
-      onEnter: function (self) { epicIn(valuesEls); updateValuesCards(self.progress); pulse(); },
-      onEnterBack: function (self) { epicIn(valuesEls); updateValuesCards(self.progress); pulse(); },
-      onLeave: function () { epicOut(valuesEls); },
-      onLeaveBack: function () { epicOut(valuesEls); },
+      onEnter: function (self) { valuesShow(self); pulse(); },
+      onEnterBack: function (self) { valuesShow(self); pulse(); },
       onUpdate: function (self) {
         if (valuesGhost) gsap.set(valuesGhost, { xPercent: 10 - self.progress * 40 });
         updateValuesCards(self.progress);
       }
+    });
+    /* viz buildPinned: preview při příjezdu zespodu, tichý reset až po odjezdu */
+    ScrollTrigger.create({
+      start: function () { return valuesST.start - window.innerHeight * 0.55; },
+      end: function () { return valuesST.start - window.innerHeight * 0.55 + 1; },
+      invalidateOnRefresh: true,
+      onEnter: function () { valuesShow(valuesST); },
+      onLeaveBack: function () { valuesShown = false; epicOut(valuesEls); }
+    });
+    ScrollTrigger.create({
+      start: function () { return valuesST.end + valuesSection.offsetHeight; },
+      end: function () { return valuesST.end + valuesSection.offsetHeight + 1; },
+      invalidateOnRefresh: true,
+      onEnter: function () { valuesShown = false; gsap.killTweensOf(valuesEls); epicInit(valuesEls); },
+      onLeaveBack: function () { valuesShow({ progress: 1 }); }
     });
   }
 
