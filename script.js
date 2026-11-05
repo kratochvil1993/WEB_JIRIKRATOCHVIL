@@ -1087,9 +1087,34 @@
      si přepisovaly počáteční hodnoty.
      lowPower (mobil / reduced-motion) dostává záměrně jen běžný scroll bez
      pinu, rozpadu i blur efektů. */
+  /* Rozdělení na písmena zabalí každé do vlastního inline-block spanu a tím
+     zruší kerning mezi dvojicemi ("We", "ev"…) — nadpis by po splitu povyskočil
+     (u "Web developer" ~6px) a písmena by se rozjela. Proto se před splitem
+     změří rozestupy mezi sousedními písmeny uvnitř slova a po splitu se rozdíl
+     doplní přes margin-left, takže nadpis zůstane pixel po pixelu stejný. */
   function splitChars(h1) {
     var chars = [];
     h1.setAttribute("aria-label", h1.textContent.replace(/\s+/g, " ").trim());
+
+    /* 1) změřit původní x každého nemezerového písmena (v pořadí v dokumentu),
+       dokud je text ještě nedotčený — ještě před jakoukoli změnou DOM */
+    var rng = document.createRange(), beforeX = [];
+    (function measure(node) {
+      Array.prototype.slice.call(node.childNodes).forEach(function (child) {
+        if (child.nodeType === 3) {
+          var txt = child.textContent;
+          for (var i = 0; i < txt.length; i++) {
+            if (/\s/.test(txt.charAt(i))) continue;
+            rng.setStart(child, i); rng.setEnd(child, i + 1);
+            beforeX.push(rng.getBoundingClientRect().left);
+          }
+        } else if (child.nodeType === 1 && child.tagName !== "BR") {
+          measure(child);
+        }
+      });
+    })(h1);
+
+    var firstInWord = [];
     (function walk(node) {
       Array.prototype.slice.call(node.childNodes).forEach(function (child) {
         if (child.nodeType === 3) {
@@ -1100,12 +1125,13 @@
             var word = document.createElement("span");
             word.className = "split-word";
             word.setAttribute("aria-hidden", "true");
-            part.split("").forEach(function (ch) {
+            part.split("").forEach(function (ch, k) {
               var c = document.createElement("span");
               c.className = "split-char";
               c.textContent = ch;
               word.appendChild(c);
               chars.push(c);
+              firstInWord.push(k === 0);
             });
             frag.appendChild(word);
           });
@@ -1115,6 +1141,19 @@
         }
       });
     })(h1);
+
+    /* 2) po splitu přečíst všechny pozice naráz (jeden layout) a teprve potom
+       zapsat margin-left; mezera mezi i-1 a i nezávisí na marginu i-1 */
+    if (beforeX.length === chars.length) {
+      var box = h1.getBoundingClientRect();
+      var scale = h1.offsetWidth ? box.width / h1.offsetWidth : 1; /* případný zoom předka */
+      var afterX = chars.map(function (c) { return c.getBoundingClientRect().left; });
+      chars.forEach(function (c, i) {
+        if (firstInWord[i]) return;
+        var fix = ((beforeX[i] - beforeX[i - 1]) - (afterX[i] - afterX[i - 1])) / scale;
+        if (Math.abs(fix) > 0.02) c.style.marginLeft = fix + "px";
+      });
+    }
     return chars;
   }
 
