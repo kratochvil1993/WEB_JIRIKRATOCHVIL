@@ -1162,6 +1162,15 @@ footer::after{
     color:rgba(var(--magenta-rgb),.9);-webkit-text-stroke-color:transparent;
   }
 }
+/* Mobil: odlesk karty řídí script.js přes --glare/--mx/--my podle polohy na
+   obrazovce a náklonu telefonu (dřív jen hover/klepnutí). Klepnutí pořád přebije. */
+@media (max-width:991.98px){
+  .feature-card::before{
+    background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%), rgba(var(--magenta-rgb),.26), transparent 62%);
+    opacity:var(--glare,0);transition:opacity .12s linear;
+  }
+  .feature-card:hover::before{opacity:var(--glare,0);} /* hover po klepnutí na dotyku "visí" */
+}
 .feature-card.is-pressed::before{opacity:1;}
 @media (prefers-reduced-motion: reduce){
   html{scroll-behavior:auto;}

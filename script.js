@@ -885,7 +885,12 @@
     return {
       serp: morph.querySelector(".serp-layer"),
       dash: morph.querySelector(".dash-layer"),
-      bars: gsap.utils.toArray(morph.querySelectorAll(".dash-bar")),
+      bars: gsap.utils.toArray(morph.querySelectorAll(".dash-bar")).map(function (bar) {
+        /* cílová výška je pevná, animuje se jen scaleY od paty (bez layoutu při každém snímku) */
+        bar.style.height = bar.dataset.h + "%";
+        bar.style.transformOrigin = "50% 100%";
+        return bar;
+      }),
       stats: gsap.utils.toArray(morph.querySelectorAll(".dash-stat-value"))
     };
   }
@@ -902,7 +907,7 @@
     gsap.set(morph.serp, serpVars);
     gsap.set(morph.dash, dashVars);
     morph.bars.forEach(function (bar) {
-      gsap.set(bar, { height: (t * parseFloat(bar.dataset.h)) + "%" });
+      gsap.set(bar, { scaleY: t });
     });
     morph.stats.forEach(function (stat) {
       stat.textContent = (t * parseFloat(stat.dataset.target)).toFixed(1) + stat.dataset.suffix;
@@ -1102,23 +1107,6 @@
         onUpdate: function () { updateSerpMorph(serpMorph, proxy.t); }
       });
     }
-    function startCodeMorphLoop() {
-      if (!codeMorph) return null;
-      var proxy = { t: 0 };
-      return gsap.to(proxy, {
-        t: 1, duration: 1.3, ease: "power1.inOut", yoyo: true, repeat: -1, repeatDelay: 0.8,
-        onUpdate: function () { updateCodeMorph(codeMorph, proxy.t); }
-      });
-    }
-    function startSerpMorphLoop() {
-      if (!serpMorph) return null;
-      var proxy = { t: 0 };
-      return gsap.to(proxy, {
-        t: 1, duration: 1.3, ease: "power1.inOut", yoyo: true, repeat: -1, repeatDelay: 0.8,
-        onUpdate: function () { updateSerpMorph(serpMorph, proxy.t); }
-      });
-    }
-
     if (lowPower) {
       /* Unlike the desktop pin (whose scrub loops continuously while pinned),
          mobile has no pin at all — each section only gets a single scroll pass.
@@ -1127,8 +1115,6 @@
          tweens/interval below keep it animating continuously for as long as
          the graphic stays in view. */
       var autoplayInterval = null;
-      var codeLoopTween = null;
-      var serpLoopTween = null;
       function enterEl(el) {
         gsap.to(el, { y: 0, opacity: 1, scale: 1, rotate: 0, duration: 0.9, ease: "power3.out", overwrite: "auto" });
         if (el === graphic) {
@@ -1140,14 +1126,9 @@
           if (cards.length && isMobile && !reduceMotion && !autoplayInterval) {
             autoplayInterval = startCardAutoplay(cards, 2600);
           }
-          if (codeMorph) {
-            if (isMobile && !reduceMotion) { if (!codeLoopTween) codeLoopTween = startCodeMorphLoop(); }
-            else playCodeMorphOnce();
-          }
-          if (serpMorph) {
-            if (isMobile && !reduceMotion) { if (!serpLoopTween) serpLoopTween = startSerpMorphLoop(); }
-            else playSerpMorphOnce();
-          }
+          /* mobileFx: morf řídí scroll (viz níže), ne časovač */
+          if (codeMorph && !mobileFx) playCodeMorphOnce();
+          if (serpMorph && !mobileFx) playSerpMorphOnce();
         }
       }
       /* gentle = prvek je ještě vidět (scroll zpět nad jeho vstupní bod) → plynulé
@@ -1166,10 +1147,8 @@
           drawSymbolOut(symbolEntries); drawAccentsOut(accentDots);
           if (autoplayInterval) { autoplayInterval.stop(); autoplayInterval = null; }
           if (cards._autoTl) { cards._autoTl.kill(); cards._autoTl = null; }
-          if (codeLoopTween) { codeLoopTween.kill(); codeLoopTween = null; }
-          if (serpLoopTween) { serpLoopTween.kill(); serpLoopTween = null; }
-          if (codeMorph) updateCodeMorph(codeMorph, 0);
-          if (serpMorph) updateSerpMorph(serpMorph, 0);
+          if (codeMorph && !mobileFx) updateCodeMorph(codeMorph, 0);
+          if (serpMorph && !mobileFx) updateSerpMorph(serpMorph, 0);
           if (cards.length) updateCardStack(cards, 0);
         }
       }
@@ -1177,6 +1156,22 @@
         /* nadpis: wipe zleva (časová animace spuštěná při vstupu, viz mobileWipe) */
         mobH2.forEach(mobileWipe);
         if (ghost) mobileGhost(ghost, section);
+        /* Morf grafiky (kód → wireframe, SERP → dashboard) jde podle toho, jak grafika
+           projíždí obrazovkou: scrolluješ a web/dashboard se před očima "skládá".
+           Dřív běžela smyčka na časovač. Scrub s vyhlazením (0.6) kryje hrubý scroll;
+           morf je jen opacity/transform, takže to unese. Trigger je rodičovský
+           sloupec (ne grafika), aby ho neposouvala její vlastní transformace. */
+        if (graphic && (codeMorph || serpMorph)) {
+          var morphProxy = { t: 0 };
+          gsap.to(morphProxy, {
+            t: 1, ease: "none",
+            onUpdate: function () {
+              if (codeMorph) updateCodeMorph(codeMorph, morphProxy.t);
+              if (serpMorph) updateSerpMorph(serpMorph, morphProxy.t);
+            },
+            scrollTrigger: { trigger: graphic.parentElement, start: "top 82%", end: "top 28%", scrub: 0.6 }
+          });
+        }
         if (mobCards.length) {
           var cardsIn = function (batch) { gsap.to(batch, { y: 0, opacity: 1, duration: 0.9, ease: "power3.out", stagger: 0.14, overwrite: "auto" }); };
           ScrollTrigger.batch(mobCards, {
@@ -1781,6 +1776,60 @@
     } else {
       gyroStart();
     }
+  }
+
+  /* ---------------- Mobil: karty — odlesk skla a 3D "buben" ----------------
+     Obojí řídí poloha karty na obrazovce (nrm: -1 = u horního okraje, 0 = uprostřed,
+     +1 = u spodního), počítaná z rodičovského sloupce (ten nemá transformaci, takže
+     se čtení nekouše s animací samotné karty):
+     - odlesk: radiální glow z `.feature-card::before` (dřív jen hover/klepnutí)
+       sviťí nejvíc uprostřed obrazovky, jeho střed jede podle scrollu a podle
+       náklonu telefonu (tilt.x z gyra);
+     - buben: karty u horního/dolního okraje se nakloní (rotationX až ±26°) a ve
+       středu narovnají. Jen pro karty v pinnutých sekcích (kontaktní zůstávají
+       klidné) a ne pro "Proč já" (to má vlastní sticky stack).
+     Počítá se jen pro karty v okně (IntersectionObserver), s vyhlazením. */
+  if (mobileFx) {
+    var fxCards = gsap.utils.toArray(".feature-card:not(.value-card)").map(function (el) {
+      return { el: el, ref: el.parentElement, drum: !el.classList.contains("contact-card"),
+               rot: 0, vis: false, glare: -1, mx: -1, my: -1 };
+    });
+    fxCards.forEach(function (c) { if (c.drum) gsap.set(c.el, { transformPerspective: 900 }); });
+    if ("IntersectionObserver" in window) {
+      var fxIo = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          fxCards.forEach(function (c) { if (c.ref === en.target) c.vis = en.isIntersecting; });
+        });
+      }, { rootMargin: "10% 0px" });
+      fxCards.forEach(function (c) { fxIo.observe(c.ref); });
+    } else {
+      fxCards.forEach(function (c) { c.vis = true; });
+    }
+    gsap.ticker.add(function () {
+      var vh = window.innerHeight;
+      fxCards.forEach(function (c) {
+        if (!c.vis) return;
+        var r = c.ref.getBoundingClientRect();
+        var nrm = ((r.top + r.height / 2) - vh / 2) / (vh / 2);
+        if (c.drum) {
+          var want = gsap.utils.clamp(-26, 26, -Math.sign(nrm) * Math.max(0, Math.abs(nrm) - 0.2) * 28);
+          var prev = c.rot;
+          c.rot += (want - c.rot) * 0.2;
+          if (Math.abs(c.rot - want) < 0.02) c.rot = want;
+          if (c.rot !== prev) gsap.set(c.el, { rotationX: c.rot });
+        }
+        /* během klepnutí drží glow pod prstem (viz tap feedback), neměnit */
+        if (c.el.classList.contains("is-pressed")) return;
+        var g = Math.max(0, 1 - Math.abs(nrm) * 1.15);
+        var mx = 50 + tilt.x * 45 + nrm * 18, my = 50 + nrm * 70;
+        if (Math.abs(g - c.glare) > 0.01) { c.glare = g; c.el.style.setProperty("--glare", g.toFixed(2)); }
+        if (Math.abs(mx - c.mx) > 0.3 || Math.abs(my - c.my) > 0.3) {
+          c.mx = mx; c.my = my;
+          c.el.style.setProperty("--mx", mx.toFixed(1) + "%");
+          c.el.style.setProperty("--my", my.toFixed(1) + "%");
+        }
+      });
+    });
   }
 
   /* ---------------- Mobil: zpětná vazba při klepnutí ----------------
