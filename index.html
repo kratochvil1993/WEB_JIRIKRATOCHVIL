@@ -197,6 +197,15 @@
               </svg>
             </span>
           </a>
+          <!-- Mobil/tablet: malý "kód" místo velkého panelu vpravo (ten je jen od lg výš) -->
+          <div class="hero-mini-code d-lg-none" aria-hidden="true">
+            <div class="code-line"><span class="tok-kw">const</span> <span class="tok-var">jiri</span> <span
+                class="tok-op">=</span> <span class="tok-fn">createDev</span><span class="tok-punc">();</span></div>
+            <div class="code-line"><span class="tok-var">jiri</span><span class="tok-punc">.</span><span
+                class="tok-fn">build</span><span class="tok-punc">(</span><span class="tok-tag">"web"</span><span
+                class="tok-punc">,</span> <span class="tok-tag">"e-shop"</span><span class="tok-punc">);</span></div>
+            <div class="code-line"><span class="tok-comment">// + portréty</span></div>
+          </div>
         </div>
         <div class="col-lg-5 d-none d-lg-block">
           <div class="pin-graphic hero-graphic">
@@ -538,7 +547,9 @@
               <i class="bi bi-telephone"></i>
             </div>
             <h3>Telefon</h3>
-            <p><a href="tel:+420728544881">+420 728 544 881</a></p>
+            <p><a href="tel:+420728544881">+420 728 544 881</a><button type="button" class="copy-btn"
+                data-copy="+420 728 544 881" aria-label="Zkopírovat telefonní číslo"><i
+                  class="bi bi-clipboard"></i></button></p>
           </div>
         </div>
         <div class="col-md-4">
@@ -547,7 +558,9 @@
               <i class="bi bi-envelope"></i>
             </div>
             <h3>E-mail</h3>
-            <p><a href="mailto:info@jirikratochvil.eu">info@jirikratochvil.eu</a></p>
+            <p><a href="mailto:info@jirikratochvil.eu">info@jirikratochvil.eu</a><button type="button" class="copy-btn"
+                data-copy="info@jirikratochvil.eu" aria-label="Zkopírovat e-mail"><i
+                  class="bi bi-clipboard"></i></button></p>
           </div>
         </div>
         <div class="col-md-4">
@@ -631,6 +644,15 @@
               </div>
             </div>
           </form>
+          <div class="form-success text-center" id="formSuccess" role="status" hidden>
+            <svg class="form-success__check" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+              <circle class="fs-circle" cx="26" cy="26" r="23" pathLength="1" stroke="currentColor" stroke-width="2.5" />
+              <path class="fs-tick" d="M15 27l8 8 14-16" pathLength="1" stroke="currentColor" stroke-width="3"
+                stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <h3>Děkuji, zpráva je odeslaná</h3>
+            <p>Ozvu se vám co nejdříve.</p>
+          </div>
         </div>
       </div>
     </div>

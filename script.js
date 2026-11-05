@@ -192,6 +192,12 @@
   typewriter();
 
   var heroChars = mobileFx ? splitChars(document.querySelector("#hero h1")) : [];
+  /* mobil: mini kód v hero se "píše" řádek po řádku. Samostatný tween mimo heroTl —
+     jistička níž (setTimeout 1600 ms) by heroTl dokončila a useklá by psaní. */
+  var miniLines = mobileFx ? gsap.utils.toArray("#hero .hero-mini-code .code-line") : [];
+  if (miniLines.length) {
+    gsap.from(miniLines, { width: 0, duration: 0.8, ease: "steps(24)", stagger: 0.5, delay: 1.0 });
+  }
   var heroTl = gsap.timeline({ defaults: { ease: "power2.out" } })
     .from("#hero .hero-name", { y: 30, opacity: 0, duration: 0.7 })
     .from("#hero .role-line", { y: 30, opacity: 0, duration: 0.7 }, "-=0.4")
@@ -480,6 +486,11 @@
   /* Krátká vlna částic při vstupu do sekce (viz pulse()). Oddělená od heroFx,
      aby gsap overwrite nezabil scrub tweeny hera. */
   var pulseFx = { v: 0 };
+  /* Částice reagují na scroll: každá se (podle velikosti ≈ "hloubky") posouvá proti
+     směru scrollu jinou rychlostí a rychlý scroll navíc zrychlí drift. Vypnuto
+     při prefers-reduced-motion. */
+  var lastScrollY = window.pageYOffset || 0;
+  var scrollVel = 0;
   function pulse() {
     gsap.fromTo(pulseFx, { v: 0.8 }, { v: 0, duration: 1.5, ease: "power2.out", overwrite: true });
   }
@@ -488,8 +499,13 @@
     ctx.clearRect(0, 0, W, H);
     var linky = activeConfig.linky && !lowPower;
     var burst = heroFx.burst + pulseFx.v;
-    var boost = 1 + burst * 5;
+    var sy = window.pageYOffset || 0;
+    var dy = reduceMotion ? 0 : Math.max(-80, Math.min(80, sy - lastScrollY));
+    lastScrollY = sy;
+    scrollVel += (Math.abs(dy) - scrollVel) * 0.12;
+    var boost = 1 + burst * 5 + Math.min(scrollVel / 14, 3.5);
     particles.forEach(function (p, idx) {
+      if (dy) p.y -= dy * (0.06 + p.size * 0.07);
       if (burst > 0.001) {
         p.vx += (p.x - W / 2) / W * burst * 0.12;
         p.vy += (p.y - H / 2) / H * burst * 0.12;
@@ -840,9 +856,12 @@
     }
     /* mobil: h2 se odkrývá scrubovaným wipe (viz níž), proto není v jednorázovém fade-up */
     var mobH2 = mobileFx ? textEls.filter(function (el) { return el.tagName === "H2"; }) : [];
-    var plainEls = textEls.filter(function (el) { return mobH2.indexOf(el) < 0; });
+    /* mobil: karty ve stejné řadě naskakují po skupinách s odstupem (batch), ne každá zvlášť */
+    var mobCards = mobileFx ? textEls.filter(function (el) { return el.classList.contains("feature-card"); }) : [];
+    var plainEls = textEls.filter(function (el) { return mobH2.indexOf(el) < 0 && mobCards.indexOf(el) < 0; });
     if (lowPower) {
       gsap.set(plainEls, { y: 28, opacity: 0 });
+      gsap.set(mobCards, { y: 28, opacity: 0 });
       if (graphic) gsap.set(graphic, { scale: 0.94, rotate: -2, opacity: 0 });
     } else {
       epicInit(epicEls);
@@ -962,6 +981,15 @@
       if (mobileFx) {
         /* nadpis: wipe zleva (časová animace spuštěná při vstupu, viz mobileWipe) */
         mobH2.forEach(mobileWipe);
+        if (mobCards.length) {
+          var cardsIn = function (batch) { gsap.to(batch, { y: 0, opacity: 1, duration: 0.9, ease: "power3.out", stagger: 0.14, overwrite: "auto" }); };
+          ScrollTrigger.batch(mobCards, {
+            start: "top 90%", end: "bottom top",
+            onEnter: cardsIn, onEnterBack: cardsIn,
+            onLeave: function (batch) { gsap.set(batch, { y: 28, opacity: 0 }); },
+            onLeaveBack: function (batch) { gsap.to(batch, { y: 28, opacity: 0, duration: 0.35, ease: "power2.in", overwrite: "auto" }); }
+          });
+        }
         /* grafika jede o něco pomaleji než text → hloubka (jen yPercent, aby
            se nepralo s enterEl/leaveEl, které animují y/scale/rotate) */
         if (graphic) {
@@ -1329,16 +1357,88 @@
     });
   }
 
-  /* ---------------- Contact form: basic UX (Netlify handles real submit) ---------------- */
+  /* ---------------- Contact: kopírování, třes neplatných polí, odeslání bez přesměrování ----------------
+     Formulář pořád patří Netlify Forms (data-netlify, honeypot), jen se odesílá přes
+     fetch (Netlify AJAX: POST na "/" s polem form-name) a místo přesměrování na
+     obecnou stránku Netlify se ukáže potvrzení přímo ve stránce. Když fetch selže
+     (offline, jiná než 2xx odpověď), spadne to na nativní odeslání jako dřív. */
+  var toastEl = document.createElement("div");
+  toastEl.id = "copyToast";
+  toastEl.setAttribute("role", "status");
+  toastEl.setAttribute("aria-live", "polite");
+  document.body.appendChild(toastEl);
+  var toastTimer = null;
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("is-visible");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove("is-visible"); }, 1900);
+  }
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+    return new Promise(function (resolve, reject) {
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", "");
+      ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy") ? resolve() : reject(); } catch (err) { reject(err); }
+      document.body.removeChild(ta);
+    });
+  }
+  document.querySelectorAll(".copy-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var icon = btn.querySelector("i");
+      copyText(btn.dataset.copy).then(function () {
+        showToast("Zkopírováno: " + btn.dataset.copy);
+        btn.classList.add("is-copied");
+        if (icon) icon.className = "bi bi-check2";
+        setTimeout(function () { btn.classList.remove("is-copied"); if (icon) icon.className = "bi bi-clipboard"; }, 1600);
+      }).catch(function () { showToast("Kopírování se nezdařilo"); });
+    });
+  });
+
   var form = document.getElementById("contactForm");
+  var formSuccess = document.getElementById("formSuccess");
   if (form) {
-    form.addEventListener("submit", function () {
+    /* neplatné pole se při pokusu o odeslání zatřese (invalid nebublá → capture) */
+    if (!reduceMotion) {
+      form.addEventListener("invalid", function (e) {
+        var box = e.target.closest(".form-floating, .form-check") || e.target;
+        gsap.fromTo(box, { x: 0 }, { keyframes: [{ x: -8 }, { x: 8 }, { x: -5 }, { x: 5 }, { x: 0 }], duration: 0.4, ease: "power1.inOut", overwrite: "auto" });
+      }, true);
+    }
+    function showFormSuccess() {
+      var done = function () {
+        form.style.display = "none";
+        formSuccess.hidden = false;
+        if (!reduceMotion) {
+          var circle = formSuccess.querySelector(".fs-circle"), tick = formSuccess.querySelector(".fs-tick");
+          gsap.set([circle, tick], { strokeDasharray: 1, strokeDashoffset: 1 });
+          gsap.timeline()
+            .to(circle, { strokeDashoffset: 0, duration: 0.6, ease: "power2.out" })
+            .to(tick, { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, "-=0.1")
+            .from(formSuccess.querySelectorAll("h3, p"), { y: 14, opacity: 0, duration: 0.5, stagger: 0.1, ease: "power2.out" }, "-=0.3");
+        }
+        ScrollTrigger.refresh();
+        formSuccess.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
+      };
+      if (reduceMotion) done(); else gsap.to(form, { opacity: 0, y: -10, duration: 0.35, onComplete: done });
+    }
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
       var btn = form.querySelector("button[type=submit]");
-      if (btn) {
-        btn.disabled = true;
-        var label = btn.querySelector(".pill-btn__label") || btn;
-        label.textContent = "Odesílám…";
-      }
+      var label = btn && (btn.querySelector(".pill-btn__label") || btn);
+      if (btn) { btn.disabled = true; label.textContent = "Odesílám…"; }
+      fetch(form.getAttribute("action") || "/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(new FormData(form)).toString()
+      }).then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        showFormSuccess();
+      }).catch(function () {
+        form.submit(); /* nativní odeslání (stará cesta) */
+      });
     });
   }
 })();
