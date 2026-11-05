@@ -1,5 +1,5 @@
 /* ============ Cookie consent + Google Consent Mode v2 (Advanced) ============
-   Loaded on every page. GTM (GTM-MPVVNJCG) now loads on every page view — but
+   Loaded on every page. GTM (GTM-MPVVNJCG) now loads on every page view (deferred: first interaction or ~3.5 s after load) — but
    an inline <head> snippet on each page sets all consent signals to "denied"
    *before* GTM, so Google tags start in cookieless mode: no analytics/ads
    cookies, only anonymous consent-signal pings, until the visitor answers the
@@ -92,7 +92,19 @@
   else if (stored === "denied") gtag("consent", "update", DENY);
 
   // Advanced mode: the container always loads; consent state gates the tags.
-  loadGTM();
+  // Loading is deferred off the critical path (GTM + gtag are ~300 kB of JS that
+  // competes with the hero for bandwidth/CPU): it starts on the first real
+  // interaction, or ~3.5 s after the page's load event, whichever comes first.
+  // The consent default above and any consent updates are only queued in
+  // dataLayer until then, so nothing is lost or sent before the visitor answers.
+  var GTM_EVENTS = ["pointerdown", "keydown", "scroll", "touchstart"];
+  function startGTM() {
+    GTM_EVENTS.forEach(function (ev) { window.removeEventListener(ev, startGTM); });
+    loadGTM();
+  }
+  GTM_EVENTS.forEach(function (ev) { window.addEventListener(ev, startGTM, { passive: true }); });
+  if (document.readyState === "complete") setTimeout(startGTM, 3500);
+  else window.addEventListener("load", function () { setTimeout(startGTM, 3500); });
 
   if (stored !== "granted" && stored !== "denied") showBanner();
 })();

@@ -229,9 +229,11 @@
   }
   var heroTl = gsap.timeline({ defaults: { ease: "power2.out" } })
     .from("#hero .hero-name", { y: 30, opacity: 0, duration: 0.7 })
-    .from("#hero .role-line", { y: 30, opacity: 0, duration: 0.7 }, "-=0.4")
-    .from("#hero .lead-text", { y: 30, opacity: 0, duration: 0.7 }, "-=0.4")
-    .from("#hero .pill-btn", { y: 20, opacity: 0, duration: 0.6 }, "-=0.3");
+    /* Překryv kroků je záměrně větší (dřív -0.4/-0.4/-0.3): .lead-text je LCP element,
+       takže se objeví o ~0,3 s dřív, a celé intro doběhne za ~1,2 s místo ~1,6 s. */
+    .from("#hero .role-line", { y: 30, opacity: 0, duration: 0.7 }, "-=0.55")
+    .from("#hero .lead-text", { y: 30, opacity: 0, duration: 0.7 }, "-=0.55")
+    .from("#hero .pill-btn", { y: 20, opacity: 0, duration: 0.6 }, "-=0.4");
   /* mobil: písmena nadpisu se při načtení slétnou z náhodných pozic */
   if (heroChars.length) {
     heroTl.from(heroChars, {
