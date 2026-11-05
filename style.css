@@ -16,6 +16,8 @@
   --magenta:#0ac8e0;
   --purple-rgb:0,238,255;
   --magenta-rgb:10,200,224;
+  --accent2:#0ac8e0;   /* konec gradientu tlačítek, ikon a sloupců (původní azurová) */
+  --accent-ice:#a8fbff; /* konec gradientu nadpisů — ledově světlá, hloubka světlem místo druhé barvy */
   --glow-x:50%;
   --glow-y:50%;
   --grad-a:#0ef;
@@ -243,16 +245,16 @@ section{position:relative;z-index:1;}
 .section-pad{padding:8rem 0;}
 .eyebrow{
   text-transform:uppercase;
-  letter-spacing:.15em;
-  font-size:.8rem;
+  font-size:.75rem;
+  letter-spacing:.2em;
   font-weight:600;
   color:var(--magenta);
   margin-bottom:1rem;
 }
 h1,h2,h3{font-weight:800;letter-spacing:-0.02em;text-wrap:pretty;}
-section h2{font-size:clamp(2rem,1.4rem + 2.5vw,3rem);}
+section h2{font-size:clamp(2rem,1.3rem + 2.8vw,3.25rem);margin-bottom:1.1rem;}
 .gradient-text{
-  background:linear-gradient(90deg,var(--purple),var(--magenta));
+  background:linear-gradient(90deg,var(--purple),var(--accent-ice));
   -webkit-background-clip:text;
   background-clip:text;
   color:transparent;
@@ -266,12 +268,29 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
   align-items:center;
   overflow:clip; /* zvětšená grafika/zoom při pinu nesmí vytékat z hera */
 }
+/* Scroll nápověda pod hero — zmizí při prvním scrollu (script.js), jen desktop */
+.scroll-cue{
+  position:absolute;left:50%;bottom:2rem;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;
+  font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-weight:600;
+  color:rgba(255,255,255,.55);pointer-events:none;
+  transition:opacity .4s ease;
+}
+.scroll-cue.is-hidden{opacity:0;}
+.scroll-cue span{
+  width:1px;height:42px;
+  background:linear-gradient(to bottom,rgba(var(--purple-rgb),.9),transparent);
+  transform-origin:top;
+  animation:scrollCue 1.8s ease-in-out infinite;
+}
+@keyframes scrollCue{0%{transform:scaleY(0);opacity:1;}60%{transform:scaleY(1);opacity:1;}100%{transform:scaleY(1);opacity:0;}}
+@media (max-width:991.98px),(prefers-reduced-motion:reduce){.scroll-cue{display:none;}}
 /* Split nadpisů na písmena (script.js splitChars) — jen pro scroll scény (hero, kontakt) */
 .split-word{display:inline-block;white-space:nowrap;}
 .split-char{display:inline-block;will-change:transform,opacity;}
 /* gradient-text využívá background-clip:text, který se přes transformované
    inline-block potomky neprojeví — gradient proto dostane každé písmeno zvlášť */
-.gradient-text .split-char{background:linear-gradient(90deg,var(--purple),var(--magenta));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.gradient-text .split-char{background:linear-gradient(90deg,var(--purple),var(--accent-ice));-webkit-background-clip:text;background-clip:text;color:transparent;}
 #hero h1{
   font-size:clamp(2.6rem,6vw,4.6rem);
   margin-bottom:.5rem;
@@ -383,7 +402,7 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
    mobile 2*14px + 24px = 52px, desktop 2*16px + 24px = 56px. Recheck
    these sums if the label's padding or font-size ever changes. */
 .pill-btn{
-  --btn-bg:linear-gradient(90deg,var(--purple),var(--magenta));
+  --btn-bg:linear-gradient(90deg,var(--purple),var(--accent2));
   --btn-fg:#04141a;
   --btn-icon-size:52px;
   position:relative;
@@ -478,10 +497,11 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
    horizontálně (parallax). Jen desktop — na mobilu/reduced-motion se skrývá. */
 .section-ghost{
   position:absolute;inset:0;z-index:0;
-  display:flex;align-items:center;
+  display:flex;align-items:flex-end;
   white-space:nowrap;pointer-events:none;user-select:none;
-  font-size:clamp(10rem,24vw,24rem);font-weight:900;line-height:1;letter-spacing:-.04em;
-  color:transparent;-webkit-text-stroke:1.5px rgba(var(--purple-rgb),.09);
+  font-size:clamp(10rem,24vw,24rem);font-weight:900;line-height:.78;letter-spacing:-.04em;
+  padding-bottom:0;margin-bottom:-.2em; /* spodek písmen se ořízne hranou sekce */
+  color:transparent;-webkit-text-stroke:1.5px rgba(var(--purple-rgb),.14);
   will-change:transform;
 }
 @media (max-width:991.98px),(prefers-reduced-motion:reduce){.section-ghost{display:none;}}
@@ -598,7 +618,7 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
 .code-wire-morph .wf-text{flex:0 0 auto;height:10px;border-radius:5px;background:rgba(255,255,255,.14);}
 .code-wire-morph .wf-cards{display:flex;gap:.6rem;flex:1;}
 .code-wire-morph .wf-cards span{flex:1;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);}
-.code-wire-morph .wf-btn{flex:0 0 auto;width:84px;height:26px;border-radius:6px;background:linear-gradient(90deg,var(--purple),var(--magenta));opacity:.85;}
+.code-wire-morph .wf-btn{flex:0 0 auto;width:84px;height:26px;border-radius:6px;background:linear-gradient(90deg,var(--purple),var(--accent2));opacity:.85;}
 
 /* section-marketing only: a mocked Google ad result crossfades into an analytics
    dashboard as the pin scrubs (see updateSerpMorph in script.js) */
@@ -645,7 +665,7 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
 }
 .serp-dash-morph .dash-bar{
   flex:1;border-radius:5px 5px 0 0;
-  background:linear-gradient(180deg, var(--purple), var(--magenta));
+  background:linear-gradient(180deg, var(--purple),var(--accent2));
   opacity:.85;
   height:0%;
 }
@@ -679,7 +699,7 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
 .feature-card .icon{
   width:44px;height:44px;
   border-radius:12px;
-  background:linear-gradient(135deg,var(--purple),var(--magenta));
+  background:linear-gradient(135deg,var(--purple),var(--accent2));
   margin-bottom:1rem;
   display:flex;
   align-items:center;
@@ -797,7 +817,7 @@ footer::before{
   position:absolute;
   top:0;left:0;right:0;
   height:2px;
-  background:linear-gradient(90deg,transparent,var(--purple),var(--magenta),transparent);
+  background:linear-gradient(90deg,transparent,var(--purple),var(--accent2),transparent);
   opacity:.8;
 }
 footer::after{
@@ -898,6 +918,15 @@ footer::after{
     flex:0 0 100%;
     max-width:100%;
   }
+}
+/* Nízká okna na desktopu (malé notebooky): pinnutý panel nesmí přetéct výšku
+   okna, jinak se horní/spodní část schová pod navbar nebo mimo obrazovku. */
+@media (min-width:992px) and (max-height:780px){
+  .pin-panel p{font-size:1rem;line-height:1.55;}
+  .pin-panel section h2,section.pin-section h2{font-size:clamp(2rem,1.2rem + 2.2vw,2.7rem);margin-bottom:.8rem;}
+  .pin-panel .feature-card{padding:.9rem .9rem;}
+  .pin-panel .feature-card p{font-size:.88rem;}
+  .pin-panel .eyebrow{margin-bottom:.6rem;}
 }
 @media (prefers-reduced-motion: reduce){
   html{scroll-behavior:auto;}

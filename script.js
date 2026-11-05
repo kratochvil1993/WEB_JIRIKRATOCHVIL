@@ -616,8 +616,8 @@
        one most directly tied to visible scroll jank. See weakHardware
        comment near the top of the file. */
     if (!weakHardware) {
-      codeVars.filter = "blur(" + (t * 4) + "px)";
-      wireVars.filter = "blur(" + ((1 - t) * 4) + "px)";
+      codeVars.filter = "blur(" + (t * 2) + "px)";
+      wireVars.filter = "blur(" + ((1 - t) * 2) + "px)";
     }
     gsap.set(morph.code, codeVars);
     gsap.set(morph.wire, wireVars);
@@ -645,8 +645,8 @@
     var dashVars = { opacity: t, y: (1 - t) * 14 };
     /* see updateCodeMorph's weakHardware comment: same reasoning applies here. */
     if (!weakHardware) {
-      serpVars.filter = "blur(" + (t * 4) + "px)";
-      dashVars.filter = "blur(" + ((1 - t) * 4) + "px)";
+      serpVars.filter = "blur(" + (t * 2) + "px)";
+      dashVars.filter = "blur(" + ((1 - t) * 2) + "px)";
     }
     gsap.set(morph.serp, serpVars);
     gsap.set(morph.dash, dashVars);
@@ -684,7 +684,7 @@
     if (el.classList.contains("value-card")) return { y: 90, rotationX: -40, opacity: 0, transformPerspective: 900 };
     if (el.classList.contains("feature-card")) return { y: 70, rotationX: -35, scale: 0.85, opacity: 0, transformPerspective: 900 };
     if (el.tagName === "H2") return { clipPath: "inset(0 100% 0 0)", x: -50, y: 0, opacity: 1 };
-    if (el.classList.contains("eyebrow")) return { x: -30, opacity: 0, letterSpacing: "0.45em" };
+    if (el.classList.contains("eyebrow")) return { x: -30, opacity: 0, letterSpacing: "0.5em" };
     if (el.classList.contains("pill-btn")) return { y: 30, scale: 0.7, opacity: 0 };
     return epicBlur ? { y: 40, opacity: 0, filter: "blur(8px)" } : { y: 40, opacity: 0 };
   }
@@ -692,7 +692,7 @@
     if (el.classList.contains("value-card")) return { y: 0, rotationX: 0, opacity: 1, duration: 0.9, ease: "back.out(1.4)" };
     if (el.classList.contains("feature-card")) return { y: 0, rotationX: 0, scale: 1, opacity: 1, duration: 0.9, ease: "back.out(1.5)" };
     if (el.tagName === "H2") return { clipPath: "inset(0 0% 0 0)", x: 0, duration: 1, ease: "power3.out" };
-    if (el.classList.contains("eyebrow")) return { x: 0, opacity: 1, letterSpacing: "0.15em", duration: 0.8, ease: "power3.out" };
+    if (el.classList.contains("eyebrow")) return { x: 0, opacity: 1, letterSpacing: "0.2em", duration: 0.8, ease: "power3.out" };
     if (el.classList.contains("pill-btn")) return { y: 0, scale: 1, opacity: 1, duration: 0.7, ease: "back.out(1.7)" };
     return epicBlur
       ? { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.8, ease: "power2.out", onComplete: function () { gsap.set(el, { clearProps: "filter" }); } }
@@ -993,6 +993,16 @@
   }
   if (!lowPower) heroTl.eventCallback("onComplete", buildHeroScroll);
 
+  /* Scroll nápověda: zmizí při prvním scrollu, vrátí se na úplném vrcholu */
+  var scrollCue = document.querySelector("#hero .scroll-cue");
+  if (scrollCue && !lowPower) {
+    ScrollTrigger.create({
+      start: 40,
+      onEnter: function () { scrollCue.classList.add("is-hidden"); },
+      onLeaveBack: function () { scrollCue.classList.remove("is-hidden"); }
+    });
+  }
+
   window.addEventListener("load", function () { ScrollTrigger.refresh(); });
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
@@ -1035,7 +1045,7 @@
          element never conflicts with revealIn/revealOut, which only tween
          y/opacity, so no split is needed here (unlike `y`, see comment above). */
       gsap.set(card, { scale: 0.94 + closeness * 0.14 });
-      gsap.set(card.querySelector(".value-card-inner"), { opacity: 0.45 + closeness * 0.55 });
+      gsap.set(card.querySelector(".value-card-inner"), { opacity: 0.6 + closeness * 0.4 });
     });
   }
 
