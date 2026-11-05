@@ -776,8 +776,6 @@
     }
     function onDown(e) {
       if (e.pointerType === "mouse" && e.button !== 0) return;
-      /* rozběhnutý krok autoplaye se doběhne hned, ať jde balíček chytit kdykoli */
-      if (cards._autoTl) { cards._autoTl.progress(1); cards._autoTl = null; }
       tracking = true; dragging = false; dx = 0;
       sx = e.clientX; sy = e.clientY; st = e.timeStamp; pid = e.pointerId;
       clearInterval(timer); timer = null; clearTimeout(resumeT);
@@ -789,6 +787,10 @@
         if (Math.abs(mx) > 8 && Math.abs(mx) > Math.abs(my) * 1.2) {
           dragging = true;
           try { box.setPointerCapture(pid); } catch (err) {}
+          /* rozběhnutý krok autoplaye se doběhne až teď, když je jisté, že jde o
+             vodorovný tah — kdyby se doběhl už při dotyku, "cukl" by balíček i když
+             uživatel jen scrolluje stránku přes fotky */
+          if (cards._autoTl) { cards._autoTl.progress(1); cards._autoTl = null; }
           gsap.killTweensOf(cards[front]);
         } else return;
       }
@@ -978,7 +980,7 @@
   /* Mobil: ghost titulek sekce (nahoře, jako titulek kapitoly) driftuje horizontálně
      podle scrollu a podle rychlosti scrollu se naklání (viz skew ticker dole).
      Cíle skew se sbírají do polí, ať je ticker jeden pro všechny. */
-  var skewGhosts = [], skewHeads = [];
+  var skewGhosts = [], skewHeads = [], ghostFontsRefresh = false;
   function mobileGhost(ghost, section) {
     skewGhosts.push(ghost);
     /* data-wrap (GOOGLE ADS): na mobilu na víc řádků — slova pod sebe, takže se
@@ -1014,7 +1016,10 @@
     }
     fit();
     ScrollTrigger.addEventListener("refreshInit", fit);
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+    if (!ghostFontsRefresh && document.fonts && document.fonts.ready) {
+      ghostFontsRefresh = true;
+      document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+    }
     /* jemný drift ±9 % šířky po dobu, co je titulek v okně; nikdy nevyjede z obrazovky */
     gsap.fromTo(ghost, { x: function () { return document.documentElement.clientWidth * 0.09; } }, {
       x: function () { return -document.documentElement.clientWidth * 0.09; },
@@ -1719,6 +1724,7 @@
       gyroGraphics.push(g);
     });
     var gyroBase = null, gyroRawX = 0, gyroRawY = 0, gyroActive = false, gyroStarted = false;
+    var gyroDirty = true, gyroLastX = 0, gyroLastY = 0;
     var gyroClamp = gsap.utils.clamp(-1, 1);
     var onOrient = function (e) {
       if (e.gamma == null || e.beta == null || window.innerWidth > window.innerHeight) return;
@@ -1736,7 +1742,7 @@
         var io = new IntersectionObserver(function (entries) {
           entries.forEach(function (en) {
             var i = gyroVisible.indexOf(en.target);
-            if (en.isIntersecting && i < 0) gyroVisible.push(en.target);
+            if (en.isIntersecting && i < 0) { gyroVisible.push(en.target); gyroDirty = true; }
             else if (!en.isIntersecting && i >= 0) {
               gyroVisible.splice(i, 1);
               gsap.set(en.target, { rotationX: 0, rotationY: 0 });
@@ -1755,6 +1761,10 @@
           gyroActive = true;
           document.documentElement.classList.add("gyro-on");
         }
+        /* zapisovat jen když se náklon změnil (nebo grafika právě vjela do okna) —
+           v klidu by se jinak každý snímek zbytečně přepisovaly styly */
+        if (!gyroDirty && Math.abs(tilt.x - gyroLastX) < 0.0005 && Math.abs(tilt.y - gyroLastY) < 0.0005) return;
+        gyroDirty = false; gyroLastX = tilt.x; gyroLastY = tilt.y;
         gyroVisible.forEach(function (g) {
           gsap.set(g, { rotationY: tilt.x * 9, rotationX: -tilt.y * 9, transformPerspective: 900 });
           g.style.setProperty("--gx", (tilt.x * 16).toFixed(1) + "px");
@@ -1806,11 +1816,19 @@
       fxCards.forEach(function (c) { c.vis = true; });
     }
     gsap.ticker.add(function () {
-      var vh = window.innerHeight;
-      fxCards.forEach(function (c) {
-        if (!c.vis) return;
+      var half = window.innerHeight / 2, nrms = [], i, c;
+      /* nejdřív všechna čtení, pak zápisy — střídání po kartách by vynutilo
+         přepočet layoutu pro každou kartu v každém snímku */
+      for (i = 0; i < fxCards.length; i++) {
+        c = fxCards[i];
+        if (!c.vis) { nrms[i] = null; continue; }
         var r = c.ref.getBoundingClientRect();
-        var nrm = ((r.top + r.height / 2) - vh / 2) / (vh / 2);
+        nrms[i] = ((r.top + r.height / 2) - half) / half;
+      }
+      for (i = 0; i < fxCards.length; i++) {
+        c = fxCards[i];
+        var nrm = nrms[i];
+        if (nrm === null) continue;
         if (c.drum) {
           var want = gsap.utils.clamp(-26, 26, -Math.sign(nrm) * Math.max(0, Math.abs(nrm) - 0.2) * 28);
           var prev = c.rot;
@@ -1819,7 +1837,7 @@
           if (c.rot !== prev) gsap.set(c.el, { rotationX: c.rot });
         }
         /* během klepnutí drží glow pod prstem (viz tap feedback), neměnit */
-        if (c.el.classList.contains("is-pressed")) return;
+        if (c.el.classList.contains("is-pressed")) continue;
         var g = Math.max(0, 1 - Math.abs(nrm) * 1.15);
         var mx = 50 + tilt.x * 45 + nrm * 18, my = 50 + nrm * 70;
         if (Math.abs(g - c.glare) > 0.01) { c.glare = g; c.el.style.setProperty("--glare", g.toFixed(2)); }
@@ -1828,7 +1846,7 @@
           c.el.style.setProperty("--mx", mx.toFixed(1) + "%");
           c.el.style.setProperty("--my", my.toFixed(1) + "%");
         }
-      });
+      }
     });
   }
 
