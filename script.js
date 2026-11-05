@@ -249,6 +249,7 @@
      via setTimeout so hero content is never stuck invisible */
   setTimeout(function () {
     if (heroTl.progress() < 1) heroTl.progress(1);
+    if (mobileFx) buildHeroScrollMobile(); /* progress(1) nemusí vyvolat onComplete */
   }, 1600);
 
   /* ---------------- Hero graphic: type-in code, then loop between two code variants ----------------
@@ -668,13 +669,13 @@
      so consecutive cards crossfade/swap in the same window. */
   function cardStackedPose(i) {
     var dir = i % 2 === 0 ? 1 : -1;
-    return { opacity: 1, y: 12 + i * 12, rotate: dir * (5 + i * 3), scale: 0.94 - i * 0.06 };
+    return { opacity: 1, x: 0, y: 12 + i * 12, rotate: dir * (5 + i * 3), scale: 0.94 - i * 0.06 };
   }
   function cardFrontPose() {
-    return { opacity: 1, y: 0, rotate: 0, scale: 0.94 };
+    return { opacity: 1, x: 0, y: 0, rotate: 0, scale: 0.94 };
   }
   function cardExitPose() {
-    return { opacity: 0, y: -80, rotate: -12, scale: 0.86 };
+    return { opacity: 0, x: 0, y: -80, rotate: -12, scale: 0.86 };
   }
   /* Mobile has no scroll-scrub to drive updateCardStack, so the fanned photos
      would otherwise sit frozen on card 0 forever. Autoplay rotates the "front"
@@ -686,13 +687,27 @@
   function startCardAutoplay(cards, interval) {
     var n = cards.length;
     if (n < 2) return null;
-    var front = 0;
+    var front = 0, timer = null, resumeT = null;
+    var box = cards[0].parentNode;
     function offsetOf(i, idx) { return (i - idx + n) % n; }
     function poseFor(offset) { return offset === 0 ? cardFrontPose() : cardStackedPose(offset - 1); }
     function killTl() { if (cards._autoTl) { cards._autoTl.kill(); cards._autoTl = null; } }
+    /* Tečky pod balíčkem: ukazují, kolikátá fotka je vpředu (a naznačují, že je
+       to balíček, který jde listovat). Vytvoří se jednou, při dalších startech se
+       jen přepínají. */
+    if (!box._dots) {
+      var wrap = document.createElement("div");
+      wrap.className = "deck-dots";
+      wrap.setAttribute("aria-hidden", "true");
+      box._dots = [];
+      for (var d = 0; d < n; d++) { var dot = document.createElement("i"); wrap.appendChild(dot); box._dots.push(dot); }
+      box.appendChild(wrap);
+    }
+    function updateDots() { box._dots.forEach(function (dot, i) { dot.classList.toggle("is-on", i === front); }); }
     /* Úvodní seskládání balíčku. */
     function setup(idx) {
       killTl();
+      updateDots();
       cards.forEach(function (card, i) {
         var o = offsetOf(i, idx);
         gsap.set(card, { zIndex: n - o });
@@ -701,15 +716,17 @@
         gsap.to(card, pose);
       });
     }
-    /* Jeden krok: přední fotka odletí nahoru a zmizí (zůstává nad všemi), ostatní
-       se posunou o místo dopředu, a teprve až je odlétnutá karta neviditelná, tiše
-       se přesune úplně dozadu a vyplave. Dřív se z-index všech karet přepsal na
-       začátku přechodu, zatímco byly plně viditelné — stará přední fotka tím
-       skokem "spadla" pod ostatní, což vypadalo jako probliknutí. Z-index
-       viditelné karty se teď nikdy nemění tak, aby se změnilo pořadí překrytí. */
-    function advance() {
+    /* Jeden krok: přední fotka odletí (nahoru při autoplayi, do strany při swipu)
+       a zmizí (zůstává nad všemi), ostatní se posunou o místo dopředu, a teprve až
+       je odlétnutá karta neviditelná, tiše se přesune úplně dozadu a vyplave. Dřív
+       se z-index všech karet přepsal na začátku přechodu, zatímco byly plně
+       viditelné — stará přední fotka tím skokem "spadla" pod ostatní, což vypadalo
+       jako probliknutí. Z-index viditelné karty se teď nikdy nemění tak, aby se
+       změnilo pořadí překrytí. dir = ±1 → odlet do strany (swipe). */
+    function advance(dir) {
       var old = front;
       front = (front + 1) % n;
+      updateDots();
       killTl();
       var tl = gsap.timeline();
       cards._autoTl = tl;
@@ -722,16 +739,108 @@
         pose.duration = 0.8; pose.ease = "power2.inOut";
         tl.to(card, pose, 0);
       });
-      var exit = cardExitPose();
-      exit.duration = 0.55; exit.ease = "power2.in";
+      var exit = dir ? { opacity: 0, x: dir * 380, y: -24, rotate: dir * 22, scale: 0.9 } : cardExitPose();
+      exit.duration = dir ? 0.42 : 0.55; exit.ease = "power2.in";
       tl.to(cards[old], exit, 0);
       var back = cardStackedPose(n - 2);
       back.opacity = 0; back.zIndex = 1;
       tl.set(cards[old], back);
       tl.to(cards[old], { opacity: 1, duration: 0.5, ease: "power1.out" });
     }
+    function autoStep() { advance(); }
+    function startTimer() { clearInterval(timer); timer = setInterval(autoStep, interval || 3200); }
+    function scheduleResume(ms) {
+      clearTimeout(resumeT);
+      resumeT = setTimeout(startTimer, ms);
+    }
+
+    /* Swipe: přední karta jde za prstem (x + náklon), ostatní se úměrně posunou
+       dopředu; po puštění buď odletí (dost daleko/rychle), nebo se pružně vrátí.
+       Vodorovné tažení řeší pointer events, svislé nechává prohlížeči
+       (touch-action: pan-y), takže se stránka dál scrolluje. Autoplay se při
+       dotyku zastaví a po pár vteřinách klidu naběhne znovu. */
+    var tracking = false, dragging = false, sx = 0, sy = 0, st = 0, dx = 0, pid = null;
+    function settleOthers(dur) {
+      cards.forEach(function (card, i) {
+        if (i === front) return;
+        var pose = poseFor(offsetOf(i, front));
+        pose.duration = dur; pose.ease = "power2.out"; pose.overwrite = "auto";
+        gsap.to(card, pose);
+      });
+    }
+    function snapBack() {
+      var pose = cardFrontPose();
+      pose.duration = 0.55; pose.ease = "back.out(1.8)"; pose.overwrite = "auto";
+      gsap.to(cards[front], pose);
+      settleOthers(0.4);
+    }
+    function onDown(e) {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      /* rozběhnutý krok autoplaye se doběhne hned, ať jde balíček chytit kdykoli */
+      if (cards._autoTl) { cards._autoTl.progress(1); cards._autoTl = null; }
+      tracking = true; dragging = false; dx = 0;
+      sx = e.clientX; sy = e.clientY; st = e.timeStamp; pid = e.pointerId;
+      clearInterval(timer); timer = null; clearTimeout(resumeT);
+    }
+    function onMove(e) {
+      if (!tracking || e.pointerId !== pid) return;
+      var mx = e.clientX - sx, my = e.clientY - sy;
+      if (!dragging) {
+        if (Math.abs(mx) > 8 && Math.abs(mx) > Math.abs(my) * 1.2) {
+          dragging = true;
+          try { box.setPointerCapture(pid); } catch (err) {}
+          gsap.killTweensOf(cards[front]);
+        } else return;
+      }
+      dx = mx;
+      var p = Math.min(Math.abs(dx) / 140, 1) * 0.6;
+      gsap.set(cards[front], { x: dx, y: -Math.abs(dx) * 0.05, rotate: gsap.utils.clamp(-22, 22, dx * 0.07) });
+      cards.forEach(function (card, i) {
+        if (i === front) return;
+        var o = offsetOf(i, front);
+        gsap.set(card, blendPose(poseFor(o), poseFor(o - 1), p));
+      });
+    }
+    function onUp(e) {
+      if (!tracking || e.pointerId !== pid) return;
+      tracking = false;
+      if (!dragging) { scheduleResume(1500); return; }
+      dragging = false;
+      var v = Math.abs(dx) / Math.max(e.timeStamp - st, 1);
+      if (Math.abs(dx) > 70 || (v > 0.5 && Math.abs(dx) > 30)) {
+        advance(dx > 0 ? 1 : -1);
+        scheduleResume(4500);
+      } else {
+        snapBack();
+        scheduleResume(3500);
+      }
+    }
+    function onCancel(e) {
+      if (!tracking || e.pointerId !== pid) return;
+      tracking = false;
+      if (dragging) { dragging = false; snapBack(); }
+      scheduleResume(2500);
+    }
+    box.style.touchAction = "pan-y";
+    box.addEventListener("pointerdown", onDown);
+    box.addEventListener("pointermove", onMove);
+    box.addEventListener("pointerup", onUp);
+    box.addEventListener("pointercancel", onCancel);
+
     setup(front);
-    return setInterval(advance, interval || 3200);
+    startTimer();
+    return {
+      stop: function () {
+        clearInterval(timer); clearTimeout(resumeT);
+        box.removeEventListener("pointerdown", onDown);
+        box.removeEventListener("pointermove", onMove);
+        box.removeEventListener("pointerup", onUp);
+        box.removeEventListener("pointercancel", onCancel);
+        box.style.touchAction = "";
+        tracking = false; dragging = false;
+        killTl();
+      }
+    };
   }
   function blendPose(a, b, t) {
     var out = {};
@@ -1029,7 +1138,7 @@
              auto-rotating carousel, per WCAG's "pause, stop, hide" guidance on
              auto-updating content. */
           if (cards.length && isMobile && !reduceMotion && !autoplayInterval) {
-            autoplayInterval = startCardAutoplay(cards, 1500);
+            autoplayInterval = startCardAutoplay(cards, 2600);
           }
           if (codeMorph) {
             if (isMobile && !reduceMotion) { if (!codeLoopTween) codeLoopTween = startCodeMorphLoop(); }
@@ -1055,7 +1164,7 @@
         }
         if (el === graphic) {
           drawSymbolOut(symbolEntries); drawAccentsOut(accentDots);
-          if (autoplayInterval) { clearInterval(autoplayInterval); autoplayInterval = null; }
+          if (autoplayInterval) { autoplayInterval.stop(); autoplayInterval = null; }
           if (cards._autoTl) { cards._autoTl.kill(); cards._autoTl = null; }
           if (codeLoopTween) { codeLoopTween.kill(); codeLoopTween = null; }
           if (serpLoopTween) { serpLoopTween.kill(); serpLoopTween = null; }
@@ -1318,6 +1427,67 @@
   }
   if (!lowPower) heroTl.eventCallback("onComplete", buildHeroScroll);
 
+  /* Mobil: odjezd hera při scrollu (obdoba desktopové scény, ale BEZ pinu).
+     Pin na mobilu zlobí (schovávající se adresní řádek, hrubé hlášení scrollu,
+     špatný stav po reloadu uprostřed stránky), proto hero odjíždí normálně a
+     scrubovaná časová osa k tomu přidává rozlet písmen, různé směry ostatních
+     prvků, průlet mini kódu a výbuch částic. Přirozený scroll a přidaný pohyb se
+     sčítají, takže odjezd působí rychleji a dramatičtěji. Vyhlazení progresu je
+     stejné jako na desktopu (manuální gsap.to) — zakrývá hrubé hlášení scrollu.
+     Jen transform/opacity, žádný blur (na středních telefonech se sekal). Staví
+     se až po dokončení intra: oba animují stejné vlastnosti písmen. */
+  var heroScrollMobileBuilt = false;
+  function buildHeroScrollMobile() {
+    if (heroScrollMobileBuilt || !heroChars.length) return;
+    heroScrollMobileBuilt = true;
+    var h1 = document.querySelector("#hero h1");
+    var tl = gsap.timeline({ paused: true, defaults: { ease: "power2.in" } });
+    var box = null;
+    function center(i) {
+      if (!box) box = h1.getBoundingClientRect();
+      var r = heroChars[i].getBoundingClientRect();
+      return { dx: (r.left + r.width / 2) - (box.left + box.width / 2),
+               dy: (r.top + r.height / 2) - (box.top + box.height / 2) };
+    }
+    tl.to(heroChars, {
+      x: function (i) { return center(i).dx * 1.1 + gsap.utils.random(-50, 50); },
+      y: function (i) { return center(i).dy * 1.1 + gsap.utils.random(-170, 70); },
+      rotation: function () { return gsap.utils.random(-130, 130); },
+      scale: function () { return gsap.utils.random(0.5, 1.7); },
+      opacity: 0, duration: 0.6,
+      stagger: { amount: 0.15, from: "center" }
+    }, 0)
+      .to("#hero p.eyebrow", { y: -50, x: -30, opacity: 0, duration: 0.35 }, 0)
+      .to("#hero .role-line", { y: -80, x: -50, opacity: 0, duration: 0.45 }, 0.04)
+      .to("#hero .lead-text", { y: -60, x: 50, opacity: 0, duration: 0.45 }, 0.08)
+      .to("#hero .hero-contact", { y: 70, x: -40, opacity: 0, duration: 0.45 }, 0.04)
+      .to("#hero .pill-btn", { y: 100, opacity: 0, duration: 0.45 }, 0.08)
+      /* mini kód: zvětšení + 3D náklon + průlet přes obrazovku */
+      .to("#hero .hero-mini-code", {
+        scale: 1.9, rotationY: -30, rotationX: 10, x: -30, y: -90, transformPerspective: 700,
+        ease: "power1.in", duration: 0.85
+      }, 0)
+      .to("#hero .hero-mini-code", { opacity: 0, ease: "power1.in", duration: 0.3 }, 0.55)
+      /* celý obsah: zoom dopředu a závěrečné zmizení */
+      .to("#hero > .container", { scale: 1.1, ease: "none", duration: 1 }, 0)
+      .to("#hero > .container", { opacity: 0, ease: "power1.in", duration: 0.2 }, 0.8)
+      /* částice: výbuch od středu a dozvuk */
+      .to(heroFx, { burst: 1, ease: "none", duration: 0.5 }, 0)
+      .to(heroFx, { burst: 0, ease: "none", duration: 0.5 }, 0.5);
+    var st = ScrollTrigger.create({
+      trigger: "#hero",
+      start: "top top",
+      end: function () { return "+=" + Math.round(document.getElementById("hero").offsetHeight * 0.62); },
+      invalidateOnRefresh: true,
+      onUpdate: function (self) {
+        gsap.to(tl, { progress: self.progress, duration: 0.6, ease: "power3.out", overwrite: true });
+      }
+    });
+    /* srovnat s aktuální pozicí (reload uprostřed stránky), bez vyhlazení */
+    tl.progress(st.progress);
+  }
+  if (mobileFx) heroTl.eventCallback("onComplete", buildHeroScrollMobile);
+
   /* Scroll nápověda: zmizí při prvním scrollu, vrátí se na úplném vrcholu */
   var scrollCue = document.querySelector("#hero .scroll-cue");
   if (scrollCue && !lowPower) {
@@ -1388,11 +1558,33 @@
       onEnter: function () { revealIn(valuesPlain); },
       once: true
     });
-    valuesCards.forEach(function (card) { card.classList.add("is-active"); });
+    if (!stackMode) valuesCards.forEach(function (card) { card.classList.add("is-active"); });
     if (valuesH2) mobileWipe(valuesH2);
     if (valuesGhost && mobileFx) mobileGhost(valuesGhost, valuesSection);
     if (stackMode) {
       valuesSection.classList.add("values-stack");
+      /* Aktivní je poslední karta, která už vyjela do horní poloviny okna (zpět při
+         scrollu nahoru se přepne o kartu dřív): přepíná glow rámečku i vyplnění
+         čísla (CSS) a ikona při tom "poskočí". */
+      var vcActive = -1;
+      ScrollTrigger.create({
+        trigger: "#valuesGrid", start: "top bottom", end: "bottom top",
+        onUpdate: function () {
+          var idx = -1;
+          valuesCards.forEach(function (card, i) {
+            if (card.parentElement.getBoundingClientRect().top < window.innerHeight * 0.55) idx = i;
+          });
+          if (idx === vcActive) return;
+          vcActive = idx;
+          valuesCards.forEach(function (card, i) {
+            var on = i === idx;
+            if (on && !card.classList.contains("is-active")) {
+              gsap.fromTo(card.querySelector(".icon"), { scale: 0.65, rotate: -14 }, { scale: 1, rotate: 0, duration: 0.6, ease: "back.out(2.2)", overwrite: true });
+            }
+            card.classList.toggle("is-active", on);
+          });
+        }
+      });
       valuesCards.forEach(function (card, i) {
         var next = valuesCards[i + 1];
         if (!next) return;

@@ -410,6 +410,11 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
   align-items:center;
   overflow:clip; /* zvětšená grafika/zoom při pinu nesmí vytékat z hera */
 }
+/* Mobil: po odjezdu obsahu hera (scrub ze script.js) by zbyl prázdný pruh, než
+   přijede další sekce — zkrátit ho. Jen bez reduced-motion, kde se obsah nemaže. */
+@media (max-width:991.98px) and (prefers-reduced-motion:no-preference){
+  #hero{margin-bottom:-10vh;}
+}
 /* Scroll nápověda pod hero — zmizí při prvním scrollu (script.js), jen desktop */
 .scroll-cue{
   position:absolute;left:50%;bottom:2rem;transform:translateX(-50%);
@@ -681,6 +686,20 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
   width:100%;height:100%;
   object-fit:cover;
 }
+/* Tečky pod balíčkem fotek (vytváří script.js jen na mobilu při autoplayi) */
+.deck-dots{
+  position:absolute;left:0;right:0;bottom:10px;z-index:20;
+  display:flex;justify-content:center;gap:6px;pointer-events:none;
+}
+.deck-dots i{
+  width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.4);
+  transition:width .3s ease,background .3s ease;
+}
+.deck-dots i.is-on{width:18px;background:#fff;}
+/* Balíček fotek se listuje tažením: obrázky nesmí spustit nativní drag/ukládání
+   (rušilo by pointer události) ani iOS menu při podržení. */
+.pin-graphic-cards{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+.pin-graphic-cards img{pointer-events:none;-webkit-user-drag:none;user-drag:none;}
 .pin-graphic-cards .photo-card{
   position:absolute;inset:0;
   border-radius:18px;
@@ -1126,6 +1145,21 @@ footer::after{
   #section-values.values-stack .value-card{
     background:rgba(255,255,255,.06);
     -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  }
+  /* Číslo 01–04 v rohu karty: obrysové, a jakmile je karta nahoře (.is-active,
+     přepíná script.js podle scrollu), vyplní se barvou. */
+  #section-values.values-stack #valuesGrid{counter-reset:vc;}
+  #section-values.values-stack #valuesGrid > div{counter-increment:vc;}
+  #section-values.values-stack .value-card::after{
+    content:counter(vc,decimal-leading-zero);
+    position:absolute;top:.6rem;right:1rem;
+    font-size:2.5rem;font-weight:800;line-height:1;letter-spacing:-.03em;
+    color:transparent;-webkit-text-stroke:1.2px rgba(255,255,255,.22);
+    transition:color .45s ease,-webkit-text-stroke-color .45s ease;
+    pointer-events:none;
+  }
+  #section-values.values-stack .value-card.is-active::after{
+    color:rgba(var(--magenta-rgb),.9);-webkit-text-stroke-color:transparent;
   }
 }
 .feature-card.is-pressed::before{opacity:1;}
