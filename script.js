@@ -517,6 +517,10 @@
   /* Krátká vlna částic při vstupu do sekce (viz pulse()). Oddělená od heroFx,
      aby gsap overwrite nezabil scrub tweeny hera. */
   var pulseFx = { v: 0 };
+  /* Náklon telefonu (gyro, jen mobil; viz blok "Gyro parallax" dole). x/y jsou
+     vyhlazené hodnoty -1…1, px/py předchozí snímek — částice se posouvají o
+     rozdíl, takže se po vrácení telefonu vrátí na původní místo. */
+  var tilt = { x: 0, y: 0, px: 0, py: 0 };
   /* Částice reagují na scroll: každá se (podle velikosti ≈ "hloubky") posouvá proti
      směru scrollu jinou rychlostí a rychlý scroll navíc zrychlí drift. Vypnuto
      při prefers-reduced-motion. */
@@ -535,8 +539,11 @@
     lastScrollY = sy;
     scrollVel += (Math.abs(dy) - scrollVel) * 0.12;
     var boost = 1 + burst * 5 + Math.min(scrollVel / 14, 3.5);
+    var tdx = (tilt.x - tilt.px) * W * 0.16, tdy = (tilt.y - tilt.py) * H * 0.16;
+    tilt.px = tilt.x; tilt.py = tilt.y;
     particles.forEach(function (p, idx) {
       if (dy) p.y -= dy * (0.06 + p.size * 0.07);
+      if (tdx || tdy) { var depth = 0.3 + p.size * 0.35; p.x -= tdx * depth; p.y -= tdy * depth; }
       if (burst > 0.001) {
         p.vx += (p.x - W / 2) / W * burst * 0.12;
         p.vy += (p.y - H / 2) / H * burst * 0.12;
@@ -854,7 +861,55 @@
      animace při přijíždění nadpisu trhala. Teď je to jednorázová časová
      animace spuštěná při vstupu (a plynule vrácená při scrollu zpět), která
      na škubání scrollu nezávisí. */
+  /* Mobil: ghost titulek sekce (nahoře, jako titulek kapitoly) driftuje horizontálně
+     podle scrollu a podle rychlosti scrollu se naklání (viz skew ticker dole).
+     Cíle skew se sbírají do polí, ať je ticker jeden pro všechny. */
+  var skewGhosts = [], skewHeads = [];
+  function mobileGhost(ghost, section) {
+    skewGhosts.push(ghost);
+    /* data-wrap (GOOGLE ADS): na mobilu na víc řádků — slova pod sebe, takže se
+       dopočítá větší písmo. Jen DOM na mobilu, desktop zůstává jednořádkový. */
+    var lines = 1;
+    if (ghost.hasAttribute("data-wrap") && !ghost.querySelector("span")) {
+      var words = ghost.textContent.trim().split(/\s+/);
+      lines = words.length;
+      ghost.textContent = "";
+      var wrap = document.createElement("span");
+      words.forEach(function (w, i) {
+        if (i) wrap.appendChild(document.createElement("br"));
+        wrap.appendChild(document.createTextNode(w));
+      });
+      ghost.appendChild(wrap);
+    } else if (ghost.querySelector("span")) {
+      lines = ghost.querySelectorAll("br").length + 1;
+    }
+    /* pivot skew na spodku boxu (= základna písmen) */
+    gsap.set(ghost, { transformOrigin: "50% 100%" });
+    /* Titulek se vždy vejde celý: velikost písma se dopočítá tak, aby nápis zabral
+       ~78 % šířky okna (kratší slova jsou větší, dlouhé menší). Dřív se posouval
+       přes okraj a z "WEB" zbylo čitelné jen "EB". Nad obsahem
+       dostane sekce místo (padding-top), ať ho nepřekrývá eyebrow/h2. Přepočítává
+       se při refreshi. */
+    function fit() {
+      ghost.style.fontSize = "100px";
+      var r = document.createRange(); r.selectNodeContents(ghost);
+      var w = r.getBoundingClientRect().width || 1;
+      var size = Math.max(44, Math.min(150, 100 * document.documentElement.clientWidth * 0.78 / w));
+      ghost.style.fontSize = size.toFixed(1) + "px";
+      section.style.paddingTop = Math.ceil(size * (lines > 1 ? 0.96 * lines : 0.8) + 24 + 22) + "px";
+    }
+    fit();
+    ScrollTrigger.addEventListener("refreshInit", fit);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+    /* jemný drift ±9 % šířky po dobu, co je titulek v okně; nikdy nevyjede z obrazovky */
+    gsap.fromTo(ghost, { x: function () { return document.documentElement.clientWidth * 0.09; } }, {
+      x: function () { return -document.documentElement.clientWidth * 0.09; },
+      ease: "none",
+      scrollTrigger: { trigger: ghost, start: "top bottom", end: "bottom top", scrub: 0.8, invalidateOnRefresh: true }
+    });
+  }
   function mobileWipe(h2) {
+    skewHeads.push(h2);
     gsap.set(h2, { clipPath: "inset(0 100% 0 0)", x: -24 });
     ScrollTrigger.create({
       trigger: h2,
@@ -1012,6 +1067,7 @@
       if (mobileFx) {
         /* nadpis: wipe zleva (časová animace spuštěná při vstupu, viz mobileWipe) */
         mobH2.forEach(mobileWipe);
+        if (ghost) mobileGhost(ghost, section);
         if (mobCards.length) {
           var cardsIn = function (batch) { gsap.to(batch, { y: 0, opacity: 1, duration: 0.9, ease: "power3.out", stagger: 0.14, overwrite: "auto" }); };
           ScrollTrigger.batch(mobCards, {
@@ -1334,6 +1390,7 @@
     });
     valuesCards.forEach(function (card) { card.classList.add("is-active"); });
     if (valuesH2) mobileWipe(valuesH2);
+    if (valuesGhost && mobileFx) mobileGhost(valuesGhost, valuesSection);
     if (stackMode) {
       valuesSection.classList.add("values-stack");
       valuesCards.forEach(function (card, i) {
@@ -1441,6 +1498,98 @@
       gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.5, ease: "power2.out" });
     });
   });
+
+  /* ---------------- Mobil: skew podle rychlosti scrollu ----------------
+     Ghost titulky a h2 se při rychlém scrollu nakloní proti směru a po zastavení
+     se pružně narovnají ("tekutý" pocit). Jen transform; ticker nic nezapisuje,
+     dokud se skew nemění. */
+  if (mobileFx && (skewGhosts.length || skewHeads.length)) {
+    var skLastY = window.pageYOffset || 0, skVel = 0, skCur = 0;
+    gsap.ticker.add(function () {
+      var y = window.pageYOffset || 0;
+      skVel += ((y - skLastY) - skVel) * 0.14;
+      skLastY = y;
+      var target = gsap.utils.clamp(-1, 1, skVel / 45);
+      if (Math.abs(target - skCur) < 0.002 && Math.abs(skCur) < 0.002) return;
+      skCur += (target - skCur) * 0.35;
+      if (Math.abs(skCur) < 0.002) skCur = 0;
+      skewGhosts.forEach(function (el) { gsap.set(el, { skewX: skCur * -12 }); });
+      skewHeads.forEach(function (el) { gsap.set(el, { skewY: skCur * -1.5 }); });
+    });
+  }
+
+  /* ---------------- Mobil: gyro parallax ----------------
+     Náklon telefonu naklání grafiky sekcí (3D), posouvá jejich vrstvy proti sobě
+     (symbol vs. blob/mřížka přes CSS proměnné) a částice na pozadí (tilt, viz
+     drawParticles). Android posílá deviceorientation rovnou; iOS vyžaduje svolení
+     z gesta, proto se ptá až při prvním klepnutí mimo odkazy a formulář (při
+     zamítnutí se nic neděje). Nulová poloha se pomalu přesouvá k aktuálnímu
+     náklonu, takže nezáleží, v jakém úhlu telefon zrovna držíš. */
+  if (mobileFx && "DeviceOrientationEvent" in window && window.matchMedia("(pointer: coarse)").matches) {
+    var gyroGraphics = [], gyroVisible = [];
+    gsap.utils.toArray("section.pin-section .pin-graphic").forEach(function (g) {
+      if (g.classList.contains("hero-graphic")) return;
+      gyroGraphics.push(g);
+    });
+    var gyroBase = null, gyroRawX = 0, gyroRawY = 0, gyroActive = false, gyroStarted = false;
+    var gyroClamp = gsap.utils.clamp(-1, 1);
+    var onOrient = function (e) {
+      if (e.gamma == null || e.beta == null || window.innerWidth > window.innerHeight) return;
+      if (!gyroBase) gyroBase = { g: e.gamma, b: e.beta };
+      gyroRawX = gyroClamp((e.gamma - gyroBase.g) / 22);
+      gyroRawY = gyroClamp((e.beta - gyroBase.b) / 22);
+      gyroBase.g += (e.gamma - gyroBase.g) * 0.004;
+      gyroBase.b += (e.beta - gyroBase.b) * 0.004;
+    };
+    var gyroStart = function () {
+      if (gyroStarted) return;
+      gyroStarted = true;
+      window.addEventListener("deviceorientation", onOrient, { passive: true });
+      if ("IntersectionObserver" in window) {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            var i = gyroVisible.indexOf(en.target);
+            if (en.isIntersecting && i < 0) gyroVisible.push(en.target);
+            else if (!en.isIntersecting && i >= 0) {
+              gyroVisible.splice(i, 1);
+              gsap.set(en.target, { rotationX: 0, rotationY: 0 });
+            }
+          });
+        });
+        gyroGraphics.forEach(function (g) { io.observe(g); });
+      } else {
+        gyroVisible = gyroGraphics.slice();
+      }
+      gsap.ticker.add(function () {
+        tilt.x += (gyroRawX - tilt.x) * 0.08;
+        tilt.y += (gyroRawY - tilt.y) * 0.08;
+        if (!gyroActive) {
+          if (Math.abs(tilt.x) + Math.abs(tilt.y) < 0.01) return;
+          gyroActive = true;
+          document.documentElement.classList.add("gyro-on");
+        }
+        gyroVisible.forEach(function (g) {
+          gsap.set(g, { rotationY: tilt.x * 9, rotationX: -tilt.y * 9, transformPerspective: 900 });
+          g.style.setProperty("--gx", (tilt.x * 16).toFixed(1) + "px");
+          g.style.setProperty("--gy", (tilt.y * 16).toFixed(1) + "px");
+          g.style.setProperty("--bx", (tilt.x * -14).toFixed(1) + "px");
+          g.style.setProperty("--by", (tilt.y * -14).toFixed(1) + "px");
+        });
+      });
+    };
+    var DOE = window.DeviceOrientationEvent;
+    if (typeof DOE.requestPermission === "function") {
+      var asked = false;
+      document.addEventListener("click", function askGyro(e) {
+        if (asked || (e.target.closest && e.target.closest("a, button, input, textarea, label, select, form"))) return;
+        asked = true;
+        document.removeEventListener("click", askGyro);
+        DOE.requestPermission().then(function (state) { if (state === "granted") gyroStart(); }).catch(function () {});
+      });
+    } else {
+      gyroStart();
+    }
+  }
 
   /* ---------------- Mobil: zpětná vazba při klepnutí ----------------
      Tlačítka a karty se při doteku zmenší a rozsvítí glow v místě prstu

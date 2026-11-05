@@ -646,7 +646,21 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
   color:transparent;-webkit-text-stroke:1.5px rgba(var(--purple-rgb),.14);
   will-change:transform;
 }
-@media (max-width:991.98px),(prefers-reduced-motion:reduce){.section-ghost{display:none;}}
+/* Mobil: ghost titulek zůstává, ale menší — script.js (mobileGhost) ho posouvá
+   podle scrollu a naklání podle jeho rychlosti. Reduced-motion ho skrývá. */
+@media (max-width:991.98px){
+  .section-ghost{
+    inset:1.5rem 0 auto 0;height:auto;margin-bottom:0; /* nahoře: titulek kapitoly nad sekcí */
+    justify-content:center; /* střed = drift ±10 % nikdy neořízne okraj */
+    text-align:center;
+    font-size:6rem; /* přepíše script.js (fit na šířku okna) */
+    line-height:.8;
+    -webkit-text-stroke:2px rgba(var(--purple-rgb),.26);
+  }
+  /* víceřádkový ghost (data-wrap): větší řádkování, ať se obrysy řádků nedotýkají */
+  .section-ghost > span{line-height:.96;}
+}
+@media (prefers-reduced-motion:reduce){.section-ghost{display:none;}}
 .pin-graphic{
   position:relative;
   height:360px;
@@ -684,7 +698,8 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
 }
 .pin-graphic .pin-symbol{
   position:absolute;top:50%;left:50%;
-  transform:translate(-50%,-50%);
+  /* --gx/--gy: gyro parallax (script.js, jen mobil); bez nich 0 = beze změny */
+  transform:translate(calc(-50% + var(--gx,0px)),calc(-50% + var(--gy,0px)));
   width:160px;height:160px;
   pointer-events:none;
 }
@@ -1061,6 +1076,15 @@ footer::after{
     max-width:100%;
   }
 }
+/* Gyro parallax (třídu gyro-on dává script.js na <html>): pozadí grafiky
+   (blob + mřížka) jede opačně než symbol, proto je o rezervu větší, aby při
+   posunu nebyl vidět okraj. */
+.gyro-on .pin-graphic .blob,
+.gyro-on .pin-graphic .grid-lines{
+  inset:-26px;
+  transform:translate(var(--bx,0px),var(--by,0px));
+  will-change:transform;
+}
 /* Nízká okna na desktopu (malé notebooky): pinnutý panel nesmí přetéct výšku
    okna, jinak se horní/spodní část schová pod navbar nebo mimo obrazovku. */
 @media (min-width:992px) and (max-height:830px){
@@ -1092,7 +1116,7 @@ footer::after{
    jen při mobileFx a šířce ≤767px). overflow:visible je nutné — overflow:hidden
    na .pin-section by z něj udělalo scroll kontejner a sticky by nefungoval. */
 @media (max-width:767.98px){
-  #section-values.values-stack{overflow:visible;}
+  #section-values.values-stack{overflow:visible;overflow-x:clip;}
   #section-values.values-stack #valuesGrid > div{position:sticky;top:5.5rem;}
   #section-values.values-stack #valuesGrid > div:nth-child(2){top:6.6rem;}
   #section-values.values-stack #valuesGrid > div:nth-child(3){top:7.7rem;}
@@ -1137,6 +1161,13 @@ footer::after{
 }
 .copy-btn:hover,.copy-btn:focus-visible{border-color:var(--magenta);color:var(--purple);background:rgba(var(--magenta-rgb),.12);}
 .copy-btn.is-copied{border-color:var(--purple);color:var(--purple);}
+/* Mobil: tlačítko kopírování pod číslem/e-mailem a menší; klepací plocha zůstává
+   ~44 px (neviditelný ::after), ať se do něj dá trefit palcem. */
+@media (max-width:991.98px){
+  .contact-card p.has-copy{flex-direction:column;gap:.45rem;}
+  .copy-btn{width:26px;height:26px;font-size:.72rem;position:relative;}
+  .copy-btn::after{content:"";position:absolute;inset:-9px;}
+}
 #copyToast{
   position:fixed;left:50%;top:4.6rem;z-index:1300;
   transform:translate(-50%,-12px);opacity:0;pointer-events:none;
