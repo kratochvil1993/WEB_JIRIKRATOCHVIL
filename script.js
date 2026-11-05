@@ -5,6 +5,10 @@
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var isMobile = window.matchMedia("(max-width: 991px)").matches;
   var lowPower = reduceMotion || isMobile;
+  /* Mobil BEZ reduced-motion: dostává lehké efekty bez pinování (písmena hera,
+     scrubované nadpisy, parallax grafiky, sticky stack karet, dotykové
+     reakce). Jen transform/opacity — žádný pin, žádný velký blur. */
+  var mobileFx = isMobile && !reduceMotion;
 
   /* Desktop-width machines with few CPU cores tend to pair with weak
      integrated GPUs (older/budget laptops) — a real FPS benchmark would be
@@ -187,11 +191,23 @@
   }
   typewriter();
 
+  var heroChars = mobileFx ? splitChars(document.querySelector("#hero h1")) : [];
   var heroTl = gsap.timeline({ defaults: { ease: "power2.out" } })
     .from("#hero .hero-name", { y: 30, opacity: 0, duration: 0.7 })
     .from("#hero .role-line", { y: 30, opacity: 0, duration: 0.7 }, "-=0.4")
     .from("#hero .lead-text", { y: 30, opacity: 0, duration: 0.7 }, "-=0.4")
     .from("#hero .pill-btn", { y: 20, opacity: 0, duration: 0.6 }, "-=0.3");
+  /* mobil: písmena nadpisu se při načtení slétnou z náhodných pozic */
+  if (heroChars.length) {
+    heroTl.from(heroChars, {
+      x: function () { return gsap.utils.random(-90, 90); },
+      y: function () { return gsap.utils.random(-70, 70); },
+      rotation: function () { return gsap.utils.random(-80, 80); },
+      scale: function () { return gsap.utils.random(0.4, 1.6); },
+      opacity: 0, duration: 0.9, ease: "power3.out",
+      stagger: { amount: 0.45, from: "random" }
+    }, 0.1);
+  }
   /* safety net: if rAF is throttled (e.g. backgrounded/inactive tab), force-complete
      via setTimeout so hero content is never stuck invisible */
   setTimeout(function () {
@@ -396,6 +412,21 @@
     mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true;
   });
   window.addEventListener("mouseleave", function () { mouse.active = false; });
+  /* Dotyk: částice se odtlačují od prstu stejně jako od myši. Po touchend se
+     ještě chvíli počká, protože prohlížeč po klepnutí vyšle emulovaný mousemove,
+     který by jinak nechal "odpuzovací zónu" viset na místě posledního doteku. */
+  if (!reduceMotion) {
+    var touchMove = function (e) {
+      var t = e.touches && e.touches[0];
+      if (!t) return;
+      mouse.x = t.clientX; mouse.y = t.clientY; mouse.active = true;
+    };
+    var touchEnd = function () { setTimeout(function () { mouse.active = false; }, 450); };
+    window.addEventListener("touchstart", touchMove, { passive: true });
+    window.addEventListener("touchmove", touchMove, { passive: true });
+    window.addEventListener("touchend", touchEnd, { passive: true });
+    window.addEventListener("touchcancel", touchEnd, { passive: true });
+  }
 
   var navLinks = document.querySelectorAll('.navbar-custom .nav-link[href^="#"]');
   function updateActiveNavLink(sectionId) {
@@ -757,8 +788,11 @@
     function graphicFrom() {
       return { opacity: 0, scale: 0.7, rotationY: gdir * 55, rotationX: 10, x: gdir * 120, transformPerspective: 1000 };
     }
+    /* mobil: h2 se odkrývá scrubovaným wipe (viz níž), proto není v jednorázovém fade-up */
+    var mobH2 = mobileFx ? textEls.filter(function (el) { return el.tagName === "H2"; }) : [];
+    var plainEls = textEls.filter(function (el) { return mobH2.indexOf(el) < 0; });
     if (lowPower) {
-      gsap.set(textEls, { y: 40, opacity: 0 });
+      gsap.set(plainEls, { y: 40, opacity: 0 });
       if (graphic) gsap.set(graphic, { scale: 0.85, rotate: -6, opacity: 0 });
     } else {
       epicInit(epicEls);
@@ -865,7 +899,24 @@
           if (cards.length) updateCardStack(cards, 0);
         }
       }
-      textEls.concat(graphic ? [graphic] : []).forEach(function (el) {
+      if (mobileFx) {
+        /* nadpis: wipe zleva podle toho, jak vyjíždí nahoru (palec "řídí" animaci) */
+        mobH2.forEach(function (h2) {
+          gsap.fromTo(h2, { clipPath: "inset(0 100% 0 0)", x: -30 }, {
+            clipPath: "inset(0 0% 0 0)", x: 0, ease: "none",
+            scrollTrigger: { trigger: h2, start: "top 88%", end: "top 58%", scrub: true }
+          });
+        });
+        /* grafika jede o něco pomaleji než text → hloubka (jen yPercent, aby
+           se nepralo s enterEl/leaveEl, které animují y/scale/rotate) */
+        if (graphic) {
+          gsap.fromTo(graphic, { yPercent: 14 }, {
+            yPercent: -14, ease: "none",
+            scrollTrigger: { trigger: section, start: "top bottom", end: "bottom top", scrub: true }
+          });
+        }
+      }
+      plainEls.concat(graphic ? [graphic] : []).forEach(function (el) {
         ScrollTrigger.create({
           trigger: el, start: "top 88%", end: "bottom 12%",
           onEnter: function () { enterEl(el); },
@@ -1045,7 +1096,15 @@
   var valuesSection = document.getElementById("section-values");
   var valuesCards = gsap.utils.toArray("#valuesGrid .value-card");
   var valuesEls = gsap.utils.toArray("#section-values .fade-el");
-  if (lowPower) gsap.set(valuesEls, { y: 40, opacity: 0 }); else epicInit(valuesEls);
+  /* mobil: nadpis wipe podle scrollu; karty (jen 1 sloupec, ≤767px) jako sticky
+     stack — CSS `position: sticky` + scrub zmenšování předchozí karty. Obojí
+     je vyňaté z jednorázového revealIn. */
+  var valuesH2 = mobileFx ? document.querySelector("#section-values h2") : null;
+  var stackMode = mobileFx && window.matchMedia("(max-width: 767.98px)").matches;
+  var valuesPlain = valuesEls.filter(function (el) {
+    return el !== valuesH2 && !(stackMode && el.classList.contains("value-card"));
+  });
+  if (lowPower) gsap.set(valuesPlain, { y: 40, opacity: 0 }); else epicInit(valuesEls);
   var valuesGhost = document.querySelector("#section-values .section-ghost");
   if (valuesGhost && !lowPower) gsap.set(valuesGhost, { xPercent: 10 });
 
@@ -1078,10 +1137,29 @@
   if (lowPower) {
     ScrollTrigger.create({
       trigger: valuesSection, start: "top 80%",
-      onEnter: function () { revealIn(valuesEls); },
+      onEnter: function () { revealIn(valuesPlain); },
       once: true
     });
     valuesCards.forEach(function (card) { card.classList.add("is-active"); });
+    if (valuesH2) {
+      gsap.fromTo(valuesH2, { clipPath: "inset(0 100% 0 0)", x: -30 }, {
+        clipPath: "inset(0 0% 0 0)", x: 0, ease: "none",
+        scrollTrigger: { trigger: valuesH2, start: "top 88%", end: "top 58%", scrub: true }
+      });
+    }
+    if (stackMode) {
+      valuesSection.classList.add("values-stack");
+      valuesCards.forEach(function (card, i) {
+        var next = valuesCards[i + 1];
+        if (!next) return;
+        /* jemné ztmavení (ne průhlednost): zakryté karty zůstávají čitelně světlé a
+           po průchodu stackem nezůstanou příliš tmavé */
+        gsap.fromTo(card, { scale: 1, filter: "brightness(1)" }, {
+          scale: 0.92, filter: "brightness(0.8)", transformOrigin: "50% 0%", ease: "none",
+          scrollTrigger: { trigger: next.parentElement, start: "top 85%", end: "top 25%", scrub: true }
+        });
+      });
+    }
   } else {
     ScrollTrigger.create({
       trigger: valuesSection,
@@ -1157,6 +1235,49 @@
       gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.5, ease: "power2.out" });
     });
   });
+
+  /* ---------------- Mobil: zpětná vazba při klepnutí ----------------
+     Tlačítka a karty se při doteku zmenší a rozsvítí glow v místě prstu
+     (--mx/--my používá i hover glow). Přes gsap, ne CSS :active — gsap drží na
+     těchto prvcích inline `scale`, který by CSS přebil. Při posunu prstu o víc
+     než 10 px (= scrolluje se, neklepe) se stav hned uvolní. */
+  if (mobileFx && window.matchMedia("(pointer: coarse)").matches) {
+    var tapSel = ".pill-btn, .feature-card:not(.value-card), .social-ico, .btn-vcard";
+    var tapEl = null, tapX = 0, tapY = 0;
+    var tapRelease = function () {
+      if (!tapEl) return;
+      var el = tapEl; tapEl = null;
+      el.classList.remove("is-pressed");
+      gsap.to(el, { scale: 1, duration: 0.35, ease: "back.out(2.2)", overwrite: "auto" });
+    };
+    document.addEventListener("touchstart", function (e) {
+      var el = e.target.closest && e.target.closest(tapSel);
+      if (!el) return;
+      var t = e.touches[0], r = el.getBoundingClientRect();
+      tapEl = el; tapX = t.clientX; tapY = t.clientY;
+      el.style.setProperty("--mx", (t.clientX - r.left) + "px");
+      el.style.setProperty("--my", (t.clientY - r.top) + "px");
+      el.classList.add("is-pressed");
+      gsap.to(el, { scale: 0.96, duration: 0.12, ease: "power2.out", overwrite: "auto" });
+      if (el.classList.contains("pill-btn") && navigator.vibrate) navigator.vibrate(8);
+    }, { passive: true });
+    document.addEventListener("touchmove", function (e) {
+      var t = e.touches[0];
+      if (tapEl && (Math.abs(t.clientX - tapX) > 10 || Math.abs(t.clientY - tapY) > 10)) tapRelease();
+    }, { passive: true });
+    document.addEventListener("touchend", tapRelease, { passive: true });
+    document.addEventListener("touchcancel", tapRelease, { passive: true });
+  }
+
+  /* Mobilní menu: odkazy vlétnou postupně při otevření (Bootstrap collapse event) */
+  var navMenu = document.getElementById("navMenu");
+  if (navMenu && mobileFx) {
+    navMenu.addEventListener("show.bs.collapse", function () {
+      gsap.fromTo("#navMenu .nav-link", { x: -26, opacity: 0 }, {
+        x: 0, opacity: 1, duration: 0.45, stagger: 0.07, delay: 0.12, ease: "power3.out", overwrite: true
+      });
+    });
+  }
 
   /* ---------------- Contact form: basic UX (Netlify handles real submit) ---------------- */
   var form = document.getElementById("contactForm");
