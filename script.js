@@ -346,15 +346,37 @@
   window.addEventListener("resize", resize);
   resize();
 
+  /* Pohyb částice = plynulý drift + krátkodobé "kopnutí".
+       - drift: směr `a` se pomalu natáčí (`da`), rychlost `s` je stálá →
+         částice kreslí jemné oblouky a nezastaví se. Při prefers-reduced-motion
+         je drift vypnutý (s = 0), částice zůstanou stát.
+       - kopnutí (vx/vy): myš, výbuch hera a vlna při vstupu do sekce přidávají
+         do vx/vy rychlost, která se každý snímek tlumí (×0.985) a doznívá.
+     Velikost, odstín i rychlost driftu se po změně sekce plynule dotahují k
+     cílovým hodnotám (tSize/tHue/ts), takže konfigurace sekce je vidět i na
+     částicích, které už na plátně byly. */
+  function driftSpeed(cfg) {
+    return reduceMotion ? 0 : cfg.speed * (0.4 + Math.random() * 0.8);
+  }
+  function retarget(p, cfg) {
+    p.ts = driftSpeed(cfg);
+    p.tSize = cfg.size[0] + Math.random() * (cfg.size[1] - cfg.size[0]);
+    p.tHue = cfg.hue[0] + Math.random() * (cfg.hue[1] - cfg.hue[0]);
+  }
   function makeParticle() {
-    var hueRange = activeConfig.hue;
+    var cfg = activeConfig;
+    var size = cfg.size[0] + Math.random() * (cfg.size[1] - cfg.size[0]);
+    var hue = cfg.hue[0] + Math.random() * (cfg.hue[1] - cfg.hue[0]);
+    var speed = driftSpeed(cfg);
     return {
       x: Math.random() * W,
       y: Math.random() * H,
-      vx: (Math.random() - 0.5) * activeConfig.speed,
-      vy: (Math.random() - 0.5) * activeConfig.speed,
-      size: activeConfig.size[0] + Math.random() * (activeConfig.size[1] - activeConfig.size[0]),
-      hue: hueRange[0] + Math.random() * (hueRange[1] - hueRange[0])
+      vx: 0, vy: 0,
+      a: Math.random() * Math.PI * 2,
+      da: (Math.random() - 0.5) * 0.006,
+      s: speed, ts: speed,
+      size: size, tSize: size,
+      hue: hue, tHue: hue
     };
   }
 
@@ -398,6 +420,7 @@
       activeConfig = found;
       targetDensity = found.density;
       var want = targetCount();
+      particles.forEach(function (p) { retarget(p, found); });
       while (particles.length < want) particles.push(makeParticle());
       while (particles.length > want) particles.pop();
     }
@@ -440,7 +463,10 @@
         p.vx += (p.x - W / 2) / W * burst * 0.12;
         p.vy += (p.y - H / 2) / H * burst * 0.12;
       }
-      p.x += p.vx * boost; p.y += p.vy * boost;
+      p.a += p.da;
+      p.s += (p.ts - p.s) * 0.02; p.size += (p.tSize - p.size) * 0.02; p.hue += (p.tHue - p.hue) * 0.02;
+      p.x += (Math.cos(p.a) * p.s + p.vx) * boost;
+      p.y += (Math.sin(p.a) * p.s + p.vy) * boost;
       if (mouse.active) {
         var dx = p.x - mouse.x, dy = p.y - mouse.y;
         var dist = Math.sqrt(dx * dx + dy * dy);
