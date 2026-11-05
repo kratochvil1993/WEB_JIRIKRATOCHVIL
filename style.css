@@ -404,6 +404,8 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
 /* Hero */
 #hero{
   min-height:100vh;
+  box-sizing:border-box;
+  padding-top:6.5rem; /* navbar před scrollem: 18 + 70px logo — obsah hera nesmí pod logo */
   display:flex;
   align-items:center;
   overflow:clip; /* zvětšená grafika/zoom při pinu nesmí vytékat z hera */
