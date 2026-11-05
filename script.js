@@ -1565,7 +1565,7 @@
       valuesSection.classList.add("values-stack");
       /* Aktivní je poslední karta, která už vyjela do horní poloviny okna (zpět při
          scrollu nahoru se přepne o kartu dřív): přepíná glow rámečku i vyplnění
-         čísla (CSS) a ikona při tom "poskočí". */
+         čísla (CSS). */
       var vcActive = -1;
       ScrollTrigger.create({
         trigger: "#valuesGrid", start: "top bottom", end: "bottom top",
@@ -1576,13 +1576,7 @@
           });
           if (idx === vcActive) return;
           vcActive = idx;
-          valuesCards.forEach(function (card, i) {
-            var on = i === idx;
-            if (on && !card.classList.contains("is-active")) {
-              gsap.fromTo(card.querySelector(".icon"), { scale: 0.65, rotate: -14 }, { scale: 1, rotate: 0, duration: 0.6, ease: "back.out(2.2)", overwrite: true });
-            }
-            card.classList.toggle("is-active", on);
-          });
+          valuesCards.forEach(function (card, i) { card.classList.toggle("is-active", i === idx); });
         }
       });
       valuesCards.forEach(function (card, i) {
