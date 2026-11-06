@@ -318,6 +318,8 @@ html.weak-hw .navbar-custom.scrolled{
   pointer-events:none;
 }
 .navbar-custom.scrolled::after{opacity:1;}
+/* Desktop: progress line is distracting (the to-top ring already shows progress) — mobile only. */
+@media (min-width:992px){.navbar-custom::after{display:none;}}
 .navbar-custom .brand{
   font-weight:700;
   font-size:1.15rem;
