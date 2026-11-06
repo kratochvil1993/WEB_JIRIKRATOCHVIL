@@ -1473,7 +1473,7 @@
     if (heroScrollMobileBuilt || !heroChars.length) return;
     heroScrollMobileBuilt = true;
     var h1 = document.querySelector("#hero h1");
-    var tl = gsap.timeline({ paused: true, defaults: { ease: "power2.in" } });
+    var tl = gsap.timeline({ paused: true, defaults: { ease: "none" } });
     var box = null;
     function center(i) {
       if (!box) box = h1.getBoundingClientRect();
@@ -1487,7 +1487,7 @@
       rotation: function () { return gsap.utils.random(-130, 130); },
       scale: function () { return gsap.utils.random(0.5, 1.7); },
       opacity: 0, duration: 0.6,
-      stagger: { amount: 0.15, from: "center" }
+      stagger: { amount: 0.05, from: "center" }
     }, 0)
       .to("#hero p.eyebrow", { y: -50, x: -30, opacity: 0, duration: 0.35 }, 0)
       .to("#hero .role-line", { y: -80, x: -50, opacity: 0, duration: 0.45 }, 0.04)
@@ -1497,7 +1497,7 @@
       /* mini kód: zvětšení + 3D náklon + průlet přes obrazovku */
       .to("#hero .hero-mini-code", {
         scale: 1.9, rotationY: -30, rotationX: 10, x: -30, y: -90, transformPerspective: 700,
-        ease: "power1.in", duration: 0.85
+        ease: "none", duration: 0.85
       }, 0)
       .to("#hero .hero-mini-code", { opacity: 0, ease: "power1.in", duration: 0.3 }, 0.55)
       /* celý obsah: zoom dopředu a závěrečné zmizení */
