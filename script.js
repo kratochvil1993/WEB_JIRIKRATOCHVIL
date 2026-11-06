@@ -527,9 +527,15 @@
      při prefers-reduced-motion. */
   var lastScrollY = window.pageYOffset || 0;
   var scrollVel = 0;
-  /* Vyhlazená hodnota burst+pulse pro vizuální roztažení částic od středu. */
+  /* Vyhlazený posun podle scrollu. Surová změna scrollu za snímek chodí nerovnoměrně
+     (třeba jen každý 3. snímek) → částice se trhaly a mezi trhnutími stály.
+     Exponenciální vyhlazení zachová celkový posun, ale rozloží ho plynule
+     a po zastavení scrollu krátce doznívá. */
+  var scrollShift = 0;
+  /* Vyhlazená hodnota heroFx.burst pro vizuální roztažení (zoom) částic od středu. */
   var burstView = 0;
   function pulse() {
+    particles.forEach(function (p) { p.pa = Math.random() * Math.PI * 2; });
     gsap.fromTo(pulseFx, { v: 0.8 }, { v: 0, duration: 1.5, ease: "power2.out", overwrite: true });
   }
 
@@ -541,18 +547,27 @@
     var dy = reduceMotion ? 0 : Math.max(-80, Math.min(80, sy - lastScrollY));
     lastScrollY = sy;
     scrollVel += (Math.abs(dy) - scrollVel) * 0.12;
+    scrollShift += (dy - scrollShift) * 0.18;
+    if (scrollShift > -0.01 && scrollShift < 0.01) scrollShift = 0;
     var boost = 1 + burst * 5 + Math.min(scrollVel / 14, 3.5);
     var tdx = (tilt.x - tilt.px) * W * 0.16, tdy = (tilt.y - tilt.py) * H * 0.16;
     tilt.px = tilt.x; tilt.py = tilt.y;
-    /* Burst/pulse jen ROZTAHUJE vykreslenou pozici od středu (p.x/p.y se nemění).
-       Dřív to byl trvalý impuls rychlosti — částice se po průjezdu stránkou
-       nahromadily za okrajem plátna (wrap-around) a na pozadí jich skoro nezbylo.
-       Takhle se po skončení efektu vrátí přesně na původní místo. */
-    burstView += (burst - burstView) * 0.12;
+    /* Hero burst (vázaný na scroll tam i zpět) jen ROZTAHUJE vykreslenou pozici
+       od středu (p.x/p.y se nemění) → po návratu nahoru jsou částice zase na
+       původních místech. Pulz při vstupu do sekce naopak částice opravdu
+       POSUNE (kick vx/vy níže), ale každou v jejím vlastním náhodném směru
+       (p.pa, viz pulse()) — radiální tlak ven by je s wrap-around nahnal do
+       neviditelného pruhu u okraje. */
+    burstView += (heroFx.burst - burstView) * 0.12;
     var bv = burstView > 0.001 ? burstView : 0;
     particles.forEach(function (p, idx) {
-      if (dy) p.y -= dy * (0.06 + p.size * 0.07);
+      if (scrollShift) p.y -= scrollShift * (0.06 + p.size * 0.07);
       if (tdx || tdy) { var depth = 0.3 + p.size * 0.35; p.x -= tdx * depth; p.y -= tdy * depth; }
+      if (pulseFx.v > 0.001) {
+        var pm = pulseFx.v * 0.07 * (0.6 + p.size * 0.2);
+        p.vx += Math.cos(p.pa || 0) * pm;
+        p.vy += Math.sin(p.pa || 0) * pm;
+      }
       p.a += p.da;
       p.s += (p.ts - p.s) * 0.02; p.size += (p.tSize - p.size) * 0.02; p.hue += (p.tHue - p.hue) * 0.02;
       p.x += (Math.cos(p.a) * p.s + p.vx) * boost;
