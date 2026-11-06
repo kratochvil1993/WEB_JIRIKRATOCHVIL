@@ -527,6 +527,8 @@
      při prefers-reduced-motion. */
   var lastScrollY = window.pageYOffset || 0;
   var scrollVel = 0;
+  /* Vyhlazená hodnota burst+pulse pro vizuální roztažení částic od středu. */
+  var burstView = 0;
   function pulse() {
     gsap.fromTo(pulseFx, { v: 0.8 }, { v: 0, duration: 1.5, ease: "power2.out", overwrite: true });
   }
@@ -542,40 +544,55 @@
     var boost = 1 + burst * 5 + Math.min(scrollVel / 14, 3.5);
     var tdx = (tilt.x - tilt.px) * W * 0.16, tdy = (tilt.y - tilt.py) * H * 0.16;
     tilt.px = tilt.x; tilt.py = tilt.y;
+    /* Burst/pulse jen ROZTAHUJE vykreslenou pozici od středu (p.x/p.y se nemění).
+       Dřív to byl trvalý impuls rychlosti — částice se po průjezdu stránkou
+       nahromadily za okrajem plátna (wrap-around) a na pozadí jich skoro nezbylo.
+       Takhle se po skončení efektu vrátí přesně na původní místo. */
+    burstView += (burst - burstView) * 0.12;
+    var bv = burstView > 0.001 ? burstView : 0;
     particles.forEach(function (p, idx) {
       if (dy) p.y -= dy * (0.06 + p.size * 0.07);
       if (tdx || tdy) { var depth = 0.3 + p.size * 0.35; p.x -= tdx * depth; p.y -= tdy * depth; }
-      if (burst > 0.001) {
-        p.vx += (p.x - W / 2) / W * burst * 0.12;
-        p.vy += (p.y - H / 2) / H * burst * 0.12;
-      }
       p.a += p.da;
       p.s += (p.ts - p.s) * 0.02; p.size += (p.tSize - p.size) * 0.02; p.hue += (p.tHue - p.hue) * 0.02;
       p.x += (Math.cos(p.a) * p.s + p.vx) * boost;
       p.y += (Math.sin(p.a) * p.s + p.vy) * boost;
       if (mouse.active) {
-        var dx = p.x - mouse.x, dy = p.y - mouse.y;
-        var dist = Math.sqrt(dx * dx + dy * dy);
+        var mdx = p.x - mouse.x, mdy = p.y - mouse.y;
+        var dist = Math.sqrt(mdx * mdx + mdy * mdy);
         var radius = 130;
         if (dist < radius && dist > 0.1) {
           var force = (radius - dist) / radius * 0.6;
-          p.vx += (dx / dist) * force * 0.04;
-          p.vy += (dy / dist) * force * 0.04;
+          p.vx += (mdx / dist) * force * 0.04;
+          p.vy += (mdy / dist) * force * 0.04;
         }
       }
       p.vx *= 0.985; p.vy *= 0.985;
       if (p.x < -10) p.x = W + 10; if (p.x > W + 10) p.x = -10;
       if (p.y < -10) p.y = H + 10; if (p.y > H + 10) p.y = -10;
 
+      var gx = p.x, gy = p.y;
+      if (bv) {
+        var k = bv * (0.45 + p.size * 0.15);
+        gx += (p.x - W / 2) * k;
+        gy += (p.y - H / 2) * k;
+      }
+
       ctx.beginPath();
       ctx.fillStyle = "hsla(" + p.hue + ",45%,62%,.55)";
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.arc(gx, gy, p.size, 0, Math.PI * 2);
       ctx.fill();
 
       if (linky) {
         for (var j = idx + 1; j < particles.length; j++) {
           var q = particles[j];
-          var ddx = p.x - q.x, ddy = p.y - q.y;
+          var qx = q.x, qy = q.y;
+          if (bv) {
+            var qk = bv * (0.45 + q.size * 0.15);
+            qx += (q.x - W / 2) * qk;
+            qy += (q.y - H / 2) * qk;
+          }
+          var ddx = gx - qx, ddy = gy - qy;
           var dSq = ddx * ddx + ddy * ddy;
           /* Cheap squared-distance check first, so Math.sqrt only runs for
              the (usually small) subset of pairs actually close enough to
@@ -586,8 +603,8 @@
             ctx.strokeStyle = "hsla(" + p.hue + ",45%,62%," + (0.12 * (1 - d / LINK_DIST)) + ")";
             ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(q.x, q.y);
+            ctx.moveTo(gx, gy);
+            ctx.lineTo(qx, qy);
             ctx.stroke();
           }
         }
