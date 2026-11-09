@@ -521,10 +521,14 @@
   /* ---------------- Nadpisy sekcí: odkrytí zleva (wipe) jako na úvodní stránce ----------------
      Výchozí stav (clip-path) je v CSS (.js .reveal-wipe); po doběhnutí se clip-path zruší,
      ať neořezává přesahy písmen. */
+  /* Tempo: wipe.dur = délka odkrytí v s, wipe.ease = křivka (power3.out startovalo moc prudce a
+     působilo nervózně; inOut se rozjíždí i dojíždí pozvolna), x = o kolik px nadpis při odkrytí
+     "dojede" zleva. */
+  var wipe = { dur: 1.2, ease: "power1.inOut", x: -26 };
   if (!reduceMotion) {
     gsap.utils.toArray(".reveal-wipe").forEach(function (h) {
-      gsap.fromTo(h, { clipPath: "inset(0 100% 0 0)", x: -40 }, {
-        clipPath: "inset(0 0% 0 0)", x: 0, duration: 1, ease: "power3.out",
+      gsap.fromTo(h, { clipPath: "inset(0 100% 0 0)", x: wipe.x }, {
+        clipPath: "inset(0 0% 0 0)", x: 0, duration: wipe.dur, ease: wipe.ease,
         scrollTrigger: { trigger: h, start: "top 88%", once: true },
         onComplete: function () { gsap.set(h, { clearProps: "clipPath,x" }); h.classList.add("is-wiped"); }
       });
@@ -581,7 +585,7 @@
       once: true,
       onEnter: function (batch) {
         gsap.to(batch, {
-          opacity: 1, y: 0, duration: 0.8, ease: "power3.out",
+          opacity: 1, y: 0, duration: 0.9, ease: "power2.out",
           stagger: Math.min(0.09, 0.5 / Math.max(batch.length, 1)), /* celé odkrytí max ~0,5 s, i když se při skoku v okně sejde spousta prvků */
           overwrite: "auto" /* ne true: zabilo by i tweeny kroků/karet na stejných prvcích */
         });
