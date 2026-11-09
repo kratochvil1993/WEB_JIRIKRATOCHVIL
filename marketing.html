@@ -235,6 +235,8 @@
   <symbol id="bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></symbol>
   <symbol id="bi-star-fill" viewBox="0 0 16 16"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></symbol>
   <symbol id="bi-star-half" viewBox="0 0 16 16"><path d="M5.354 5.119 7.538.792A.52.52 0 0 1 8 .5c.183 0 .366.097.465.292l2.184 4.327 4.898.696A.54.54 0 0 1 16 6.32a.55.55 0 0 1-.17.445l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256a.5.5 0 0 1-.146.05c-.342.06-.668-.254-.6-.642l.83-4.73L.173 6.765a.55.55 0 0 1-.172-.403.6.6 0 0 1 .085-.302.51.51 0 0 1 .37-.245zM8 12.027a.5.5 0 0 1 .232.056l3.686 1.894-.694-3.957a.56.56 0 0 1 .162-.505l2.907-2.77-4.052-.576a.53.53 0 0 1-.393-.288L8.001 2.223 8 2.226z"/></symbol>
+  <symbol id="bi-clipboard" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/></symbol>
+  <symbol id="bi-check2" viewBox="0 0 16 16"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0"/></symbol>
 </svg>
 
 <div id="bg-layer">
@@ -248,7 +250,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark navbar-custom" id="mainNav">
   <div class="container d-flex justify-content-between align-items-center">
     <a class="brand d-flex align-items-center gap-2" href="/">
-      <img src="assets/logo.webp" alt="Jiří Kratochvíl" class="brand-logo" width="200" height="145" style="filter:brightness(10);">
+      <img src="assets/logo.webp" alt="Jiří Kratochvíl" class="brand-logo" width="200" height="145" style="filter:brightness(10);" decoding="async">
     </a>
     <button class="navbar-toggler" type="button" aria-controls="navMenu" aria-expanded="false" aria-label="Otevřít menu">
       <span class="navbar-toggler-icon"></span>
@@ -275,7 +277,7 @@
           <h1>Správa Google Ads <span class="gradient-text">a online marketing</span></h1>
           <p class="sub-lead hero-in">Nastavuju a spravuju kampaně v Google Ads. Měřím, co se skutečně prodá, a rozpočet posouvám tam, kde se vrací.</p>
           <div class="hero-links hero-in">
-            <a href="kontakt.html" class="pill-btn">
+            <a href="kontakt.html" data-open-contact class="pill-btn">
               <span class="pill-btn__icon pill-btn__icon--left" aria-hidden="true">
                 <svg viewBox="0 0 40 40" fill="none"><path d="M7 20h26" stroke="currentColor" stroke-width="3" stroke-linecap="round" /><path d="M22 9l11 11-11 11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>
               </span>
@@ -475,7 +477,7 @@
     <div class="container">
       <h2 class="reveal-wipe">Zákazníci z Googlu, <span class="gradient-text">ne jen kliky.</span></h2>
       <p class="reveal">Napište mi, co prodáváte a co chcete získat. Ozvu se a řekneme si, jestli a jak můžu pomoct.</p>
-      <a href="kontakt.html" class="pill-btn reveal">
+      <a href="kontakt.html" data-open-contact class="pill-btn reveal">
         <span class="pill-btn__icon pill-btn__icon--left" aria-hidden="true">
           <svg viewBox="0 0 40 40" fill="none"><path d="M7 20h26" stroke="currentColor" stroke-width="3" stroke-linecap="round" /><path d="M22 9l11 11-11 11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>
         </span>
@@ -484,15 +486,6 @@
           <svg viewBox="0 0 40 40" fill="none"><path d="M7 20h26" stroke="currentColor" stroke-width="3" stroke-linecap="round" /><path d="M22 9l11 11-11 11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>
         </span>
       </a>
-      <div class="cta-contact reveal">
-        <a href="tel:+420728544881">+420 728 544 881</a>
-        <a href="mailto:info@jirikratochvil.eu">info@jirikratochvil.eu</a>
-      </div>
-      <nav class="sub-next reveal" aria-label="Další stránky">
-        <a href="web.html">Web &amp; e-shop &rarr;</a>
-        <a href="fotografie.html">Portrétní fotografie &rarr;</a>
-        <a href="/">&larr; Zpět na úvod</a>
-      </nav>
     </div>
   </section>
 </main>
@@ -544,6 +537,97 @@
     <button type="button" id="cookie-accept">Souhlasím</button>
   </div>
 </div>
+
+<dialog id="contactModal" class="contact-modal" aria-labelledby="contactModalTitle">
+  <div class="contact-modal__panel" tabindex="-1" autofocus>
+    <button type="button" class="contact-modal__close" aria-label="Zavřít">&times;</button>
+    <p class="eyebrow">Kontakt</p>
+    <h2 id="contactModalTitle">Zavolejte</h2>
+    <div class="modal-phone">
+      <span class="modal-phone__icon" aria-hidden="true"><svg class="bi"><use href="#bi-telephone"/></svg></span>
+      <a class="modal-phone__link" href="tel:+420728544881">+420 728 544 881</a>
+      <button type="button" class="copy-btn" data-copy="+420 728 544 881" aria-label="Zkopírovat telefonní číslo"><svg class="bi" aria-hidden="true"><use href="#bi-clipboard"/></svg></button>
+    </div>
+    <div class="modal-or"><span>nebo napište zprávu</span></div>
+    <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="contactFormModal">
+            <input type="hidden" name="form-name" value="contact">
+            <p class="honeypot-field"><label>Nevyplňujte: <input name="bot-field"></label></p>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input class="form-control form-control-neon" type="text" id="m-name" name="name" placeholder=" "
+                    required>
+                  <label for="m-name">Jméno</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input class="form-control form-control-neon" type="text" id="m-company" name="company"
+                    placeholder=" ">
+                  <label for="m-company">Společnost (nepovinné)</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input class="form-control form-control-neon" type="email" id="m-email" name="email" placeholder=" "
+                    required>
+                  <label for="m-email">E-mail</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input class="form-control form-control-neon" type="tel" id="m-phone" name="phone" placeholder=" ">
+                  <label for="m-phone">Telefon (nepovinné)</label>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="form-floating">
+                  <textarea class="form-control form-control-neon" id="m-message" name="message" placeholder=" "
+                    required></textarea>
+                  <label for="m-message">Zpráva</label>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="m-gdprCheck" name="gdpr" required>
+                  <label class="form-check-label" for="m-gdprCheck">
+                    Souhlasím se zpracováním osobních údajů. <a href="gdpr.html">Více informací</a>.
+                  </label>
+                </div>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="pill-btn">
+                  <span class="pill-btn__icon pill-btn__icon--left" aria-hidden="true">
+                    <svg viewBox="0 0 40 40" fill="none">
+                      <path d="M7 20h26" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                      <path d="M22 9l11 11-11 11" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    </svg>
+                  </span>
+                  <span class="pill-btn__label">Odeslat</span>
+                  <span class="pill-btn__icon pill-btn__icon--right" aria-hidden="true">
+                    <svg viewBox="0 0 40 40" fill="none">
+                      <path d="M7 20h26" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                      <path d="M22 9l11 11-11 11" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    </svg>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </form>
+    <div class="form-success text-center" role="status" hidden>
+            <svg class="form-success__check" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+              <circle class="fs-circle" cx="26" cy="26" r="23" pathLength="1" stroke="currentColor" stroke-width="2.5" />
+              <path class="fs-tick" d="M15 27l8 8 14-16" pathLength="1" stroke="currentColor" stroke-width="3"
+                stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <h3>Děkuji, zpráva je odeslaná</h3>
+            <p>Ozvu se vám co nejdříve.</p>
+          </div>
+
+  </div>
+</dialog>
 
 <script src="assets/vendor/gsap/gsap.min.js"></script>
 <script src="assets/vendor/gsap/ScrollTrigger.min.js"></script>

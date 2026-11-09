@@ -167,6 +167,10 @@
     copyBtns.forEach(function (btn) {
       btn.addEventListener("click", function () {
         var icon = btn.querySelector("use");
+        /* <dialog> je v "top layer" a překrývá všechno mimo sebe, takže toast se při kopírování
+           z modalu musí přesunout dovnitř něj */
+        var host = btn.closest("dialog") || document.body;
+        if (toastEl.parentNode !== host) host.appendChild(toastEl);
         copyText(btn.dataset.copy).then(function () {
           showToast("Zkopírováno: " + btn.dataset.copy);
           btn.classList.add("is-copied");
@@ -177,9 +181,14 @@
     });
   }
 
-  var form = document.getElementById("contactForm");
-  var formSuccess = document.getElementById("formSuccess");
-  if (form && formSuccess) {
+  /* Všechny formuláře "contact": ten na kontakt.html i ten v modalu ostatních podstránek.
+     Úspěšné panelové potvrzení je sourozenec formuláře (.form-success). */
+  function initContactForm(form) {
+    var success = form.parentNode.querySelector(".form-success");
+    if (!success) return;
+    var btn = form.querySelector("button[type=submit]");
+    var label = btn && (btn.querySelector(".pill-btn__label") || btn);
+    var labelText = label ? label.textContent : "";
     if (!reduceMotion) {
       form.addEventListener("invalid", function (e) {
         var box = e.target.closest(".form-floating, .form-check") || e.target;
@@ -189,24 +198,22 @@
     var showFormSuccess = function () {
       var done = function () {
         form.style.display = "none";
-        formSuccess.hidden = false;
+        success.hidden = false;
         if (!reduceMotion) {
-          var circle = formSuccess.querySelector(".fs-circle"), tick = formSuccess.querySelector(".fs-tick");
+          var circle = success.querySelector(".fs-circle"), tick = success.querySelector(".fs-tick");
           gsap.set([circle, tick], { strokeDasharray: 1, strokeDashoffset: 1 });
           gsap.timeline()
             .to(circle, { strokeDashoffset: 0, duration: 0.6, ease: "power2.out" })
             .to(tick, { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, "-=0.1")
-            .from(formSuccess.querySelectorAll("h3, p"), { y: 14, opacity: 0, duration: 0.5, stagger: 0.1, ease: "power2.out" }, "-=0.3");
+            .from(success.querySelectorAll("h3, p"), { y: 14, opacity: 0, duration: 0.5, stagger: 0.1, ease: "power2.out" }, "-=0.3");
         }
         ScrollTrigger.refresh();
-        formSuccess.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
+        success.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
       };
       if (reduceMotion) done(); else gsap.to(form, { opacity: 0, y: -10, duration: 0.35, onComplete: done });
     };
     form.addEventListener("submit", function (e) {
       e.preventDefault();
-      var btn = form.querySelector("button[type=submit]");
-      var label = btn && (btn.querySelector(".pill-btn__label") || btn);
       if (btn) { btn.disabled = true; label.textContent = "Odesílám…"; }
       fetch(form.getAttribute("action") || "/", {
         method: "POST",
@@ -218,6 +225,51 @@
       }).catch(function () {
         form.submit(); /* nativní odeslání (stará cesta) */
       });
+    });
+    /* po zavření modalu se formulář vrátí do výchozího stavu (po úspěšném odeslání znovu otevřený) */
+    form.resetState = function () {
+      if (success.hidden && !(btn && btn.disabled)) return;
+      form.reset();
+      gsap.set(form, { clearProps: "opacity,y" });
+      form.style.display = "";
+      success.hidden = true;
+      if (btn) { btn.disabled = false; label.textContent = labelText; }
+    };
+  }
+  document.querySelectorAll('form[name="contact"]').forEach(initContactForm);
+
+  /* ---------------- Modal s kontaktem (podstránky): telefon + formulář ----------------
+     Tlačítka [data-open-contact] ("Napsat mi") mají href na kontakt.html jako zálohu — bez JS
+     nebo bez podpory <dialog> se prostě přejde na stránku. Native <dialog>: focus trap, ESC
+     i návrat focusu řeší prohlížeč; tady jen animace, zavření klikem na pozadí a zámek scrollu. */
+  var modal = document.getElementById("contactModal");
+  if (modal && typeof modal.showModal === "function") {
+    var panel = modal.querySelector(".contact-modal__panel");
+    var modalForm = modal.querySelector("form");
+    var closing = false;
+    var openModal = function (e) {
+      e.preventDefault();
+      if (modal.open) return;
+      document.documentElement.classList.add("modal-open");
+      modal.showModal();
+      if (!reduceMotion) {
+        gsap.fromTo(panel, { opacity: 0, y: 28, scale: 0.97 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power3.out" });
+        gsap.from(panel.querySelectorAll(".modal-phone, .modal-or, form .row > *"), { opacity: 0, y: 14, duration: 0.5, stagger: 0.04, delay: 0.12, ease: "power2.out", clearProps: "opacity,transform" });
+      }
+    };
+    var closeModal = function () {
+      if (!modal.open || closing) return;
+      if (reduceMotion) { modal.close(); return; }
+      closing = true;
+      gsap.to(panel, { opacity: 0, y: 14, scale: 0.98, duration: 0.25, ease: "power2.in", onComplete: function () { closing = false; modal.close(); gsap.set(panel, { clearProps: "opacity,transform" }); } });
+    };
+    document.querySelectorAll("[data-open-contact]").forEach(function (a) { a.addEventListener("click", openModal); });
+    modal.querySelector(".contact-modal__close").addEventListener("click", closeModal);
+    modal.addEventListener("click", function (e) { if (e.target === modal) closeModal(); }); /* klik na pozadí */
+    modal.addEventListener("cancel", function (e) { e.preventDefault(); closeModal(); });    /* ESC = zavření s animací */
+    modal.addEventListener("close", function () {
+      document.documentElement.classList.remove("modal-open");
+      if (modalForm && modalForm.resetState) modalForm.resetState();
     });
   }
 
@@ -532,6 +584,36 @@
         clipPath: "inset(0 0% 0 0)", x: 0, duration: wipe.dur, ease: wipe.ease,
         scrollTrigger: { trigger: h, start: "top 88%", once: true },
         onComplete: function () { gsap.set(h, { clearProps: "clipPath,x" }); h.classList.add("is-wiped"); }
+      });
+    });
+  }
+
+  /* ---------------- FAQ: plynulé rozbalení a sbalení nativních <details> ----------------
+     Obsah (vše za <summary>) se zabalí do .faq-body a animuje se jeho výška + průhlednost.
+     Při sbalování zůstává [open], dokud animace nedoběhne (jinak by obsah zmizel hned); třída
+     .is-closing otočí plus zpět už na začátku. Bez JS / s reduced-motion zůstává nativní chování. */
+  if (!reduceMotion) {
+    document.querySelectorAll(".faq details").forEach(function (d) {
+      var summary = d.querySelector("summary");
+      if (!summary) return;
+      var body = document.createElement("div");
+      body.className = "faq-body";
+      while (summary.nextSibling) body.appendChild(summary.nextSibling);
+      d.appendChild(body);
+      summary.addEventListener("click", function (e) {
+        e.preventDefault();
+        gsap.killTweensOf(body);
+        if (!d.open) {
+          d.classList.remove("is-closing");
+          d.open = true;
+          gsap.fromTo(body, { height: 0, opacity: 0 }, { height: "auto", opacity: 1, duration: 0.5, ease: "power2.out", clearProps: "height,opacity" });
+        } else {
+          d.classList.add("is-closing");
+          gsap.to(body, {
+            height: 0, opacity: 0, duration: 0.38, ease: "power2.inOut",
+            onComplete: function () { d.open = false; d.classList.remove("is-closing"); gsap.set(body, { clearProps: "height,opacity" }); }
+          });
+        }
       });
     });
   }

@@ -1310,7 +1310,6 @@ footer::after{
 .sub-cta{padding:5rem 0 6rem;text-align:center;}
 .sub-cta h2{font-size:clamp(2.2rem,1.4rem + 3.6vw,4rem);}
 .sub-cta p{max-width:34rem;margin:0 auto 2rem;}
-.sub-cta .cta-contact{display:flex;justify-content:center;flex-wrap:wrap;gap:.6rem 1.8rem;margin-top:1.6rem;font-size:1rem;}
 .sub-next{display:flex;flex-wrap:wrap;gap:.8rem 2rem;justify-content:center;margin-top:2.4rem;padding-top:1.8rem;border-top:1px solid rgba(255,255,255,.08);font-size:.95rem;}
 .sub-next a{color:var(--fg-dim);}
 .sub-next a:hover{color:var(--magenta);}
@@ -1328,7 +1327,10 @@ footer::after{
 .photo-gallery img{display:block;width:100%;height:auto;transition:transform .6s ease;}
 @media (hover:hover){.photo-gallery figure:hover img{transform:scale(1.03);}}
 .photo-links{display:flex;flex-wrap:wrap;align-items:center;gap:1.2rem 2rem;margin-top:2rem;}
+/* .pill-btn má obecně margin-top:2rem; tady musí být 0, jinak tlačítko sedí níž než texty vedle něj */
+.photo-links .pill-btn{margin-top:0;}
 .photo-links .photo-cats{margin:0;font-size:1rem;display:flex;flex-wrap:wrap;gap:.4rem 1.1rem;align-items:center;}
+.photo-cats-wrap{display:flex;flex-direction:column;gap:.55rem;}
 .photo-links .photo-cats a{font-weight:600;}
 @media (max-width:767.98px){
   .photo-gallery{column-count:2;column-gap:.6rem;}
@@ -1453,4 +1455,94 @@ footer::after{
 @media (prefers-reduced-motion:reduce){
   .sub-hero-graphic .wireframe-layer,
   .sub-hero-graphic .dash-layer{opacity:0;}
+}
+
+/* ---------- Modal s kontaktem (podstránky) ----------
+   Native <dialog> (page.js). Zámek scrollu přes html.modal-open; scrollbar-gutter drží šířku,
+   aby při zamknutí stránka neposkočila. <dialog> je v "top layer", proto si nese vlastní kurzor
+   (vlastní #cursor je pod ním skrytý) a vlastní toast. */
+html.js{scrollbar-gutter:stable;}
+html.modal-open{overflow:hidden;}
+.contact-modal{
+  border:0;padding:0;margin:auto;background:transparent;color:var(--fg);
+  width:min(660px,calc(100vw - 1.5rem));max-width:none;
+  max-height:calc(100vh - 1.5rem);max-height:calc(100dvh - 1.5rem);
+  overflow:visible;
+}
+.contact-modal::backdrop{
+  background:rgba(4,10,14,.5);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+}
+@media (prefers-reduced-motion:no-preference){
+  .contact-modal[open]::backdrop{animation:modalBackdrop .35s ease both;}
+}
+@keyframes modalBackdrop{from{opacity:0;}to{opacity:1;}}
+.contact-modal,.contact-modal *{cursor:auto;}
+.contact-modal a,.contact-modal button,.contact-modal summary,.contact-modal label,.contact-modal input[type=checkbox]{cursor:pointer;}
+.contact-modal__panel{
+  position:relative;outline:none;overflow:auto;
+  max-height:calc(100vh - 1.5rem);max-height:calc(100dvh - 1.5rem);
+  padding:2.2rem 2rem 2rem;border-radius:24px;
+  background:rgba(10,17,23,.62);
+  -webkit-backdrop-filter:blur(22px) saturate(130%);backdrop-filter:blur(22px) saturate(130%);
+  border:1px solid rgba(var(--purple-rgb),.28);
+  box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 70px rgba(var(--purple-rgb),.12);
+}
+.contact-modal__panel h2{font-size:clamp(1.8rem,1.3rem + 1.6vw,2.4rem);margin-bottom:1.2rem;}
+.contact-modal__panel p{font-size:1rem;}
+.contact-modal__close{
+  position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;line-height:1;color:var(--fg);
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);
+  transition:background .2s ease,border-color .2s ease,color .2s ease;
+}
+.contact-modal__close:hover,.contact-modal__close:focus-visible{border-color:var(--magenta);color:var(--purple);background:rgba(var(--magenta-rgb),.12);}
+/* telefon nahoře */
+.modal-phone{
+  display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;
+  padding:1rem 1.2rem;border-radius:16px;
+  background:rgba(var(--purple-rgb),.07);border:1px solid rgba(var(--purple-rgb),.3);
+}
+.modal-phone__icon{
+  width:2.6rem;height:2.6rem;border-radius:50%;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--purple),var(--accent2));color:#04141a;font-size:1.1rem;
+}
+.modal-phone__link{font-size:clamp(1.35rem,1.1rem + 1vw,1.7rem);font-weight:800;letter-spacing:-.01em;color:var(--fg);}
+.modal-phone__link:hover{color:var(--purple);}
+.modal-or{display:flex;align-items:center;gap:1rem;margin:1.4rem 0 1.2rem;font-size:.85rem;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.55);}
+.modal-or::before,.modal-or::after{content:"";flex:1;height:1px;background:rgba(255,255,255,.12);}
+.contact-modal .form-success{padding:1.5rem .5rem;}
+@media (max-width:575.98px){
+  .contact-modal__panel{padding:1.8rem 1.2rem 1.5rem;border-radius:20px;}
+  .modal-phone{padding:.8rem .9rem;gap:.65rem;flex-wrap:nowrap;}
+  .modal-phone__icon{width:2.2rem;height:2.2rem;font-size:1rem;}
+  .modal-phone__link{font-size:1.2rem;min-width:0;white-space:nowrap;}
+  .modal-phone .copy-btn{margin-left:auto;flex:none;}
+}
+.contact-modal__panel:has(.form-success:not([hidden])) .modal-or{display:none;}
+
+/* Vystředěná sekce (kontakt.html "Než napíšete"): úzký sloupec se centruje i s obsahem */
+.sub-narrow.sub-center{text-align:center;}
+.sub-narrow.sub-center > *{margin-left:auto;margin-right:auto;}
+
+/* FAQ: obsah je zabalený do .faq-body kvůli animaci výšky (page.js) */
+.faq-body{overflow:hidden;}
+.faq details.is-closing summary::after{transform:none;background:transparent;}
+
+/* Zmenšená (sticky) hlavička na desktopu: aktivní položka bez podtržení a záře. Čára je pěkná hned po
+   příchodu na stránku, ale po začátku scrollu se tlačí do okraje skleněné hlavičky, takže plynule zmizí
+   a aktivní položku odliší jen barva (ostatní se ztlumí). Tučnost se záměrně nemění — posunula by šířky
+   položek a menu by poskočilo. Mobilní menu se nemění. */
+@media (min-width:992px){
+  .navbar-custom .nav-link{transition:color .3s ease;}
+  .navbar-custom .nav-link.active::after{
+    transform-origin:center;
+    transition:opacity .3s ease,transform .3s ease;
+  }
+  .navbar-custom.scrolled .nav-link{color:rgba(255,255,255,.58);}
+  .navbar-custom.scrolled .nav-link:hover{color:var(--fg);}
+  .navbar-custom.scrolled .nav-link.active{color:#fff;}
+  .navbar-custom.scrolled .nav-link.active::after{opacity:0;transform:scaleX(.35);}
 }
