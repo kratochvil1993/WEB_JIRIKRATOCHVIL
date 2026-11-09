@@ -644,6 +644,51 @@
     });
   }
 
+  /* ---------------- Dekorativní okna s kódem (web.html): řádky se jednou "napíšou" ----------------
+     Řádky mají v CSS width: fit-content, takže gsap.from(width: 0) píše přesně do konce textu
+     (steps = počet znaků, jako na úvodní stránce). Po doběhnutí se inline width smaže. data-gap
+     na řádku = pauza před ním (střídání mluvčích v chatu). Bez animací vidět hotový text. */
+  if (!reduceMotion) {
+    gsap.utils.toArray("[data-type-code]").forEach(function (win) {
+      var tl = gsap.timeline({ scrollTrigger: { trigger: win, start: "top 85%", once: true } });
+      var first = true;
+      win.querySelectorAll(".code-line").forEach(function (line) {
+        var n = line.textContent.trim().length;
+        if (!n) return;
+        var gap = first ? 0.5 : parseFloat(line.getAttribute("data-gap") || "0.15");
+        first = false;
+        tl.from(line, { width: 0, duration: Math.max(0.3, n * 0.032), ease: "steps(" + n + ")", clearProps: "width" }, ">+" + gap);
+      });
+    });
+  }
+
+  /* ---------------- Git log u postupu (web.html): commit naskočí, když scroll dojede k jeho kroku ----------------
+     .git-commit číslo i odpovídá #postup-(i+1). Bez animací jsou všechny vidět hned. */
+  if (!reduceMotion) {
+    var gitCommits = gsap.utils.toArray(".git-log .git-commit");
+    gsap.set(gitCommits, { opacity: 0, x: -12 });
+    gitCommits.forEach(function (c, i) {
+      var st = document.getElementById("postup-" + (i + 1));
+      if (!st) { gsap.set(c, { opacity: 1, x: 0 }); return; }
+      ScrollTrigger.create({
+        trigger: st, start: "top 72%", once: true,
+        onEnter: function () { gsap.to(c, { opacity: 1, x: 0, duration: 0.55, ease: "power2.out" }); }
+      });
+    });
+  }
+
+  /* ---------------- Checklist kampaně u postupu (marketing.html): políčko se odškrtne, když scroll dojede ke kroku ----------------
+     V HTML jsou všechny .is-done (bez JS / reduced-motion vidět hotovo); tady se sundají a vrací po krocích. */
+  if (!reduceMotion) {
+    var todoItems = gsap.utils.toArray(".todo-log .todo-item");
+    todoItems.forEach(function (it, i) {
+      var st = document.getElementById("postup-" + (i + 1));
+      if (!st) return;
+      it.classList.remove("is-done");
+      ScrollTrigger.create({ trigger: st, start: "top 72%", once: true, onEnter: function () { it.classList.add("is-done"); } });
+    });
+  }
+
   /* ---------------- Karty: záře za kurzorem a jemný náklon ---------------- */
   document.querySelectorAll(".feature-card").forEach(function (card) {
     card.addEventListener("mousemove", function (e) {

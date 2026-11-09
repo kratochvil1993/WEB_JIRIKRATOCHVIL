@@ -333,17 +333,30 @@
   </section>
 
   <section class="sub-section" id="proc">
-    <div class="container sub-narrow">
+    <div class="container sub-narrow sub-split">
       <p class="eyebrow reveal">Proč to dělám</p>
       <h2 class="reveal-wipe">Web bez návštěvníků je <span class="gradient-text">jen vizitka</span></h2>
       <p class="reveal">Kvalitní web nebo e-shop je jen první krok. Bez cíleného marketingu ho najde málokdo.</p>
       <p class="reveal">Samotná reklama ale problém nevyřeší. Když nevíte, co vám přináší, jen utrácíte. Proto nezačínám kampaní, ale měřením.</p>
       <p class="reveal">Baví mě na tom, že se dá všechno spočítat. Každá koruna má své číslo a z čísel poznáte, co funguje a co ne. Rozhoduju podle dat, ne podle pocitu.</p>
+      <aside class="code-win code-win--aside reveal" data-type-code aria-hidden="true">
+        <div class="code-win__bar"><i></i><i></i><i></i><span class="code-win__name">hledané dotazy</span></div>
+        <div class="code-win__body">
+          <div class="code-line"><span class="tok-comment">// co lidé opravdu hledají</span></div>
+          <div class="code-line">&nbsp;</div>
+          <div class="code-line q-yes"><span class="q-term">dárky pro tchyni</span>      <span class="q-mark">✓</span></div>
+          <div class="code-line q-no"><span class="q-term">dárky zdarma</span>          <span class="q-mark">✕</span></div>
+          <div class="code-line q-yes"><span class="q-term">dárek pro mámu</span>        <span class="q-mark">✓</span></div>
+          <div class="code-line q-no"><span class="q-term">jak vyrobit dárek</span>     <span class="q-mark">✕</span></div>
+          <div class="code-line">&nbsp;</div>
+          <div class="code-line"><span class="tok-comment">// zbytečné vyřazuju</span><span class="code-caret"></span></div>
+        </div>
+      </aside>
     </div>
   </section>
 
   <section class="sub-section" id="postup">
-    <div class="container sub-narrow">
+    <div class="container sub-narrow sub-split">
       <p class="eyebrow reveal">Jak to probíhá</p>
       <h2 class="reveal-wipe">Od cíle <span class="gradient-text">po vyhodnocení</span></h2>
       <ol class="steps">
@@ -378,6 +391,17 @@
           </div>
         </li>
       </ol>
+      <aside class="code-win code-win--aside todo-log reveal" aria-hidden="true">
+        <div class="code-win__bar"><i></i><i></i><i></i><span class="code-win__name">kampaň</span></div>
+        <div class="code-win__body">
+          <div class="git-cmd"><span class="tok-comment">// stav kampaně</span></div>
+          <div class="todo-item is-done">cíl: objednávky</div>
+          <div class="todo-item is-done">měření zapnuto</div>
+          <div class="todo-item is-done">kampaně připraveny</div>
+          <div class="todo-item is-done">zbytečné dotazy pryč</div>
+          <div class="todo-item is-done">přehled bez omáčky<span class="code-caret"></span></div>
+        </div>
+      </aside>
     </div>
   </section>
 
@@ -629,6 +653,13 @@
   </div>
 </dialog>
 
+<script>
+/* Pro ty, kdo koukají pod pokličku. */
+if (window.console && console.log) {
+  console.log("%cKoukáte pod pokličku?", "font:700 16px/1.6 sans-serif;color:#00b8c8");
+  console.log("Jako u kampaní: co se dá změřit, to se dá zlepšit. Napište mi: info@jirikratochvil.eu");
+}
+</script>
 <script src="assets/vendor/gsap/gsap.min.js"></script>
 <script src="assets/vendor/gsap/ScrollTrigger.min.js"></script>
 <script src="assets/vendor/gsap/ScrollToPlugin.min.js"></script>

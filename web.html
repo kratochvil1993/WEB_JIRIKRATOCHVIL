@@ -337,18 +337,31 @@
   </section>
 
   <section class="sub-section" id="proc">
-    <div class="container sub-narrow">
+    <div class="container sub-narrow sub-split">
       <p class="eyebrow reveal">Proč to dělám</p>
       <h2 class="reveal-wipe">Web je první dojem. <span class="gradient-text">Dotáhnu ho do detailu.</span></h2>
       <p class="reveal">Web je často první, co o vás člověk uvidí. Když se pomalu načítá, na mobilu se špatně ovládá nebo v něm nenajde, co hledá, druhou šanci nedostanete.</p>
       <p class="reveal">Baví mě právě tyhle detaily. Že se stránka rozjede hned. Že tlačítko je tam, kde ho čekáte. Že objednávka projde na první pokus. Zní to nenápadně, ale přesně tohle rozhoduje, jestli web jen existuje, nebo opravdu pracuje.</p>
       <p class="reveal">Dělám to sám, od návrhu po nasazení. Víte, s kým mluvíte, a nic se neztratí cestou mezi grafikem, programátorem a někým, kdo to nasadí.</p>
       <p class="reveal">K ruce mám AI agenty. Berou na sebe rutinu, takže můžu víc času věnovat tomu, na čem záleží: struktuře, detailům a tomu, aby to celé dávalo smysl. Co z toho vyleze, vždycky procházím a za výsledek ručím já.</p>
+      <aside class="code-win code-win--aside reveal" data-type-code aria-hidden="true">
+        <div class="code-win__bar"><i></i><i></i><i></i><span class="code-win__name">detaily.js</span></div>
+        <div class="code-win__body">
+          <div class="code-line"><span class="tok-kw">const</span> <span class="tok-var">web</span> <span class="tok-op">=</span> <span class="tok-kw">new</span> <span class="tok-fn">Web</span><span class="tok-punc">();</span></div>
+          <div class="code-line"><span class="tok-var">web</span><span class="tok-punc">.</span>rychlost <span class="tok-op">=</span> <span class="tok-str">"ihned"</span><span class="tok-punc">;</span></div>
+          <div class="code-line"><span class="tok-var">web</span><span class="tok-punc">.</span>tlacitko <span class="tok-op">=</span> <span class="tok-str">"kde má být"</span><span class="tok-punc">;</span></div>
+          <div class="code-line">&nbsp;</div>
+          <div class="code-line"><span class="tok-kw">if</span> <span class="tok-punc">(</span><span class="tok-var">zakaznik</span><span class="tok-punc">.</span>nenajde<span class="tok-punc">)</span> <span class="tok-punc">{</span></div>
+          <div class="code-line indent"><span class="tok-kw">return</span> <span class="tok-tag">&lt;Hero /&gt;</span><span class="tok-punc">;</span></div>
+          <div class="code-line"><span class="tok-punc">}</span></div>
+          <div class="code-line"><span class="tok-comment">// druhou šanci nedostanete</span><span class="code-caret"></span></div>
+        </div>
+      </aside>
     </div>
   </section>
 
   <section class="sub-section" id="postup">
-    <div class="container sub-narrow">
+    <div class="container sub-narrow sub-split">
       <p class="eyebrow reveal">Jak to probíhá</p>
       <h2 class="reveal-wipe">Od prvního hovoru <span class="gradient-text">po spuštění</span></h2>
       <ol class="steps">
@@ -383,6 +396,17 @@
           </div>
         </li>
       </ol>
+      <aside class="code-win code-win--aside git-log reveal" aria-hidden="true">
+        <div class="code-win__bar"><i></i><i></i><i></i><span class="code-win__name">git log</span></div>
+        <div class="code-win__body">
+          <div class="git-cmd"><span class="tok-punc">$</span> git log --oneline</div>
+          <div class="git-commit"><span class="tok-kw">a3f9c2</span> <span class="tok-fn">zadání:</span> jasný rozsah</div>
+          <div class="git-commit"><span class="tok-kw">7be0d1</span> <span class="tok-fn">návrh:</span> ještě o pixel</div>
+          <div class="git-commit"><span class="tok-kw">91c44a</span> <span class="tok-fn">vývoj:</span> čtu každý diff</div>
+          <div class="git-commit"><span class="tok-kw">d00dfe</span> <span class="tok-fn">spuštění:</span> bez paniky</div>
+          <div class="git-commit"><span class="tok-kw">5c2e8b</span> <span class="tok-fn">péče:</span> web žije dál<span class="code-caret"></span></div>
+        </div>
+      </aside>
     </div>
   </section>
 
@@ -398,6 +422,15 @@
             <h3>Vývoj s AI agenty po boku</h3>
             <p>Agenti mi pomáhají s kódem, testováním a rutinními úpravami. Práce jde rychleji a detaily se tolik neztrácejí. Zadání, návrh a finální kontrola ale zůstávají na mně, protože za výsledek odpovídám já, ne nástroj.</p>
             <div class="tags"><span class="tag">AI agenti</span><span class="tag">Revize kódu</span><span class="tag">Testování</span></div>
+            <div class="code-win code-win--chat" data-type-code aria-hidden="true">
+              <div class="code-win__bar"><i></i><i></i><i></i><span class="code-win__name">agent.log</span></div>
+              <div class="code-win__body">
+                <div class="code-line"><span class="chat-who chat-agent">agent</span> <span class="tok-punc">›</span> formulář hotový, commit?</div>
+                <div class="code-line" data-gap="0.55"><span class="chat-who chat-me">já</span>    <span class="tok-punc">›</span> ne, tohle ne. přepiš.</div>
+                <div class="code-line" data-gap="0.55"><span class="chat-who chat-agent">agent</span> <span class="tok-punc">›</span> rozumím, přepisuju…</div>
+                <div class="code-line" data-gap="0.7"><span class="chat-who chat-me">já</span>    <span class="tok-punc">›</span> <span class="tok-ok">✓ schváleno</span><span class="code-caret"></span></div>
+              </div>
+            </div>
           </div>
           <ol class="ai-flow" aria-label="Rozdělení práce mezi mě a AI agenty">
             <li class="ai-flow__step is-me">
@@ -664,6 +697,13 @@
   </div>
 </dialog>
 
+<script>
+/* Pro ty, kdo koukají pod pokličku. */
+if (window.console && console.log) {
+  console.log("%cKoukáte pod pokličku?", "font:700 16px/1.6 sans-serif;color:#00b8c8");
+  console.log("Takové lidi mám rád. Napište mi: info@jirikratochvil.eu");
+}
+</script>
 <script src="assets/vendor/gsap/gsap.min.js"></script>
 <script src="assets/vendor/gsap/ScrollTrigger.min.js"></script>
 <script src="assets/vendor/gsap/ScrollToPlugin.min.js"></script>
