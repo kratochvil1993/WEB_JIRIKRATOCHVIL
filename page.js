@@ -539,6 +539,16 @@
     });
   }
 
+  /* ---------------- Schéma "já / agenti" v AI kartě (web.html): spojnice se dokreslí a kroky naskočí, jednou ---------------- */
+  if (!reduceMotion) {
+    gsap.utils.toArray(".ai-flow").forEach(function (fl) {
+      var steps = fl.querySelectorAll(".ai-flow__step");
+      var tl = gsap.timeline({ scrollTrigger: { trigger: fl, start: "top 85%", once: true } });
+      tl.to(fl, { "--flow": 1, duration: 1.2, ease: "power2.inOut" }, 0)
+        .fromTo(steps, { opacity: 0, x: 26 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out", stagger: 0.28 }, 0.1);
+    });
+  }
+
   /* ---------------- Karty: záře za kurzorem a jemný náklon ---------------- */
   document.querySelectorAll(".feature-card").forEach(function (card) {
     card.addEventListener("mousemove", function (e) {
@@ -546,12 +556,12 @@
       var x = e.clientX - r.left, y = e.clientY - r.top;
       card.style.setProperty("--mx", x + "px");
       card.style.setProperty("--my", y + "px");
-      if (!isMobile && !reduceMotion) {
+      if (!isMobile && !reduceMotion && !card.classList.contains("card-wide")) {
         gsap.to(card, { rotateX: ((y / r.height) - 0.5) * -8, rotateY: ((x / r.width) - 0.5) * 8, duration: 0.3, ease: "power2.out", transformPerspective: 700 });
       }
     });
     card.addEventListener("mouseleave", function () {
-      if (!isMobile && !reduceMotion) gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.5, ease: "power2.out" });
+      if (!isMobile && !reduceMotion && !card.classList.contains("card-wide")) gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.5, ease: "power2.out" });
     });
   });
 
@@ -570,7 +580,8 @@
       onEnter: function (batch) {
         gsap.to(batch, {
           opacity: 1, y: 0, duration: 0.8, ease: "power3.out",
-          stagger: 0.09, overwrite: "auto" /* ne true: zabilo by i tweeny kroků/karet na stejných prvcích */
+          stagger: Math.min(0.09, 0.5 / Math.max(batch.length, 1)), /* celé odkrytí max ~0,5 s, i když se při skoku v okně sejde spousta prvků */
+          overwrite: "auto" /* ne true: zabilo by i tweeny kroků/karet na stejných prvcích */
         });
       }
     });

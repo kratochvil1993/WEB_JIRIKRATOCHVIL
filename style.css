@@ -157,7 +157,7 @@ textarea.form-control{min-height:calc(1.5em + .75rem + 2px);}
   --purple-rgb:0,238,255;
   --magenta-rgb:10,200,224;
   --accent2:#0ac8e0;   /* konec gradientu tlačítek, ikon a sloupců (původní azurová) */
-  --accent-ice:#a8fbff; /* konec gradientu nadpisů — ledově světlá, hloubka světlem místo druhé barvy */
+  --accent-ice:#a8fbff; /* DNES NEPOUŽITO: dřív konec gradientu nadpisů; přechod do světla je na webu záměrně pryč */
   --glow-x:50%;
   --glow-y:50%;
   --grad-a:#0ef;
@@ -395,12 +395,10 @@ section{position:relative;z-index:1;}
 }
 h1,h2,h3{font-weight:800;letter-spacing:-0.02em;text-wrap:pretty;}
 section h2{font-size:clamp(2rem,1.3rem + 2.8vw,3.25rem);margin-bottom:1.1rem;}
-.gradient-text{
-  background:linear-gradient(90deg,var(--purple),var(--accent-ice));
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
-}
+/* Zvýrazněná slova v nadpisech: jednobarevná azurová. Dřív to byl přechod do ledově světlé
+   (--accent-ice) — záměrně pryč, na webu už nikde nechceme přechod do světla. Třída se jmenuje
+   .gradient-text jen ze zvyku (je v HTML na ~30 místech). */
+.gradient-text{color:var(--purple);}
 p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
 
 /* Hero */
@@ -437,9 +435,8 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
 /* Split nadpisů na písmena (script.js splitChars) — jen pro scroll scény (hero, kontakt) */
 .split-word{display:inline-block;white-space:nowrap;}
 .split-char{display:inline-block;will-change:transform,opacity;}
-/* gradient-text využívá background-clip:text, který se přes transformované
-   inline-block potomky neprojeví — gradient proto dostane každé písmeno zvlášť */
-.gradient-text .split-char{background:linear-gradient(90deg,var(--purple),var(--accent-ice));-webkit-background-clip:text;background-clip:text;color:transparent;}
+/* písmena po splitu zdědí barvu zvýrazněného slova (.gradient-text) */
+.gradient-text .split-char{color:var(--purple);}
 #hero h1{
   font-size:clamp(2.6rem,6vw,4.6rem);
   margin-bottom:.5rem;
@@ -1397,11 +1394,56 @@ footer::after{
   }
 }
 
-/* Zvýrazněná část hero nadpisu na podstránkách je jednobarevná (azurová jako na úvodní stránce),
-   bez gradientu; gradient zůstává u nadpisů sekcí níž. Přepisuje i gradient po písmenech
-   (.gradient-text .split-char), který vzniká po rozdělení nadpisu. */
-.sub-hero h1 .gradient-text,
-.sub-hero h1 .gradient-text .split-char{
-  background:none;-webkit-background-clip:border-box;background-clip:border-box;
-  color:var(--purple);
+/* Zásady ("Na čem mi záleží") jako číslované karty — odlišné od karet technologií (ikona + štítky) */
+.principles{gap:1rem;grid-template-columns:1fr;}
+@media (min-width:600px){.principles{grid-template-columns:repeat(2,1fr);}}
+@media (min-width:1100px){.principles{grid-template-columns:repeat(4,1fr);}}
+.principle-card{padding:1.6rem 1.4rem 1.5rem;}
+.principle-num{
+  display:block;margin-bottom:1rem;width:fit-content;
+  font-size:3.8rem;font-weight:800;line-height:.9;letter-spacing:-.04em;
+  /* výplň s přechodem do průhledna; obrys (text-stroke) se u některých číslic ve variabilním Inter
+     kreslí s čárou navíc (překrývající se obrysy, hlavně u "4") */
+  color:transparent;
+  background:linear-gradient(180deg,rgba(var(--purple-rgb),.85) 0%,rgba(var(--purple-rgb),.06) 100%);
+  -webkit-background-clip:text;background-clip:text;
+  opacity:.8;transition:opacity .4s ease;
+}
+.principle-card:hover .principle-num{opacity:1;}
+.principles .principle-card h3{font-size:1.2rem;margin-bottom:.45rem;}
+.principles .principle-card p{font-size:1rem;line-height:1.6;}
+
+/* Široká AI karta (web.html): vlevo text, vpravo schéma rozdělení práce (page.js ho jednou odkryje) */
+.sub-grid .card-split{display:grid;gap:1.8rem 2.6rem;align-items:center;padding:1.8rem 1.6rem;}
+@media (min-width:992px){.sub-grid .card-split{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);padding:2rem 2.2rem;}}
+.ai-flow{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.75rem;position:relative;}
+.ai-flow::before{ /* svislá spojnice za kroky */
+  content:"";position:absolute;left:calc(1rem + 1.15rem - 1px);top:1.6rem;bottom:1.6rem;width:2px;
+  background:rgba(var(--purple-rgb),.3);transform:scaleY(var(--flow,1));transform-origin:top;
+}
+.ai-flow__step{
+  position:relative;display:grid;grid-template-columns:2.3rem 1fr auto;gap:.2rem .9rem;align-items:center;
+  padding:.75rem 1rem;border-radius:14px;
+  background:rgba(10,16,22,.78);border:1px solid rgba(255,255,255,.08);
+}
+.ai-flow__dot{
+  width:2.3rem;height:2.3rem;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:.9rem;
+}
+.ai-flow__title{display:block;color:var(--fg);font-size:1rem;font-weight:700;line-height:1.25;}
+.ai-flow__text{margin:.1rem 0 0;font-size:.88rem;line-height:1.4;color:rgba(255,255,255,.62);}
+.ai-flow__who{font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:.22rem .7rem;border-radius:999px;white-space:nowrap;}
+/* já = plná azurová, agenti = tlumený obrys (je vidět, kdo co dělá) */
+.ai-flow .is-me .ai-flow__dot{background:linear-gradient(135deg,var(--purple),var(--accent2));color:#04141a;}
+.ai-flow .is-me .ai-flow__who{background:var(--purple);color:#04141a;}
+.ai-flow .is-agent .ai-flow__dot{background:rgba(var(--purple-rgb),.1);border:1px solid rgba(var(--purple-rgb),.5);color:var(--purple);}
+.ai-flow .is-agent .ai-flow__who{border:1px solid rgba(var(--purple-rgb),.5);color:var(--purple);}
+.ai-flow .is-agent{border-style:dashed;border-color:rgba(var(--purple-rgb),.35);}
+@media (max-width:575.98px){
+  .ai-flow__step{grid-template-columns:2.3rem 1fr;}
+  .ai-flow__who{grid-column:2;justify-self:start;margin-top:.15rem;}
+}
+@media (prefers-reduced-motion:no-preference){
+  .js .ai-flow{--flow:0;}
+  .js .ai-flow__step{opacity:0;}
 }

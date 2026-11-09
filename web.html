@@ -487,11 +487,35 @@
       <h2 class="reveal-wipe">Na čem <span class="gradient-text">stavím</span></h2>
       <p class="reveal" style="max-width:38rem;">Nástroje vybírám podle toho, co projekt potřebuje, ne podle toho, co je zrovna v módě.</p>
       <div class="sub-grid">
-        <div class="feature-card card-wide reveal">
-          <div class="icon"><svg class="bi" aria-hidden="true"><use href="#bi-rocket-takeoff-fill"/></svg></div>
-          <h3>Vývoj s AI agenty po boku</h3>
-          <p>Agenti mi pomáhají s kódem, testováním a rutinními úpravami. Práce jde rychleji a detaily se tolik neztrácejí. Zadání, návrh a finální kontrola ale zůstávají na mně, protože za výsledek odpovídám já, ne nástroj.</p>
-          <div class="tags"><span class="tag">AI agenti</span><span class="tag">Revize kódu</span><span class="tag">Testování</span></div>
+        <div class="feature-card card-wide card-split reveal">
+          <div class="card-split__text">
+            <div class="icon"><svg class="bi" aria-hidden="true"><use href="#bi-rocket-takeoff-fill"/></svg></div>
+            <h3>Vývoj s AI agenty po boku</h3>
+            <p>Agenti mi pomáhají s kódem, testováním a rutinními úpravami. Práce jde rychleji a detaily se tolik neztrácejí. Zadání, návrh a finální kontrola ale zůstávají na mně, protože za výsledek odpovídám já, ne nástroj.</p>
+            <div class="tags"><span class="tag">AI agenti</span><span class="tag">Revize kódu</span><span class="tag">Testování</span></div>
+          </div>
+          <ol class="ai-flow" aria-label="Rozdělení práce mezi mě a AI agenty">
+            <li class="ai-flow__step is-me">
+              <span class="ai-flow__dot" aria-hidden="true">1</span>
+              <div><strong class="ai-flow__title">Zadání</strong><p class="ai-flow__text">Určuju, co se bude dělat a proč.</p></div>
+              <span class="ai-flow__who">Já</span>
+            </li>
+            <li class="ai-flow__step is-agent">
+              <span class="ai-flow__dot" aria-hidden="true">2</span>
+              <div><strong class="ai-flow__title">Kód a testy</strong><p class="ai-flow__text">Agenti navrhují řešení a zkoušejí je.</p></div>
+              <span class="ai-flow__who">Agenti</span>
+            </li>
+            <li class="ai-flow__step is-me">
+              <span class="ai-flow__dot" aria-hidden="true">3</span>
+              <div><strong class="ai-flow__title">Kontrola</strong><p class="ai-flow__text">Každou změnu projdu a rozhodnu, jestli projde.</p></div>
+              <span class="ai-flow__who">Já</span>
+            </li>
+            <li class="ai-flow__step is-me">
+              <span class="ai-flow__dot" aria-hidden="true">4</span>
+              <div><strong class="ai-flow__title">Nasazení</strong><p class="ai-flow__text">Spouštím a hlídám, že vše funguje.</p></div>
+              <span class="ai-flow__who">Já</span>
+            </li>
+          </ol>
         </div>
         <div class="feature-card reveal">
           <div class="icon"><svg class="bi" aria-hidden="true"><use href="#bi-lightning-charge-fill"/></svg></div>
@@ -526,19 +550,23 @@
       <p class="eyebrow reveal">Na čem mi záleží</p>
       <h2 class="reveal-wipe">Čtyři věci, <span class="gradient-text">ve kterých nechci slevit</span></h2>
       <div class="principles">
-        <div class="reveal">
+        <div class="feature-card principle-card reveal">
+          <span class="principle-num" aria-hidden="true">01</span>
           <h3>Rychlost</h3>
           <p>Web má naběhnout hned. Šetřím každý zbytečný kilobajt, protože návštěvník nečeká.</p>
         </div>
-        <div class="reveal">
+        <div class="feature-card principle-card reveal">
+          <span class="principle-num" aria-hidden="true">02</span>
           <h3>Mobil jako první</h3>
           <p>Většina lidí přijde z telefonu. Web proto navrhuju a testuju nejdřív tam.</p>
         </div>
-        <div class="reveal">
+        <div class="feature-card principle-card reveal">
+          <span class="principle-num" aria-hidden="true">03</span>
           <h3>Srozumitelnost</h3>
           <p>Jasné texty, jasná navigace, jasné tlačítko. Návštěvník nemá hádat, co dál.</p>
         </div>
-        <div class="reveal">
+        <div class="feature-card principle-card reveal">
+          <span class="principle-num" aria-hidden="true">04</span>
           <h3>Měřitelnost</h3>
           <p>Co se nedá změřit, nedá se zlepšit. Proto měření řeším hned při spuštění, ne až potom.</p>
         </div>
