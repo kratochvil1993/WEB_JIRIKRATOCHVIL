@@ -397,8 +397,10 @@
       /* jemný náklon grafiky za myší (jen desktop) */
       function enableTilt() {
         /* při odscrollování grafika lehce odjede a zeslábne (scrub, vratné) */
-        gsap.to(gfx, { y: -40, scale: 0.96, opacity: 0.45, ease: "none", immediateRender: false,
-          scrollTrigger: { trigger: hero, start: "top top", end: "bottom 25%", scrub: 0.6 } });
+        /* stejná dráha a křivka jako rozpad nadpisu (amp.dist, power2.out), ať jdou ruku v ruce;
+           scale = jak výrazně se zmenší (1 = vůbec) */
+        gsap.to(gfx, { y: -60, scale: 0.8, opacity: 0.35, ease: "power2.out", immediateRender: false,
+          scrollTrigger: { trigger: hero, start: "top top", end: "+=" + amp.dist, scrub: 0.5 } });
         var qy = gsap.quickTo(gfx, "rotationY", { duration: 0.8, ease: "power3.out" });
         var qx = gsap.quickTo(gfx, "rotationX", { duration: 0.8, ease: "power3.out" });
         hero.addEventListener("mousemove", function (e) {
