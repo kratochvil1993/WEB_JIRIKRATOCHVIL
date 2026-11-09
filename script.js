@@ -526,7 +526,7 @@
 
   /* slow ambient float of blobs (paused if reduced motion) */
   if (!reduceMotion) {
-    /* na mobilu se bloby nehýbou: skvrna putující přes malý displej působí jako flek (zůstává jen dýchání níž) */
+    /* na mobilu se bloby nehýbou: skvrna putující přes malý displej působila jako reflektor (dýchání níž zůstává) */
     if (!isMobile) {
       gsap.to("#bg-blob-a", { x: 80, y: 60, duration: 14, ease: "sine.inOut", yoyo: true, repeat: -1 });
       gsap.to("#bg-blob-b", { x: -60, y: -80, duration: 17, ease: "sine.inOut", yoyo: true, repeat: -1 });

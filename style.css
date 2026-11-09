@@ -244,36 +244,58 @@ a:hover{color:var(--purple);}
    navbar's own height (~140-160px with the status bar), otherwise the
    glow is already at full strength the moment it clears the navbar and
    the hard edge just reappears below it instead of at the viewport edge. */
+/* Mobil, úvodní stránka (html.is-home): pozadí přesně jako v pushnuté verzi — záře, tečky (#particle-canvas) i bloby se
+   hýbou jako dřív; záře se u okrajů vyhasíná do ploché barvy (180 px nahoře, 140 px dole), což splyne s průsvitnou
+   lištou Safari. Tečky a barvy podle sekcí (--grad-a/b) jsou beze změny; tvar záře je upravený, aby nepůsobila jako
+   reflektor: kruh (skvrna A) je svislý závoj přes celou šířku s jádrem POD koncem masky (jasné jádro přímo v přechodu
+   masky vypadalo jako čepice), skvrna B dole je pryč, bloby se na mobilu nehýbou (drift vypíná script.js) a v pozadí
+   je jemný azurový nádech. Měřeno mřížkou jasu (viz "Testing" v CLAUDE.md). */
 @media (max-width:991px){
-  /* Mobil: záře je klidné pole bez ostrých pruhů. Maska (splynutí se Safari lištou) je krátká (80 px nahoře, dole žádná — spodní lišta Safari je průsvitná) a hladká (ease), ale jasné
-     jádro skvrn leží až pod jejím koncem (dřív bylo jasné jádro přímo v přechodu: tmavý pruh pod lištou a hned jasná čepice). */
-  #bg-layer,#particle-canvas{
-    -webkit-mask-image:linear-gradient(to bottom, transparent 0, rgba(0,0,0,.12) 12px, rgba(0,0,0,.35) 30px, rgba(0,0,0,.65) 50px, rgba(0,0,0,.88) 68px, #000 80px);
-    mask-image:linear-gradient(to bottom, transparent 0, rgba(0,0,0,.12) 12px, rgba(0,0,0,.35) 30px, rgba(0,0,0,.65) 50px, rgba(0,0,0,.88) 68px, #000 80px);
+  html.is-home #bg-layer,html.is-home #particle-canvas{
+    -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 180px, #000 calc(100% - 140px), transparent 100%);
+    mask-image:linear-gradient(to bottom, transparent 0, #000 180px, #000 calc(100% - 140px), transparent 100%);
   }
-  /* Plocha pod/za lištami Safari: stavový řádek a plovoucí spodní lišta se tónují barvou stránky (theme-color + html/body).
-     Dřív #0a0a0f, tedy plochý tmavý pruh pod září dole; teď barva záře u spodku (stejná hodnota je v theme-color
-     metě s media="(max-width: 991px)" v každé stránce). Ověřeno na iPhonu (testovací stránka). */
-  html,body{background:#0c1d24;}
-  /* okolní záře: jemný azurový nádech přes celé pozadí (bez nového odstínu), ať telefon není proti desktopu tmavý */
-  #bg-layer{background:linear-gradient(180deg,rgba(var(--magenta-rgb),.07) 0%,rgba(var(--magenta-rgb),.08) 50%,rgba(var(--magenta-rgb),.07) 100%),var(--bg);}
-  /* Bloby ve vw (ne vmax = výška), jádra níž pod masku, slabší špička; bg-gradient s menšími alfa */
-  #bg-gradient{
+  html.is-home #bg-layer{background:linear-gradient(180deg,rgba(var(--magenta-rgb),.06) 0%,rgba(var(--magenta-rgb),.07) 50%,rgba(var(--magenta-rgb),.06) 100%),var(--bg);}
+  html.is-home #bg-gradient{
     background:
       radial-gradient(60% 34% at 22% 30%, rgba(var(--purple-rgb),.10), transparent 72%),
       radial-gradient(60% 34% at 80% 24%, rgba(var(--magenta-rgb),.07), transparent 72%),
       radial-gradient(70% 36% at 50% 82%, rgba(var(--purple-rgb),.08), transparent 72%),
       linear-gradient(var(--grad-angle), rgba(var(--purple-rgb),.04), rgba(var(--magenta-rgb),.03));
   }
-  /* horní záře jako vodorovně rovnoměrný závoj shora (ne kruh/ovál, který byl vidět jako reflektor s tmavými boky):
-     svislý přechod přes celou šířku, bez blur filteru (přechod je sám hladký, a je levnější) */
-  #bg-blob-a{width:100%;height:90vh;top:0;left:0;border-radius:0;filter:none;opacity:calc(var(--glow-a,.5) * .35);}
-  /* spodní skvrna na mobilu pryč: byla to samostatná světlá oválná plocha obklopená tmavým podkladem = flek */
-  #bg-blob-b{display:none;}
+  html.is-home #bg-blob-a{width:100%;height:100vh;top:0;left:0;border-radius:0;filter:none;opacity:calc(var(--glow-a,.5) * .32);}
+  html.is-home #bg-blob-b{display:none;}
 }
 @supports (color:color-mix(in srgb,red 50%,transparent)){
   @media (max-width:991px){
-    #bg-blob-a{background:linear-gradient(180deg, color-mix(in srgb,var(--grad-a) 40%,transparent) 0%, color-mix(in srgb,var(--grad-a) 55%,transparent) 22%, color-mix(in srgb,var(--grad-a) 28%,transparent) 45%, color-mix(in srgb,var(--grad-a) 10%,transparent) 72%, transparent 100%);}
+    html.is-home #bg-blob-a{background:linear-gradient(180deg, color-mix(in srgb,var(--grad-a) 18%,transparent) 0%, color-mix(in srgb,var(--grad-a) 55%,transparent) 30%, color-mix(in srgb,var(--grad-a) 36%,transparent) 50%, color-mix(in srgb,var(--grad-a) 12%,transparent) 75%, transparent 100%);}
+  }
+}
+/* Mobil, ostatní stránky (html:not(.is-home), tj. podstránky, GDPR, sitemap, 404): body (a html) má neprůhlednou barvu
+   #0c1d24, takže vrstvy se záporným z-indexem (#bg-layer, bloby) jsou pod ní schované — vizuálně plochá teal plocha a
+   nahoře/dole v Safari nevzniká žádný pruh. Pravidla pro záři níže jsou tedy nyní neviditelná; nechaná jsou záměrně, ať se
+   nic jiného nezmění. theme-color má v těchto stránkách mobilní #0c1d24 (media="(max-width: 991px)"). */
+@media (max-width:991px){
+  html:not(.is-home) #bg-layer,html:not(.is-home) #particle-canvas{
+    -webkit-mask-image:linear-gradient(to bottom, transparent 0, rgba(0,0,0,.12) 12px, rgba(0,0,0,.35) 30px, rgba(0,0,0,.65) 50px, rgba(0,0,0,.88) 68px, #000 80px);
+    mask-image:linear-gradient(to bottom, transparent 0, rgba(0,0,0,.12) 12px, rgba(0,0,0,.35) 30px, rgba(0,0,0,.65) 50px, rgba(0,0,0,.88) 68px, #000 80px);
+  }
+  html:not(.is-home){background:#0c1d24;}
+  html:not(.is-home) body{background:#0c1d24;}
+  html:not(.is-home) #bg-layer{background:linear-gradient(180deg,rgba(var(--magenta-rgb),.07) 0%,rgba(var(--magenta-rgb),.08) 50%,rgba(var(--magenta-rgb),.07) 100%),var(--bg);}
+  html:not(.is-home) #bg-gradient{
+    background:
+      radial-gradient(60% 34% at 22% 30%, rgba(var(--purple-rgb),.10), transparent 72%),
+      radial-gradient(60% 34% at 80% 24%, rgba(var(--magenta-rgb),.07), transparent 72%),
+      radial-gradient(70% 36% at 50% 82%, rgba(var(--purple-rgb),.08), transparent 72%),
+      linear-gradient(var(--grad-angle), rgba(var(--purple-rgb),.04), rgba(var(--magenta-rgb),.03));
+  }
+  html:not(.is-home) #bg-blob-a{width:100%;height:90vh;top:0;left:0;border-radius:0;filter:none;opacity:calc(var(--glow-a,.5) * .35);}
+  html:not(.is-home) #bg-blob-b{display:none;}
+}
+@supports (color:color-mix(in srgb,red 50%,transparent)){
+  @media (max-width:991px){
+    html:not(.is-home) #bg-blob-a{background:linear-gradient(180deg, color-mix(in srgb,var(--grad-a) 40%,transparent) 0%, color-mix(in srgb,var(--grad-a) 55%,transparent) 22%, color-mix(in srgb,var(--grad-a) 28%,transparent) 45%, color-mix(in srgb,var(--grad-a) 10%,transparent) 72%, transparent 100%);}
   }
 }
 
