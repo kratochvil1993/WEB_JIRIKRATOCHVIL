@@ -29,34 +29,108 @@
     });
   }
 
-  /* ---------------- Mobile nav collapse ---------------- */
+  /* ---------------- Mobilní menu: celoobrazovková vrstva ----------------
+     Na <992 px je #navMenu fixní vrstva přes celou obrazovku (CSS). Při prvním otevření se text odkazů
+     rozdělí na písmena (+ číslo 01–05), která se při otevření slétnou jako h1 v hero. Reduced motion:
+     bez animace, jen zobrazení. Zámek scrollu přes html.nav-open, lišta dostane .nav-open (jinak by její
+     backdrop-filter rozbil position:fixed vrstvy), zbytek stránky je inert, Tab drží focus ve vrstvě,
+     ESC zavírá a focus se vrací na tlačítko. */
   var navMenuEl = document.getElementById("navMenu");
   var navToggler = document.querySelector(".navbar-toggler");
-  var navOpen = false;
-  function setNav(open) {
+  var navOpen = false, navBuilt = false, navChars = [], navNums = [], navLinkEls = [];
+  var navMq = window.matchMedia("(max-width: 991.98px)");
+  function buildNavText() {
+    if (navBuilt || !navMenuEl) return;
+    navBuilt = true;
+    navLinkEls = Array.prototype.slice.call(navMenuEl.querySelectorAll(".nav-link"));
+    navLinkEls.forEach(function (a, i) {
+      var label = a.textContent.replace(/\s+/g, " ").trim();
+      a.setAttribute("aria-label", label);
+      a.textContent = "";
+      var num = document.createElement("span");
+      num.className = "nl-num"; num.setAttribute("aria-hidden", "true");
+      num.textContent = ("0" + (i + 1)).slice(-2);
+      var txt = document.createElement("span");
+      txt.className = "nl-txt"; txt.setAttribute("aria-hidden", "true");
+      var words = label.split(" ");
+      words.forEach(function (word, wi) {
+        var w = document.createElement("span");
+        w.className = "nl-word";
+        word.split("").forEach(function (ch) {
+          var c = document.createElement("span");
+          c.className = "nl-char"; c.textContent = ch;
+          w.appendChild(c); navChars.push(c);
+        });
+        txt.appendChild(w);
+        if (wi < words.length - 1) txt.appendChild(document.createTextNode(" "));
+      });
+      a.appendChild(num); a.appendChild(txt);
+      navNums.push(num);
+    });
+  }
+  function navInert(on) {
+    document.querySelectorAll("main, footer, body > section").forEach(function (el) {
+      if (on) el.setAttribute("inert", ""); else el.removeAttribute("inert");
+    });
+  }
+  function setNav(open, instant) {
     if (!navMenuEl || open === navOpen) return;
     navOpen = open;
     if (navToggler) {
       navToggler.setAttribute("aria-expanded", open ? "true" : "false");
+      navToggler.setAttribute("aria-label", open ? "Zavřít menu" : "Otevřít menu");
       navToggler.classList.toggle("collapsed", !open);
     }
-    gsap.killTweensOf(navMenuEl);
+    if (navbar) navbar.classList.toggle("nav-open", open);
+    document.documentElement.classList.toggle("nav-open", open);
+    navInert(open);
+    gsap.killTweensOf([navMenuEl].concat(navChars, navNums));
+    var animate = !reduceMotion && !instant;
     if (open) {
+      buildNavText();
       navMenuEl.classList.add("show");
-      if (!reduceMotion) {
-        gsap.fromTo(navMenuEl, { height: 0, overflow: "hidden" },
-          { height: "auto", duration: 0.35, ease: "power2.out", clearProps: "height,overflow" });
+      if (animate) {
+        gsap.fromTo(navMenuEl, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" });
+        gsap.fromTo(navChars, {
+          x: function () { return gsap.utils.random(-70, 70); },
+          y: function () { return gsap.utils.random(-60, 60); },
+          rotation: function () { return gsap.utils.random(-45, 45); },
+          scale: 0.5, opacity: 0
+        }, { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1, duration: 0.7, ease: "power3.out",
+             stagger: { amount: 0.4, from: "random" }, delay: 0.08, overwrite: true });
+        gsap.fromTo(navNums, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.07, delay: 0.25, ease: "power2.out", overwrite: true });
+      } else {
+        gsap.set([navMenuEl].concat(navChars, navNums), { clearProps: "all" });
       }
-    } else if (!reduceMotion) {
-      gsap.to(navMenuEl, {
-        height: 0, overflow: "hidden", duration: 0.3, ease: "power2.in",
-        onComplete: function () { navMenuEl.classList.remove("show"); gsap.set(navMenuEl, { clearProps: "height,overflow" }); }
-      });
+      if (navLinkEls[0]) navLinkEls[0].focus({ preventScroll: true });
     } else {
-      navMenuEl.classList.remove("show");
+      var inMenu = navMenuEl.contains(document.activeElement);
+      if (animate) {
+        gsap.to(navMenuEl, {
+          opacity: 0, duration: 0.25, ease: "power1.in",
+          onComplete: function () { navMenuEl.classList.remove("show"); gsap.set(navMenuEl, { clearProps: "opacity" }); }
+        });
+      } else {
+        navMenuEl.classList.remove("show");
+        gsap.set([navMenuEl].concat(navChars, navNums), { clearProps: "all" });
+      }
+      if (inMenu && navToggler) navToggler.focus({ preventScroll: true });
     }
   }
   if (navToggler) navToggler.addEventListener("click", function () { setNav(!navOpen); });
+  document.addEventListener("keydown", function (e) {
+    if (!navOpen) return;
+    if (e.key === "Escape") { setNav(false); return; }
+    if (e.key !== "Tab") return;
+    var brand = document.querySelector(".navbar-custom .brand");
+    var ring = [brand, navToggler].concat(navLinkEls).filter(Boolean);
+    var i = ring.indexOf(document.activeElement);
+    if (e.shiftKey && (i <= 0)) { e.preventDefault(); ring[ring.length - 1].focus(); }
+    else if (!e.shiftKey && (i === ring.length - 1)) { e.preventDefault(); ring[0].focus(); }
+  });
+  /* po zvětšení okna na desktop (otočení tabletu) vrstvu hned zavřít, jinak by zůstal zámek scrollu */
+  var navMqChange = function (e) { if (!e.matches && navOpen) setNav(false, true); };
+  if (navMq.addEventListener) navMq.addEventListener("change", navMqChange); else navMq.addListener(navMqChange);
 
   /* ---------------- Go to top button (s prstencem postupu) ---------------- */
   var toTopBtn = document.getElementById("toTop");
