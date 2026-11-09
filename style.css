@@ -245,11 +245,11 @@ a:hover{color:var(--purple);}
    glow is already at full strength the moment it clears the navbar and
    the hard edge just reappears below it instead of at the viewport edge. */
 @media (max-width:991px){
-  /* Mobil: záře je klidné pole bez ostrých pruhů. Maska (splynutí se Safari lištou) je delší a hladká (ease), ale jasné
+  /* Mobil: záře je klidné pole bez ostrých pruhů. Maska (splynutí se Safari lištou) je krátká (80 px nahoře, 60 dole) a hladká (ease), ale jasné
      jádro skvrn leží až pod jejím koncem (dřív bylo jasné jádro přímo v přechodu: tmavý pruh pod lištou a hned jasná čepice). */
   #bg-layer,#particle-canvas{
-    -webkit-mask-image:linear-gradient(to bottom, transparent 0, rgba(0,0,0,.08) 20px, rgba(0,0,0,.25) 50px, rgba(0,0,0,.5) 85px, rgba(0,0,0,.8) 120px, #000 150px, #000 calc(100% - 120px), rgba(0,0,0,.7) calc(100% - 85px), rgba(0,0,0,.35) calc(100% - 50px), rgba(0,0,0,.1) calc(100% - 20px), transparent 100%);
-    mask-image:linear-gradient(to bottom, transparent 0, rgba(0,0,0,.08) 20px, rgba(0,0,0,.25) 50px, rgba(0,0,0,.5) 85px, rgba(0,0,0,.8) 120px, #000 150px, #000 calc(100% - 120px), rgba(0,0,0,.7) calc(100% - 85px), rgba(0,0,0,.35) calc(100% - 50px), rgba(0,0,0,.1) calc(100% - 20px), transparent 100%);
+    -webkit-mask-image:linear-gradient(to bottom, transparent 0, rgba(0,0,0,.12) 12px, rgba(0,0,0,.35) 30px, rgba(0,0,0,.65) 50px, rgba(0,0,0,.88) 68px, #000 80px, #000 calc(100% - 60px), rgba(0,0,0,.75) calc(100% - 45px), rgba(0,0,0,.4) calc(100% - 28px), rgba(0,0,0,.12) calc(100% - 12px), transparent 100%);
+    mask-image:linear-gradient(to bottom, transparent 0, rgba(0,0,0,.12) 12px, rgba(0,0,0,.35) 30px, rgba(0,0,0,.65) 50px, rgba(0,0,0,.88) 68px, #000 80px, #000 calc(100% - 60px), rgba(0,0,0,.75) calc(100% - 45px), rgba(0,0,0,.4) calc(100% - 28px), rgba(0,0,0,.12) calc(100% - 12px), transparent 100%);
   }
   /* okolní záře: jemný azurový nádech přes celé pozadí (bez nového odstínu), ať telefon není proti desktopu tmavý */
   #bg-layer{background:linear-gradient(180deg,rgba(var(--magenta-rgb),.07) 0%,rgba(var(--magenta-rgb),.08) 50%,rgba(var(--magenta-rgb),.07) 100%),var(--bg);}
@@ -769,6 +769,11 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
   background:radial-gradient(60% 60% at 40% 40%, var(--grad-a), transparent 70%),
              radial-gradient(50% 50% at 70% 70%, var(--grad-b), transparent 70%);
   filter:blur(30px);
+}
+/* Mobil: karta s kódem je malá, takže plná záře za ní (střed ~3× jasnější než okraje) vypadala jako reflektor.
+   Slabší a rozlitější, ať je z toho jen jemný nádech (celé pozadí na mobilu je teď klidné, viz #bg-layer výš). */
+@media (max-width:991.98px){
+  .pin-graphic .blob{opacity:.42;filter:blur(36px);}
 }
 .pin-graphic-photo img{
   position:absolute;inset:0;
