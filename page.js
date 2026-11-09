@@ -482,11 +482,17 @@
         var code = morph.querySelector(".code-layer"), wire = morph.querySelector(".wireframe-layer");
         var parts = wire.querySelectorAll(".wf-hero, .wf-text, .wf-cards span, .wf-btn");
         gsap.set(wire, { opacity: 0 });
+        gsap.set(parts, { opacity: 0, y: 10 });
         gsap.from(code.querySelectorAll(".code-line"), { opacity: 0, x: -14, duration: 0.5, stagger: 0.09, delay: 0.9, ease: "power2.out" });
         var tlC = gsap.timeline({ repeat: -1, delay: 3.2 });
-        tlC.to(code, Object.assign({ opacity: 0, y: -14, duration: 0.9, ease: "power2.inOut" }, blurIn(2)))
+        /* Obrazce drátěného náhledu se na začátku KAŽDÉHO cyklu schovají (set na čase 0), a teprve pak
+           začne vyjíždět vrstva náhledu. Dřív se jim startovní stav nastavil až 0,35 s po začátku
+           (fromTo s immediateRender:false), takže byly nejdřív vidět, jedním snímkem zmizely a znovu
+           se objevily — to bylo to "sekání". */
+        tlC.set(parts, { opacity: 0, y: 10 })
+           .to(code, Object.assign({ opacity: 0, y: -14, duration: 0.9, ease: "power2.inOut" }, blurIn(2)), 0)
            .fromTo(wire, Object.assign({ opacity: 0, y: 14 }, blurIn(2)), Object.assign({ opacity: 1, y: 0, duration: 0.9, ease: "power2.inOut", immediateRender: false }, blurOk ? { filter: "blur(0px)" } : {}), "<")
-           .fromTo(parts, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.07, ease: "power2.out", immediateRender: false }, "<0.35")
+           .to(parts, { opacity: function (i, el) { return el.classList.contains("wf-btn") ? 0.85 : 1; }, y: 0, duration: 0.5, stagger: 0.07, ease: "power2.out" }, "<0.35")
            .to({}, { duration: 2.6 })
            .to(wire, Object.assign({ opacity: 0, y: -14, duration: 0.9, ease: "power2.inOut" }, blurIn(2)))
            .fromTo(code, Object.assign({ opacity: 0, y: 14 }, blurIn(2)), Object.assign({ opacity: 1, y: 0, duration: 0.9, ease: "power2.inOut", immediateRender: false }, blurOk ? { filter: "blur(0px)" } : {}), "<")
