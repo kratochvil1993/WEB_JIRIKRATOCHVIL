@@ -1344,3 +1344,64 @@ footer::after{
 .faq-more{margin-top:1.2rem;font-weight:600;}
 .faq-jump{display:flex;flex-wrap:wrap;gap:.6rem 1.6rem;margin-top:1.8rem;font-weight:600;}
 .sub-page .faq details a{text-decoration:underline;text-underline-offset:3px;}
+
+/* ---------- Podstránky: hero, pohyb a doplňky (page.js) ----------
+   Skrytý výchozí stav platí jen bez reduced-motion; page.js pak prvky odkrývá. */
+.sub-hero{position:relative;overflow:hidden;}
+.sub-hero .container{position:relative;z-index:1;}
+.sub-hero h1{font-size:clamp(2.6rem,1.2rem + 5vw,5rem);line-height:1.04;text-wrap:balance;}
+/* obří obrysový nápis za nadpisem; --n = počet písmen (velikost se přizpůsobí šířce okna) */
+.sub-ghost{
+  position:absolute;left:0;right:0;bottom:-.14em;z-index:0;
+  white-space:nowrap;pointer-events:none;user-select:none;text-align:center;
+  font-size:min(19rem,calc(94vw / (var(--n,5) * .66)));
+  font-weight:900;line-height:.8;letter-spacing:-.04em;
+  color:transparent;-webkit-text-stroke:1.5px rgba(var(--purple-rgb),.15);
+  will-change:transform,opacity;
+}
+.sub-hero-graphic{height:420px;}
+@media (max-width:991.98px){
+  .sub-hero{padding-bottom:3rem;}
+  .sub-hero-graphic{height:280px;}
+  .sub-ghost{font-size:min(9rem,calc(94vw / (var(--n,5) * .66)));-webkit-text-stroke-color:rgba(var(--purple-rgb),.2);}
+}
+@media (prefers-reduced-motion:no-preference){
+  .js .hero-in,.js .sub-hero h1,.js .sub-hero-graphic{opacity:0;}
+  .js .reveal-wipe{clip-path:inset(0 100% 0 0);}
+  .js .reveal-wipe.is-wiped{clip-path:none;}
+  .js .step{--pop:.6;--line:0;}
+}
+/* kroky: číslo a spojnice se animují přes proměnné (page.js) */
+.step::before{transform:scale(var(--pop,1));}
+.step::after{transform:scaleY(var(--line,1));transform-origin:top;}
+/* první odstavec úvodní sekce jako výrazný úvod */
+#proc .sub-narrow > p:first-of-type{font-size:clamp(1.25rem,1.1rem + .6vw,1.5rem);color:#fff;line-height:1.55;}
+
+/* Pulz za grafikou v hero (page.js): obal drží velikost grafiky, prstence jsou za ní */
+.sub-hero-gfxwrap{position:relative;}
+.sub-pulse{
+  position:absolute;inset:0;border-radius:24px;pointer-events:none;
+  border:1.5px solid rgba(var(--purple-rgb),.55);
+  box-shadow:0 0 40px rgba(var(--purple-rgb),.22);
+  opacity:0;will-change:transform,opacity;
+}
+/* "Baterka": jasnější kopie obrysu ghost nápisu se odkrývá okolo kurzoru (jen myš, bez reduced-motion) */
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+  .sub-ghost{--gx:-999px;--gy:-999px;}
+  .sub-ghost::after{
+    content:attr(data-text);
+    position:absolute;inset:0;
+    color:transparent;-webkit-text-stroke:1.5px rgba(var(--purple-rgb),.85);
+    -webkit-mask-image:radial-gradient(circle 280px at var(--gx) var(--gy),#000 0%,transparent 100%);
+    mask-image:radial-gradient(circle 280px at var(--gx) var(--gy),#000 0%,transparent 100%);
+  }
+}
+
+/* Zvýrazněná část hero nadpisu na podstránkách je jednobarevná (azurová jako na úvodní stránce),
+   bez gradientu; gradient zůstává u nadpisů sekcí níž. Přepisuje i gradient po písmenech
+   (.gradient-text .split-char), který vzniká po rozdělení nadpisu. */
+.sub-hero h1 .gradient-text,
+.sub-hero h1 .gradient-text .split-char{
+  background:none;-webkit-background-clip:border-box;background-clip:border-box;
+  color:var(--purple);
+}
