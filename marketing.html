@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="color-scheme" content="dark">
+<script>document.documentElement.classList.add("js");</script>
+<!-- Google Consent Mode v2 — výchozí stav (musí být před GTM, viz cookie-consent.js) -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag("consent", "default", {
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+    analytics_storage: "denied",
+    functionality_storage: "granted",
+    security_storage: "granted",
+    wait_for_update: 500
+  });
+</script>
+<title>Google Ads a online marketing: jak pracuji — Jiří Kratochvíl</title>
+<meta name="description" content="Jak nastavuji a spravuji kampaně v Google Ads: měření na prvním místě, vyhledávací síť, Shopping a remarketing, rozhodování podle dat a přehledy bez omáčky.">
+<link rel="canonical" href="https://jirikratochvil.eu/marketing.html">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jirikratochvil.eu/marketing.html">
+<meta property="og:title" content="Google Ads a online marketing: jak pracuji — Jiří Kratochvíl">
+<meta property="og:description" content="Jak nastavuji a spravuji kampaně v Google Ads: měření na prvním místě, vyhledávací síť, Shopping a remarketing, rozhodování podle dat a přehledy bez omáčky.">
+<meta property="og:image" content="https://jirikratochvil.eu/assets/images/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="cs_CZ">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Google Ads a online marketing: jak pracuji — Jiří Kratochvíl">
+<meta name="twitter:description" content="Jak nastavuji a spravuji kampaně v Google Ads: měření na prvním místě, vyhledávací síť, Shopping a remarketing, rozhodování podle dat a přehledy bez omáčky.">
+<meta name="twitter:image" content="https://jirikratochvil.eu/assets/images/og-image.jpg">
+<link rel="icon" type="image/png" href="assets/fav/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/svg+xml" href="assets/fav/favicon.svg">
+<link rel="shortcut icon" href="assets/fav/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/fav/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="JK.EU">
+<link rel="manifest" href="assets/fav/site.webmanifest">
+<link rel="preload" href="assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/inter-latin-ext.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.min.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://jirikratochvil.eu/marketing.html#webpage",
+      "url": "https://jirikratochvil.eu/marketing.html",
+      "name": "Google Ads a online marketing: jak pracuji",
+      "description": "Jak nastavuji a spravuji kampaně v Google Ads: měření na prvním místě, vyhledávací síť, Shopping a remarketing, rozhodování podle dat a přehledy bez omáčky.",
+      "inLanguage": "cs",
+      "isPartOf": {
+        "@id": "https://jirikratochvil.eu/#website"
+      },
+      "about": {
+        "@id": "https://jirikratochvil.eu/#service-marketing"
+      },
+      "author": {
+        "@id": "https://jirikratochvil.eu/#person"
+      },
+      "publisher": {
+        "@id": "https://jirikratochvil.eu/#person"
+      },
+      "datePublished": "2026-11-09",
+      "dateModified": "2026-11-09",
+      "primaryImageOfPage": {
+        "@id": "https://jirikratochvil.eu/marketing.html#primaryimage"
+      },
+      "breadcrumb": {
+        "@id": "https://jirikratochvil.eu/marketing.html#breadcrumb"
+      },
+      "potentialAction": {
+        "@type": "ReadAction",
+        "target": [
+          "https://jirikratochvil.eu/marketing.html"
+        ]
+      },
+      "mainEntity": {
+        "@id": "https://jirikratochvil.eu/#service-marketing"
+      },
+      "significantLink": [
+        "https://jirikratochvil.eu/web.html",
+        "https://jirikratochvil.eu/fotografie.html",
+        "https://jirikratochvil.eu/kontakt.html",
+        "https://jirikratochvil.eu/faq.html"
+      ]
+    },
+    {
+      "@type": "ImageObject",
+      "@id": "https://jirikratochvil.eu/marketing.html#primaryimage",
+      "url": "https://jirikratochvil.eu/assets/images/og-image.jpg",
+      "contentUrl": "https://jirikratochvil.eu/assets/images/og-image.jpg",
+      "width": 1200,
+      "height": 630
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://jirikratochvil.eu/marketing.html#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Domů",
+          "item": "https://jirikratochvil.eu/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Online marketing",
+          "item": "https://jirikratochvil.eu/marketing.html"
+        }
+      ]
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jirikratochvil.eu/#service-marketing",
+      "name": "Online marketing a Google Ads",
+      "serviceType": "Správa PPC kampaní",
+      "description": "Nastavení a správa PPC kampaní v Google Ads (vyhledávání, Shopping, remarketing) s pravidelnou optimalizací podle dat.",
+      "provider": {
+        "@id": "https://jirikratochvil.eu/#person"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Česko"
+      },
+      "url": "https://jirikratochvil.eu/marketing.html",
+      "mainEntityOfPage": {
+        "@id": "https://jirikratochvil.eu/marketing.html#webpage"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Online marketing",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Kampaně ve vyhledávací síti Google",
+              "description": "Reklamy pro lidi ve chvíli, kdy hledají vaše produkty nebo služby."
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Shopping kampaně",
+              "description": "Produktové reklamy z produktového feedu e-shopu."
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Remarketing",
+              "description": "Návrat k návštěvníkům, kteří už na webu byli."
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Měření konverzí a přehledy",
+              "description": "Přehled nákladů na získání zákazníka a návratnosti investice do reklamy."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "@type": "HowTo",
+      "@id": "https://jirikratochvil.eu/marketing.html#howto",
+      "name": "Jak probíhá správa kampaní v Google Ads",
+      "description": "Postup od stanovení cílů a nastavení měření po pravidelné vyhodnocení kampaní.",
+      "inLanguage": "cs",
+      "isPartOf": {
+        "@id": "https://jirikratochvil.eu/marketing.html#webpage"
+      },
+      "step": [
+        {
+          "@type": "HowToStep",
+          "position": 1,
+          "name": "Zadání a cíle",
+          "text": "Řekneme si, co chcete získat: objednávky, poptávky nebo hovory. A kolik vás má stát jeden zákazník, aby se to vyplatilo.",
+          "url": "https://jirikratochvil.eu/marketing.html#postup-1"
+        },
+        {
+          "@type": "HowToStep",
+          "position": 2,
+          "name": "Měření",
+          "text": "Nejdřív nastavím měření konverzí a souhlasy s cookies. Bez něj by se reklama ladila poslepu.",
+          "url": "https://jirikratochvil.eu/marketing.html#postup-2"
+        },
+        {
+          "@type": "HowToStep",
+          "position": 3,
+          "name": "Kampaně",
+          "text": "Navrhnu strukturu kampaní podle toho, co prodáváte: vyhledávací síť, Shopping, remarketing. Připravím klíčová slova a reklamy.",
+          "url": "https://jirikratochvil.eu/marketing.html#postup-3"
+        },
+        {
+          "@type": "HowToStep",
+          "position": 4,
+          "name": "Spuštění a ladění",
+          "text": "V prvních týdnech sleduju hledané dotazy, vyřazuju zbytečné a upravuju nabídky. Kampaň se učí a já s ní.",
+          "url": "https://jirikratochvil.eu/marketing.html#postup-4"
+        },
+        {
+          "@type": "HowToStep",
+          "position": 5,
+          "name": "Pravidelné vyhodnocení",
+          "text": "Dostanete přehled bez omáčky: co kampaně stály, co přinesly a co dál. Uvidíte, kde se investice vrací a kde ne.",
+          "url": "https://jirikratochvil.eu/marketing.html#postup-5"
+        }
+      ]
+    },
+    {
+      "@type": "ItemList",
+      "@id": "https://jirikratochvil.eu/marketing.html#technologie",
+      "name": "Technologie",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Google Ads",
+          "description": "Vyhledávací síť, Shopping a remarketing."
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Google Tag Manager",
+          "description": "Správa měřicích značek."
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Google Analytics 4",
+          "description": "Měření návštěvnosti a konverzí."
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Consent Mode v2",
+          "description": "Měření v souladu se souhlasy s cookies."
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "name": "Google Merchant Center",
+          "description": "Produktová data pro Shopping kampaně."
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://jirikratochvil.eu/marketing.html#faq",
+      "inLanguage": "cs",
+      "isPartOf": {
+        "@id": "https://jirikratochvil.eu/marketing.html#webpage"
+      },
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Kolik mám do reklamy dát?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Záleží na oboru, konkurenci a cílech. Na úvodním hovoru nastavíme rozpočet tak, aby se dal smysluplně vyhodnotit, a nic předem nezaručuju."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Za jak dlouho přijdou výsledky?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Reklama běží hned, ale kampaň se učí. První týdny sbírají data a ladí se, teprve potom je vidět, co skutečně funguje. Zázraky za týden neslibuju."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Zaručíte mi tržby nebo první místa v Googlu?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Ne, a pozor na každého, kdo to slibuje. Zaručit můžu, že kampaně budou měřené, přehledné a průběžně laděné podle dat."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Co potřebuji, abyste mohl začít?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Přístup k webu nebo e-shopu a jasnou představu, co chcete získat: objednávky, poptávky nebo hovory. Zbytek, včetně měření, řešíme společně."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Postaráte se i o web nebo e-shop, na který reklama vede?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Ano, weby a e-shopy na Shoptetu také dělám. Reklama a web se navzájem ovlivňují, takže dává smysl řešit je dohromady. Víc najdete v sekci Web & e-shop."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body class="sub-page">
+<svg id="bi-sprite" xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="bi-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5"/></symbol>
+  <symbol id="bi-cart3" viewBox="0 0 16 16"><path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l.84 4.479 9.144-.459L13.89 4zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/></symbol>
+  <symbol id="bi-envelope" viewBox="0 0 16 16"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/></symbol>
+  <symbol id="bi-graph-up-arrow" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5"/></symbol>
+  <symbol id="bi-instagram" viewBox="0 0 16 16"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/></symbol>
+  <symbol id="bi-linkedin" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z"/></symbol>
+  <symbol id="bi-megaphone-fill" viewBox="0 0 16 16"><path d="M13 2.5a1.5 1.5 0 0 1 3 0v11a1.5 1.5 0 0 1-3 0zm-1 .724c-2.067.95-4.539 1.481-7 1.656v6.237a25 25 0 0 1 1.088.085c2.053.204 4.038.668 5.912 1.56zm-8 7.841V4.934c-.68.027-1.399.043-2.008.053A2.02 2.02 0 0 0 0 7v2c0 1.106.896 1.996 1.994 2.009l.496.008a64 64 0 0 1 1.51.048m1.39 1.081q.428.032.85.078l.253 1.69a1 1 0 0 1-.983 1.187h-.548a1 1 0 0 1-.916-.599l-1.314-2.48a66 66 0 0 1 1.692.064q.491.026.966.06"/></symbol>
+  <symbol id="bi-piggy-bank-fill" viewBox="0 0 16 16"><path d="M7.964 1.527c-2.977 0-5.571 1.704-6.32 4.125h-.55A1 1 0 0 0 .11 6.824l.254 1.46a1.5 1.5 0 0 0 1.478 1.243h.263c.3.513.688.978 1.145 1.382l-.729 2.477a.5.5 0 0 0 .48.641h2a.5.5 0 0 0 .471-.332l.482-1.351c.635.173 1.31.267 2.011.267.707 0 1.388-.095 2.028-.272l.543 1.372a.5.5 0 0 0 .465.316h2a.5.5 0 0 0 .478-.645l-.761-2.506C13.81 9.895 14.5 8.559 14.5 7.069q0-.218-.02-.431c.261-.11.508-.266.705-.444.315.306.815.306.815-.417 0 .223-.5.223-.461-.026a1 1 0 0 0 .09-.255.7.7 0 0 0-.202-.645.58.58 0 0 0-.707-.098.74.74 0 0 0-.375.562c-.024.243.082.48.32.654a2 2 0 0 1-.259.153c-.534-2.664-3.284-4.595-6.442-4.595m7.173 3.876a.6.6 0 0 1-.098.21l-.044-.025c-.146-.09-.157-.175-.152-.223a.24.24 0 0 1 .117-.173c.049-.027.08-.021.113.012a.2.2 0 0 1 .064.199m-8.999-.65a.5.5 0 1 1-.276-.96A7.6 7.6 0 0 1 7.964 3.5c.763 0 1.497.11 2.18.315a.5.5 0 1 1-.287.958A6.6 6.6 0 0 0 7.964 4.5c-.64 0-1.255.09-1.826.254ZM5 6.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0"/></symbol>
+  <symbol id="bi-telephone" viewBox="0 0 16 16"><path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.6 17.6 0 0 0 4.168 6.608 17.6 17.6 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.68.68 0 0 0-.58-.122l-2.19.547a1.75 1.75 0 0 1-1.657-.459L5.482 8.062a1.75 1.75 0 0 1-.46-1.657l.548-2.19a.68.68 0 0 0-.122-.58zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z"/></symbol>
+</svg>
+
+<div id="bg-layer">
+  <div id="bg-gradient"></div>
+  <div id="bg-blob-a"></div>
+  <div id="bg-blob-b"></div>
+</div>
+<div id="bg-noise"></div>
+<div id="cursor"></div>
+
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom" id="mainNav">
+  <div class="container d-flex justify-content-between align-items-center">
+    <a class="brand d-flex align-items-center gap-2" href="/">
+      <img src="assets/logo.webp" alt="Jiří Kratochvíl" class="brand-logo" width="200" height="145" style="filter:brightness(10);">
+    </a>
+    <button class="navbar-toggler" type="button" aria-controls="navMenu" aria-expanded="false" aria-label="Otevřít menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse flex-grow-0" id="navMenu">
+      <div class="d-flex flex-column flex-lg-row">
+        <a class="nav-link" href="/">Úvod</a>
+        <a class="nav-link" href="web.html">Web &amp; e-shop</a>
+        <a class="nav-link active" href="marketing.html" aria-current="page">Online marketing</a>
+        <a class="nav-link" href="fotografie.html">Fotograf</a>
+        <a class="nav-link" href="kontakt.html">Kontakt</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <section class="sub-hero">
+    <div class="container">
+      <p class="eyebrow reveal">Online marketing</p>
+      <h1 class="reveal">Zákazníci z Googlu, <span class="gradient-text">ne jen kliky</span></h1>
+      <p class="sub-lead reveal">Nastavuju a spravuju kampaně v Google Ads. Měřím, co se skutečně prodá, a rozpočet posouvám tam, kde se vrací.</p>
+      <div class="hero-links reveal">
+        <a href="kontakt.html" class="pill-btn">
+          <span class="pill-btn__icon pill-btn__icon--left" aria-hidden="true">
+            <svg viewBox="0 0 40 40" fill="none"><path d="M7 20h26" stroke="currentColor" stroke-width="3" stroke-linecap="round" /><path d="M22 9l11 11-11 11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </span>
+          <span class="pill-btn__label">Napsat mi</span>
+          <span class="pill-btn__icon pill-btn__icon--right" aria-hidden="true">
+            <svg viewBox="0 0 40 40" fill="none"><path d="M7 20h26" stroke="currentColor" stroke-width="3" stroke-linecap="round" /><path d="M22 9l11 11-11 11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </span>
+        </a>
+        <a href="#postup" class="text-link">Jak to probíhá &darr;</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sub-section" id="proc">
+    <div class="container sub-narrow">
+      <p class="eyebrow reveal">Proč to dělám</p>
+      <h2 class="reveal">Web bez návštěvníků je <span class="gradient-text">jen vizitka</span></h2>
+      <p class="reveal">Kvalitní web nebo e-shop je jen první krok. Bez cíleného marketingu ho najde málokdo.</p>
+      <p class="reveal">Samotná reklama ale problém nevyřeší. Když nevíte, co vám přináší, jen utrácíte. Proto nezačínám kampaní, ale měřením.</p>
+      <p class="reveal">Baví mě na tom, že se dá všechno spočítat. Každá koruna má své číslo a z čísel poznáte, co funguje a co ne. Rozhoduju podle dat, ne podle pocitu.</p>
+    </div>
+  </section>
+
+  <section class="sub-section" id="postup">
+    <div class="container sub-narrow">
+      <p class="eyebrow reveal">Jak to probíhá</p>
+      <h2 class="reveal">Od cíle <span class="gradient-text">po vyhodnocení</span></h2>
+      <ol class="steps">
+        <li class="step reveal" id="postup-1">
+          <div>
+            <h3>Zadání a cíle</h3>
+            <p>Řekneme si, co chcete získat: objednávky, poptávky nebo hovory. A kolik vás má stát jeden zákazník, aby se to vyplatilo.</p>
+          </div>
+        </li>
+        <li class="step reveal" id="postup-2">
+          <div>
+            <h3>Měření</h3>
+            <p>Nejdřív nastavím měření konverzí a souhlasy s cookies. Bez něj by se reklama ladila poslepu.</p>
+          </div>
+        </li>
+        <li class="step reveal" id="postup-3">
+          <div>
+            <h3>Kampaně</h3>
+            <p>Navrhnu strukturu kampaní podle toho, co prodáváte: vyhledávací síť, Shopping, remarketing. Připravím klíčová slova a reklamy.</p>
+          </div>
+        </li>
+        <li class="step reveal" id="postup-4">
+          <div>
+            <h3>Spuštění a ladění</h3>
+            <p>V prvních týdnech sleduju hledané dotazy, vyřazuju zbytečné a upravuju nabídky. Kampaň se učí a já s ní.</p>
+          </div>
+        </li>
+        <li class="step reveal" id="postup-5">
+          <div>
+            <h3>Pravidelné vyhodnocení</h3>
+            <p>Dostanete přehled bez omáčky: co kampaně stály, co přinesly a co dál. Uvidíte, kde se investice vrací a kde ne.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sub-section" id="technologie">
+    <div class="container">
+      <p class="eyebrow reveal">Technologie</p>
+      <h2 class="reveal">Na čem <span class="gradient-text">stavím</span></h2>
+      <p class="reveal" style="max-width:38rem;">Nástroje vybírám podle toho, co potřebujete změřit, ne podle toho, co je zrovna k mání.</p>
+      <div class="sub-grid">
+        <div class="feature-card reveal">
+          <div class="icon"><svg class="bi" aria-hidden="true"><use href="#bi-megaphone-fill"/></svg></div>
+          <h3>Google Ads</h3>
+          <p>Kampaně, které míří na lidi ve chvíli, kdy hledají. Od vyhledávání přes produktové reklamy po návrat k těm, kdo už na webu byli.</p>
+          <div class="tags"><span class="tag">Vyhledávací síť</span><span class="tag">Shopping</span><span class="tag">Remarketing</span></div>
+        </div>
+        <div class="feature-card reveal">
+          <div class="icon"><svg class="bi" aria-hidden="true"><use href="#bi-graph-up-arrow"/></svg></div>
+          <h3>Měření konverzí</h3>
+          <p>Aby šlo spočítat, kolik stojí jeden zákazník. Souhlasy s cookies řeším hned, aby měření odpovídalo pravidlům.</p>
+          <div class="tags"><span class="tag">Google Tag Manager</span><span class="tag">GA4</span><span class="tag">Consent Mode v2</span></div>
+        </div>
+        <div class="feature-card reveal">
+          <div class="icon"><svg class="bi" aria-hidden="true"><use href="#bi-cart3"/></svg></div>
+          <h3>Produktová data</h3>
+          <p>Shopping kampaně stojí na kvalitním produktovém feedu. Čistá data o produktech jsou polovina úspěchu.</p>
+          <div class="tags"><span class="tag">Produktový feed</span><span class="tag">Merchant Center</span></div>
+        </div>
+        <div class="feature-card reveal">
+          <div class="icon"><svg class="bi" aria-hidden="true"><use href="#bi-piggy-bank-fill"/></svg></div>
+          <h3>Přehledy</h3>
+          <p>Srozumitelné výstupy: kolik vás stojí získání zákazníka a kde se vám investice vrací. Bez zbytečné omáčky.</p>
+          <div class="tags"><span class="tag">CPA</span><span class="tag">ROAS</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sub-section" id="zasady">
+    <div class="container">
+      <p class="eyebrow reveal">Na čem mi záleží</p>
+      <h2 class="reveal">Čtyři věci, <span class="gradient-text">ve kterých nechci slevit</span></h2>
+      <div class="principles">
+        <div class="reveal">
+          <h3>Měřitelnost</h3>
+          <p>Každá koruna má mít své číslo. Co se nedá změřit, nedá se zlepšit.</p>
+        </div>
+        <div class="reveal">
+          <h3>Přehlednost</h3>
+          <p>Vidíte, kam jdou peníze a co přinesly, ne jen souhrnná čísla, za kterými se dá schovat cokoli.</p>
+        </div>
+        <div class="reveal">
+          <h3>Trpělivost</h3>
+          <p>Kampaň potřebuje čas a data. Nedělám unáhlené závěry po pár dnech.</p>
+        </div>
+        <div class="reveal">
+          <h3>Upřímnost</h3>
+          <p>Žádné nesplnitelné sliby. Slibuju, že budu měřit, ladit a říkat věci tak, jak jsou.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sub-section" id="faq">
+    <div class="container sub-narrow">
+      <p class="eyebrow reveal">Časté otázky</p>
+      <h2 class="reveal">Než se <span class="gradient-text">ozvete</span></h2>
+      <div class="faq reveal">
+        <details>
+          <summary>Kolik mám do reklamy dát?</summary>
+          <p>Záleží na oboru, konkurenci a cílech. Na úvodním hovoru nastavíme rozpočet tak, aby se dal smysluplně vyhodnotit, a nic předem nezaručuju.</p>
+        </details>
+        <details>
+          <summary>Za jak dlouho přijdou výsledky?</summary>
+          <p>Reklama běží hned, ale kampaň se učí. První týdny sbírají data a ladí se, teprve potom je vidět, co skutečně funguje. Zázraky za týden neslibuju.</p>
+        </details>
+        <details>
+          <summary>Zaručíte mi tržby nebo první místa v Googlu?</summary>
+          <p>Ne, a pozor na každého, kdo to slibuje. Zaručit můžu, že kampaně budou měřené, přehledné a průběžně laděné podle dat.</p>
+        </details>
+        <details>
+          <summary>Co potřebuji, abyste mohl začít?</summary>
+          <p>Přístup k webu nebo e-shopu a jasnou představu, co chcete získat: objednávky, poptávky nebo hovory. Zbytek, včetně měření, řešíme společně.</p>
+        </details>
+        <details>
+          <summary>Postaráte se i o web nebo e-shop, na který reklama vede?</summary>
+          <p>Ano, weby a e-shopy na Shoptetu také dělám. Reklama a web se navzájem ovlivňují, takže dává smysl řešit je dohromady. Víc najdete v sekci <a href="web.html">Web &amp; e-shop</a>.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="sub-cta">
+    <div class="container">
+      <h2 class="reveal">Chcete víc zákazníků? <span class="gradient-text">Ozvěte se.</span></h2>
+      <p class="reveal">Napište mi, co prodáváte a co chcete získat. Ozvu se a řekneme si, jestli a jak můžu pomoct.</p>
+      <a href="kontakt.html" class="pill-btn reveal">
+        <span class="pill-btn__icon pill-btn__icon--left" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M7 20h26" stroke="currentColor" stroke-width="3" stroke-linecap="round" /><path d="M22 9l11 11-11 11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </span>
+        <span class="pill-btn__label">Napsat mi</span>
+        <span class="pill-btn__icon pill-btn__icon--right" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M7 20h26" stroke="currentColor" stroke-width="3" stroke-linecap="round" /><path d="M22 9l11 11-11 11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </span>
+      </a>
+      <div class="cta-contact reveal">
+        <a href="tel:+420728544881">+420 728 544 881</a>
+        <a href="mailto:info@jirikratochvil.eu">info@jirikratochvil.eu</a>
+      </div>
+      <nav class="sub-next reveal" aria-label="Další stránky">
+        <a href="web.html">Web &amp; e-shop &rarr;</a>
+        <a href="fotografie.html">Portrétní fotografie &rarr;</a>
+        <a href="/">&larr; Zpět na úvod</a>
+      </nav>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="row g-4 align-items-start">
+      <div class="col-md-4">
+        <div class="brand mb-2">Jiří Kratochvíl</div>
+        <div class="footer-contact">
+          <a href="tel:+420728544881"><svg class="bi" aria-hidden="true"><use href="#bi-telephone"/></svg>+420 728 544 881</a>
+          <a href="mailto:info@jirikratochvil.eu"><svg class="bi" aria-hidden="true"><use href="#bi-envelope"/></svg>info@jirikratochvil.eu</a>
+        </div>
+      </div>
+      <div class="col-md-4 footer-nav">
+        <p class="footer-nav-title">Menu</p>
+        <ul>
+          <li><a href="web.html">Web &amp; e-shop</a></li>
+          <li><a href="marketing.html">Online marketing</a></li>
+          <li><a href="fotografie.html">Fotograf</a></li>
+          <li><a href="kontakt.html">Kontakt</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4 text-md-end">
+        <div class="d-flex gap-3 justify-content-md-end">
+          <a class="social-ico" href="https://www.instagram.com/ochmi" target="_blank" rel="noopener" aria-label="Instagram"><svg class="bi" aria-hidden="true"><use href="#bi-instagram"/></svg></a>
+          <a class="social-ico" href="https://www.linkedin.com/in/ji%C5%99%C3%AD-kratochv%C3%ADl-a61a87208" target="_blank" rel="noopener" aria-label="LinkedIn"><svg class="bi" aria-hidden="true"><use href="#bi-linkedin"/></svg></a>
+        </div>
+        <p class="mt-3 mb-0" style="font-size:.85rem;">&copy; 2026 Jiří Kratochvíl</p>
+        <p class="mb-0" style="font-size:.85rem;"><a href="gdpr.html">GDPR</a> &middot; <a href="sitemap.html">Sitemap</a> &middot; <a href="#" id="cookie-settings">Cookies</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<button id="toTop" class="to-top" aria-label="Nahoru">
+  <svg class="to-top-ring" viewBox="0 0 46 46" aria-hidden="true" focusable="false">
+    <circle class="ring-track" cx="23" cy="23" r="22"></circle>
+    <circle class="ring-bar" cx="23" cy="23" r="22"></circle>
+  </svg>
+  <svg class="bi" aria-hidden="true"><use href="#bi-arrow-up"/></svg>
+</button>
+
+<div id="cookie-consent" class="cookie-consent" hidden>
+  <p>Měříme návštěvnost webu. <a href="gdpr.html#cookies">Víc info</a></p>
+  <div class="cookie-consent-btns">
+    <button type="button" id="cookie-decline">Odmítnout</button>
+    <button type="button" id="cookie-accept">Souhlasím</button>
+  </div>
+</div>
+
+<script src="assets/vendor/gsap/gsap.min.js"></script>
+<script src="assets/vendor/gsap/ScrollTrigger.min.js"></script>
+<script src="assets/vendor/gsap/ScrollToPlugin.min.js"></script>
+<script src="page.min.js"></script>
+<script src="cookie-consent.js"></script>
+</body>
+</html>

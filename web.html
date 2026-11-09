@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="color-scheme" content="dark">
+<script>document.documentElement.classList.add("js");</script>
+<!-- Google Consent Mode v2 — výchozí stav (musí být před GTM, viz cookie-consent.js) -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag("consent", "default", {
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+    analytics_storage: "denied",
+    functionality_storage: "granted",
+    security_storage: "granted",
+    wait_for_update: 500
+  });
+</script>
+<title>Tvorba webů a e-shopů na míru (Shoptet) — Jiří Kratochvíl</title>
+<meta name="description" content="Jak vytvářím weby a e-shopy na míru: od zadání přes návrh a vývoj po spuštění. Vývoj s AI agenty po boku, specializace na Shoptet, měření a rychlost od začátku.">
+<link rel="canonical" href="https://jirikratochvil.eu/web.html">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jirikratochvil.eu/web.html">
+<meta property="og:title" content="Tvorba webů a e-shopů na míru (Shoptet) — Jiří Kratochvíl">
+<meta property="og:description" content="Jak vytvářím weby a e-shopy na míru: od zadání přes návrh a vývoj po spuštění. Vývoj s AI agenty po boku, specializace na Shoptet, měření a rychlost od začátku.">
+<meta property="og:image" content="https://jirikratochvil.eu/assets/images/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="cs_CZ">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Tvorba webů a e-shopů na míru (Shoptet) — Jiří Kratochvíl">
+<meta name="twitter:description" content="Jak vytvářím weby a e-shopy na míru: od zadání přes návrh a vývoj po spuštění. Vývoj s AI agenty po boku, specializace na Shoptet, měření a rychlost od začátku.">
+<meta name="twitter:image" content="https://jirikratochvil.eu/assets/images/og-image.jpg">
+<link rel="icon" type="image/png" href="assets/fav/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/svg+xml" href="assets/fav/favicon.svg">
+<link rel="shortcut icon" href="assets/fav/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/fav/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="JK.EU">
+<link rel="manifest" href="assets/fav/site.webmanifest">
+<link rel="preload" href="assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/inter-latin-ext.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.min.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://jirikratochvil.eu/web.html#webpage",
+      "url": "https://jirikratochvil.eu/web.html",
+      "name": "Tvorba webů a e-shopů na míru",
+      "description": "Jak vytvářím weby a e-shopy na míru: od zadání přes návrh a vývoj po spuštění. Vývoj s AI agenty po boku, specializace na Shoptet, měření a rychlost od začátku.",
+      "inLanguage": "cs",
+      "isPartOf": {
+        "@id": "https://jirikratochvil.eu/#website"
+      },
+      "about": {
+        "@id": "https://jirikratochvil.eu/#service-web"
+      },
+      "author": {
+        "@id": "https://jirikratochvil.eu/#person"
+      },
+      "publisher": {
+        "@id": "https://jirikratochvil.eu/#person"
+      },
+      "datePublished": "2026-11-09",
+      "dateModified": "2026-11-09",
+      "primaryImageOfPage": {
+        "@id": "https://jirikratochvil.eu/web.html#primaryimage"
+      },
+      "breadcrumb": {
+        "@id": "https://jirikratochvil.eu/web.html#breadcrumb"
+      },
+      "potentialAction": {
+        "@type": "ReadAction",
+        "target": [
+          "https://jirikratochvil.eu/web.html"
+        ]
+      },
+      "mainEntity": {
+        "@id": "https://jirikratochvil.eu/#service-web"
+      },
+      "significantLink": [
+        "https://jirikratochvil.eu/marketing.html",
+        "https://jirikratochvil.eu/fotografie.html",
+        "https://jirikratochvil.eu/kontakt.html",
+        "https://jirikratochvil.eu/faq.html"
+      ]
+    },
+    {
+      "@type": "ImageObject",
+      "@id": "https://jirikratochvil.eu/web.html#primaryimage",
+      "url": "https://jirikratochvil.eu/assets/images/og-image.jpg",
+      "contentUrl": "https://jirikratochvil.eu/assets/images/og-image.jpg",
+      "width": 1200,
+      "height": 630
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://jirikratochvil.eu/web.html#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Domů",
+          "item": "https://jirikratochvil.eu/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Web & e-shop",
+          "item": "https://jirikratochvil.eu/web.html"
+        }
+      ]
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jirikratochvil.eu/#service-web",
+      "name": "Tvorba webů a e-shopů",
+      "serviceType": "Tvorba webových stránek a e-shopů",
+      "description": "Návrh a vývoj webů a e-shopů na míru, včetně e-shopů na platformě Shoptet — od grafického návrhu přes kód až po nasazení.",
+      "provider": {
+        "@id": "https://jirikratochvil.eu/#person"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Česko"
+      },
+      "url": "https://jirikratochvil.eu/web.html",
+      "mainEntityOfPage": {
+        "@id": "https://jirikratochvil.eu/web.html#webpage"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Web a e-shop",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Web na míru",
+              "description": "Návrh a vývoj webové prezentace od návrhu po nasazení."
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "E-shop na Shoptetu",
+              "description": "Nastavení šablony, plateb a dopravy a ladění obchodu na platformě Shoptet."
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Měření a souhlasy",
+              "description": "Google Tag Manager, Google Analytics 4 a Consent Mode v2 nastavené už při spuštění."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "@type": "HowTo",
+      "@id": "https://jirikratochvil.eu/web.html#howto",
+      "name": "Jak vzniká web nebo e-shop",
+      "description": "Postup od prvního zadání po spuštění a následnou péči o web nebo e-shop.",
+      "inLanguage": "cs",
+      "isPartOf": {
+        "@id": "https://jirikratochvil.eu/web.html#webpage"
+      },
+      "step": [
+        {
+          "@type": "HowToStep",
+          "position": 1,
+          "name": "Zadání",
+          "text": "Nejdřív si popovídáme. Co prodáváte, komu a co má web udělat. Z toho vzejde jasný rozsah, ještě než se napíše první řádek.",
+          "url": "https://jirikratochvil.eu/web.html#postup-1"
+        },
+        {
+          "@type": "HowToStep",
+          "position": 2,
+          "name": "Návrh",
+          "text": "Struktura a vzhled vycházejí z vaší značky a zákazníků. Ať začínám od čistého listu, nebo od šablony, výsledek má vypadat jako váš, ne jako každý druhý. Návrh ladíme společně, dokud nesedí.",
+          "url": "https://jirikratochvil.eu/web.html#postup-2"
+        },
+        {
+          "@type": "HowToStep",
+          "position": 3,
+          "name": "Vývoj",
+          "text": "Programuju s AI agenty po boku: rutinu nechávám na nich, rozhodnutí a kontrolu na sobě. U e-shopů nastavuju Shoptet: šablonu, platby, dopravu a vše, co s tím souvisí. Průběžně vidíte, jak to roste.",
+          "url": "https://jirikratochvil.eu/web.html#postup-3"
+        },
+        {
+          "@type": "HowToStep",
+          "position": 4,
+          "name": "Spuštění",
+          "text": "Před ostrým startem vše projdu na mobilech i počítačích, nastavím měření návštěvnosti a základy SEO. Pak web nasadím.",
+          "url": "https://jirikratochvil.eu/web.html#postup-4"
+        },
+        {
+          "@type": "HowToStep",
+          "position": 5,
+          "name": "Po spuštění",
+          "text": "Web ani e-shop nekončí spuštěním. Upravím, co se ukáže, že lidem nefunguje, a doplním, co přibude.",
+          "url": "https://jirikratochvil.eu/web.html#postup-5"
+        }
+      ]
+    },
+    {
+      "@type": "ItemList",
+      "@id": "https://jirikratochvil.eu/web.html#technologie",
+      "name": "Technologie",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "HTML",
+          "description": "Základ webových stránek."
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "CSS",
+          "description": "Vzhled a responzivní rozložení."
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "JavaScript",
+          "description": "Interaktivita bez zbytečně těžkých frameworků."
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "GSAP",
+          "description": "Animace všude tam, kde pomáhají."
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "name": "Shoptet",
+          "description": "Platforma pro e-shopy, na kterou se specializuji."
+        },
+        {
+          "@type": "ListItem",
+          "position": 6,
+          "name": "Google Tag Manager",
+          "description": "Správa měřicích značek."
+        },
+        {
+          "@type": "ListItem",
+          "position": 7,
+          "name": "Google Analytics 4",
+          "description": "Měření návštěvnosti a konverzí."
+        },
+        {
+          "@type": "ListItem",
+          "position": 8,
+          "name": "Consent Mode v2",
+          "description": "Měření v souladu se souhlasy s cookies."
+        },
+        {
+          "@type": "ListItem",
+          "position": 9,
+          "name": "Git",
+          "description": "Verzování změn."
+        },
+        {
+          "@type": "ListItem",
+          "position": 10,
+          "name": "AI agenti",
+          "description": "Pomoc s kódem a rutinou při vývoji."
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://jirikratochvil.eu/web.html#faq",
+      "inLanguage": "cs",
+      "isPartOf": {
+        "@id": "https://jirikratochvil.eu/web.html#webpage"
+      },
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Píše váš web umělá inteligence?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "AI agenti mi pomáhají s kódem a rutinou, ale autor nejsou. Zadání, návrh i finální kontrolu dělám já a za výsledek ručím. Pro vás to znamená rychlejší práci, ne výstup z automatu."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Děláte jen e-shopy na Shoptetu?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Na Shoptet se specializuju, tam jsem doma. Weby a prezentace píšu na míru bez platformy. Pokud si nejste jistí, jestli Shoptet sedí na váš projekt, rád poradím."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Postaráte se i o reklamu a návštěvnost?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Ano, věnuji se online marketingu a Google Ads. Víc najdete v sekci Online marketing."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Jak dlouho tvorba trvá?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Záleží na rozsahu. Po úvodním hovoru dostanete konkrétní odhad, ne obecné „zhruba měsíc“."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Co když po spuštění něco potřebuji změnit?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Napište mi. Drobné úpravy i větší rozšíření řeším i po spuštění."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body class="sub-page">
+<svg id="bi-sprite" xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="bi-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5"/></symbol>
+  <symbol id="bi-cart3" viewBox="0 0 16 16"><path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l.84 4.479 9.144-.459L13.89 4zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/></symbol>
+  <symbol id="bi-envelope" viewBox="0 0 16 16"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/></symbol>
+  <symbol id="bi-graph-up-arrow" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5"/></symbol>
+  <symbol id="bi-instagram" viewBox="0 0 16 16"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/></symbol>
+  <symbol id="bi-lightning-charge-fill" viewBox="0 0 16 16"><path d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.09z"/></symbol>
+  <symbol id="bi-linkedin" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z"/></symbol>
+  <symbol id="bi-rocket-takeoff-fill" viewBox="0 0 16 16"><path d="M12.17 9.53c2.307-2.592 3.278-4.684 3.641-6.218.21-.887.214-1.58.16-2.065a3.6 3.6 0 0 0-.108-.563 2 2 0 0 0-.078-.23V.453c-.073-.164-.168-.234-.352-.295a2 2 0 0 0-.16-.045 4 4 0 0 0-.57-.093c-.49-.044-1.19-.03-2.08.188-1.536.374-3.618 1.343-6.161 3.604l-2.4.238h-.006a2.55 2.55 0 0 0-1.524.734L.15 7.17a.512.512 0 0 0 .433.868l1.896-.271c.28-.04.592.013.955.132.232.076.437.16.655.248l.203.083c.196.816.66 1.58 1.275 2.195.613.614 1.376 1.08 2.191 1.277l.082.202c.089.218.173.424.249.657.118.363.172.676.132.956l-.271 1.9a.512.512 0 0 0 .867.433l2.382-2.386c.41-.41.668-.949.732-1.526zm.11-3.699c-.797.8-1.93.961-2.528.362-.598-.6-.436-1.733.361-2.532.798-.799 1.93-.96 2.528-.361s.437 1.732-.36 2.531Z"/><path d="M5.205 10.787a7.6 7.6 0 0 0 1.804 1.352c-1.118 1.007-4.929 2.028-5.054 1.903-.126-.127.737-4.189 1.839-5.18.346.69.837 1.35 1.411 1.925"/></symbol>
+  <symbol id="bi-shield-check" viewBox="0 0 16 16"><path d="M5.338 1.59a61 61 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.7 10.7 0 0 0 2.287 2.233c.346.244.652.42.893.533q.18.085.293.118a1 1 0 0 0 .101.025 1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"/><path d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0"/></symbol>
+  <symbol id="bi-telephone" viewBox="0 0 16 16"><path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.6 17.6 0 0 0 4.168 6.608 17.6 17.6 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.68.68 0 0 0-.58-.122l-2.19.547a1.75 1.75 0 0 1-1.657-.459L5.482 8.062a1.75 1.75 0 0 1-.46-1.657l.548-2.19a.68.68 0 0 0-.122-.58zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z"/></symbol>
+</svg>
+
+<div id="bg-layer">
+  <div id="bg-gradient"></div>
+  <div id="bg-blob-a"></div>
+  <div id="bg-blob-b"></div>
+</div>
+<div id="bg-noise"></div>
+<div id="cursor"></div>
+
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom" id="mainNav">
+  <div class="container d-flex justify-content-between align-items-center">
+    <a class="brand d-flex align-items-center gap-2" href="/">
+      <img src="assets/logo.webp" alt="Jiří Kratochvíl" class="brand-logo" width="200" height="145" style="filter:brightness(10);">
+    </a>
+    <button class="navbar-toggler" type="button" aria-controls="navMenu" aria-expanded="false" aria-label="Otevřít menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse flex-grow-0" id="navMenu">
+      <div class="d-flex flex-column flex-lg-row">
+        <a class="nav-link" href="/">Úvod</a>
+        <a class="nav-link active" href="web.html" aria-current="page">Web &amp; e-shop</a>
+        <a class="nav-link" href="marketing.html">Online marketing</a>
+        <a class="nav-link" href="fotografie.html">Fotograf</a>
+        <a class="nav-link" href="kontakt.html">Kontakt</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <section class="sub-hero">
+    <div class="container">
+      <p class="eyebrow reveal">Weby &amp; e-shopy</p>
+      <h1 class="reveal">Weby a e-shopy <span class="gradient-text">na míru</span></h1>
+      <p class="sub-lead reveal">Od zadání po spuštění. E-shopy stavím hlavně na Shoptetu, weby a úpravy vyvíjím s AI agenty po boku. Jdou rychleji a výsledek stejně hlídám já.</p>
+      <div class="hero-links reveal">
+        <a href="kontakt.html" class="pill-btn">
+          <span class="pill-btn__icon pill-btn__icon--left" aria-hidden="true">
+            <svg viewBox="0 0 40 40" fill="none"><path d="M7 20h26" stroke="currentColor" stroke-width="3" stroke-linecap="round" /><path d="M22 9l11 11-11 11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </span>
+          <span class="pill-btn__label">Napsat mi</span>
+          <span class="pill-btn__icon pill-btn__icon--right" aria-hidden="true">
+            <svg viewBox="0 0 40 40" fill="none"><path d="M7 20h26" stroke="currentColor" stroke-width="3" stroke-linecap="round" /><path d="M22 9l11 11-11 11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </span>
+        </a>
+        <a href="#postup" class="text-link">Jak to probíhá &darr;</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sub-section" id="proc">
+    <div class="container sub-narrow">
+      <p class="eyebrow reveal">Proč to dělám</p>
+      <h2 class="reveal">Web je první dojem. <span class="gradient-text">Dotáhnu ho do detailu.</span></h2>
+      <p class="reveal">Web je často první, co o vás člověk uvidí. Když se pomalu načítá, na mobilu se špatně ovládá nebo v něm nenajde, co hledá, druhou šanci nedostanete.</p>
+      <p class="reveal">Baví mě právě tyhle detaily. Že se stránka rozjede hned. Že tlačítko je tam, kde ho čekáte. Že objednávka projde na první pokus. Zní to nenápadně, ale přesně tohle rozhoduje, jestli web jen existuje, nebo opravdu pracuje.</p>
+      <p class="reveal">Dělám to sám, od návrhu po nasazení. Víte, s kým mluvíte, a nic se neztratí cestou mezi grafikem, programátorem a někým, kdo to nasadí.</p>
+      <p class="reveal">K ruce mám AI agenty. Berou na sebe rutinu, takže můžu víc času věnovat tomu, na čem záleží: struktuře, detailům a tomu, aby to celé dávalo smysl. Co z toho vyleze, vždycky procházím a za výsledek ručím já.</p>
+    </div>
+  </section>
+
+  <section class="sub-section" id="postup">
+    <div class="container sub-narrow">
+      <p class="eyebrow reveal">Jak to probíhá</p>
+      <h2 class="reveal">Od prvního hovoru <span class="gradient-text">po spuštění</span></h2>
+      <ol class="steps">
+        <li class="step reveal" id="postup-1">
+          <div>
+            <h3>Zadání</h3>
+            <p>Nejdřív si popovídáme. Co prodáváte, komu a co má web udělat. Z toho vzejde jasný rozsah, ještě než se napíše první řádek.</p>
+          </div>
+        </li>
+        <li class="step reveal" id="postup-2">
+          <div>
+            <h3>Návrh</h3>
+            <p>Struktura a vzhled vycházejí z vaší značky a zákazníků. Ať začínám od čistého listu, nebo od šablony, výsledek má vypadat jako váš, ne jako každý druhý. Návrh ladíme společně, dokud nesedí.</p>
+          </div>
+        </li>
+        <li class="step reveal" id="postup-3">
+          <div>
+            <h3>Vývoj</h3>
+            <p>Programuju s AI agenty po boku: rutinu nechávám na nich, rozhodnutí a kontrolu na sobě. U e-shopů nastavuju Shoptet: šablonu, platby, dopravu a vše, co s tím souvisí. Průběžně vidíte, jak to roste.</p>
+          </div>
+        </li>
+        <li class="step reveal" id="postup-4">
+          <div>
+            <h3>Spuštění</h3>
+            <p>Před ostrým startem vše projdu na mobilech i počítačích, nastavím měření návštěvnosti a základy SEO. Pak web nasadím.</p>
+          </div>
+        </li>
+        <li class="step reveal" id="postup-5">
+          <div>
+            <h3>Po spuštění</h3>
+            <p>Web ani e-shop nekončí spuštěním. Upravím, co se ukáže, že lidem nefunguje, a doplním, co přibude.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sub-section" id="technologie">
+    <div class="container">
+      <p class="eyebrow reveal">Technologie</p>
+      <h2 class="reveal">Na čem <span class="gradient-text">stavím</span></h2>
+      <p class="reveal" style="max-width:38rem;">Nástroje vybírám podle toho, co projekt potřebuje, ne podle toho, co je zrovna v módě.</p>
+      <div class="sub-grid">
+        <div class="feature-card card-wide reveal">
+          <div class="icon"><svg class="bi" aria-hidden="true"><use href="#bi-rocket-takeoff-fill"/></svg></div>
+          <h3>Vývoj s AI agenty po boku</h3>
+          <p>Agenti mi pomáhají s kódem, testováním a rutinními úpravami. Práce jde rychleji a detaily se tolik neztrácejí. Zadání, návrh a finální kontrola ale zůstávají na mně, protože za výsledek odpovídám já, ne nástroj.</p>
+          <div class="tags"><span class="tag">AI agenti</span><span class="tag">Revize kódu</span><span class="tag">Testování</span></div>
+        </div>
+        <div class="feature-card reveal">
+          <div class="icon"><svg class="bi" aria-hidden="true"><use href="#bi-lightning-charge-fill"/></svg></div>
+          <h3>Rychlé webové základy</h3>
+          <p>HTML, CSS a JavaScript. Bez těžkých frameworků všude tam, kde nejsou potřeba, takže stránky jsou rychlé a snadno se udržují. Animace přidávám tam, kde pomáhají, ne všude.</p>
+          <div class="tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">GSAP</span></div>
+        </div>
+        <div class="feature-card reveal">
+          <div class="icon"><svg class="bi" aria-hidden="true"><use href="#bi-cart3"/></svg></div>
+          <h3>E-shopy na Shoptetu</h3>
+          <p>Úpravy šablony, nastavení plateb a dopravy, napojení a ladění obchodu. Na tuhle platformu se specializuju.</p>
+          <div class="tags"><span class="tag">Shoptet</span></div>
+        </div>
+        <div class="feature-card reveal">
+          <div class="icon"><svg class="bi" aria-hidden="true"><use href="#bi-graph-up-arrow"/></svg></div>
+          <h3>Měření a souhlasy</h3>
+          <p>Aby šlo vyhodnotit, co web přináší, a zároveň se dodržela pravidla o cookies. Měření nastavuju hned při spuštění.</p>
+          <div class="tags"><span class="tag">Google Tag Manager</span><span class="tag">GA4</span><span class="tag">Consent Mode v2</span></div>
+        </div>
+        <div class="feature-card reveal">
+          <div class="icon"><svg class="bi" aria-hidden="true"><use href="#bi-shield-check"/></svg></div>
+          <h3>Nasazení a provoz</h3>
+          <p>HTTPS, bezpečnostní hlavičky a verzování změn. Web, který běží spolehlivě a dá se bezpečně měnit.</p>
+          <div class="tags"><span class="tag">Git</span><span class="tag">HTTPS</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sub-section" id="zasady">
+    <div class="container">
+      <p class="eyebrow reveal">Na čem mi záleží</p>
+      <h2 class="reveal">Čtyři věci, <span class="gradient-text">ve kterých nechci slevit</span></h2>
+      <div class="principles">
+        <div class="reveal">
+          <h3>Rychlost</h3>
+          <p>Web má naběhnout hned. Šetřím každý zbytečný kilobajt, protože návštěvník nečeká.</p>
+        </div>
+        <div class="reveal">
+          <h3>Mobil jako první</h3>
+          <p>Většina lidí přijde z telefonu. Web proto navrhuju a testuju nejdřív tam.</p>
+        </div>
+        <div class="reveal">
+          <h3>Srozumitelnost</h3>
+          <p>Jasné texty, jasná navigace, jasné tlačítko. Návštěvník nemá hádat, co dál.</p>
+        </div>
+        <div class="reveal">
+          <h3>Měřitelnost</h3>
+          <p>Co se nedá změřit, nedá se zlepšit. Proto měření řeším hned při spuštění, ne až potom.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sub-section" id="faq">
+    <div class="container sub-narrow">
+      <p class="eyebrow reveal">Časté otázky</p>
+      <h2 class="reveal">Než se <span class="gradient-text">ozvete</span></h2>
+      <div class="faq reveal">
+        <details>
+          <summary>Píše váš web umělá inteligence?</summary>
+          <p>AI agenti mi pomáhají s kódem a rutinou, ale autor nejsou. Zadání, návrh i finální kontrolu dělám já a za výsledek ručím. Pro vás to znamená rychlejší práci, ne výstup z automatu.</p>
+        </details>
+        <details>
+          <summary>Děláte jen e-shopy na Shoptetu?</summary>
+          <p>Na Shoptet se specializuju, tam jsem doma. Weby a prezentace píšu na míru bez platformy. Pokud si nejste jistí, jestli Shoptet sedí na váš projekt, rád poradím.</p>
+        </details>
+        <details>
+          <summary>Postaráte se i o reklamu a návštěvnost?</summary>
+          <p>Ano, věnuji se online marketingu a Google Ads. Víc najdete v sekci <a href="marketing.html">Online marketing</a>.</p>
+        </details>
+        <details>
+          <summary>Jak dlouho tvorba trvá?</summary>
+          <p>Záleží na rozsahu. Po úvodním hovoru dostanete konkrétní odhad, ne obecné „zhruba měsíc“.</p>
+        </details>
+        <details>
+          <summary>Co když po spuštění něco potřebuji změnit?</summary>
+          <p>Napište mi. Drobné úpravy i větší rozšíření řeším i po spuštění.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="sub-cta">
+    <div class="container">
+      <h2 class="reveal">Máte projekt? <span class="gradient-text">Ozvěte se.</span></h2>
+      <p class="reveal">Napište pár vět o tom, co potřebujete. Ozvu se a řekneme si, jestli a jak můžu pomoct.</p>
+      <a href="kontakt.html" class="pill-btn reveal">
+        <span class="pill-btn__icon pill-btn__icon--left" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M7 20h26" stroke="currentColor" stroke-width="3" stroke-linecap="round" /><path d="M22 9l11 11-11 11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </span>
+        <span class="pill-btn__label">Napsat mi</span>
+        <span class="pill-btn__icon pill-btn__icon--right" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M7 20h26" stroke="currentColor" stroke-width="3" stroke-linecap="round" /><path d="M22 9l11 11-11 11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </span>
+      </a>
+      <div class="cta-contact reveal">
+        <a href="tel:+420728544881">+420 728 544 881</a>
+        <a href="mailto:info@jirikratochvil.eu">info@jirikratochvil.eu</a>
+      </div>
+      <nav class="sub-next reveal" aria-label="Další stránky">
+        <a href="marketing.html">Online marketing &rarr;</a>
+        <a href="fotografie.html">Portrétní fotografie &rarr;</a>
+        <a href="/">&larr; Zpět na úvod</a>
+      </nav>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="row g-4 align-items-start">
+      <div class="col-md-4">
+        <div class="brand mb-2">Jiří Kratochvíl</div>
+        <div class="footer-contact">
+          <a href="tel:+420728544881"><svg class="bi" aria-hidden="true"><use href="#bi-telephone"/></svg>+420 728 544 881</a>
+          <a href="mailto:info@jirikratochvil.eu"><svg class="bi" aria-hidden="true"><use href="#bi-envelope"/></svg>info@jirikratochvil.eu</a>
+        </div>
+      </div>
+      <div class="col-md-4 footer-nav">
+        <p class="footer-nav-title">Menu</p>
+        <ul>
+          <li><a href="web.html">Web &amp; e-shop</a></li>
+          <li><a href="marketing.html">Online marketing</a></li>
+          <li><a href="fotografie.html">Fotograf</a></li>
+          <li><a href="kontakt.html">Kontakt</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4 text-md-end">
+        <div class="d-flex gap-3 justify-content-md-end">
+          <a class="social-ico" href="https://www.instagram.com/ochmi" target="_blank" rel="noopener" aria-label="Instagram"><svg class="bi" aria-hidden="true"><use href="#bi-instagram"/></svg></a>
+          <a class="social-ico" href="https://www.linkedin.com/in/ji%C5%99%C3%AD-kratochv%C3%ADl-a61a87208" target="_blank" rel="noopener" aria-label="LinkedIn"><svg class="bi" aria-hidden="true"><use href="#bi-linkedin"/></svg></a>
+        </div>
+        <p class="mt-3 mb-0" style="font-size:.85rem;">&copy; 2026 Jiří Kratochvíl</p>
+        <p class="mb-0" style="font-size:.85rem;"><a href="gdpr.html">GDPR</a> &middot; <a href="sitemap.html">Sitemap</a> &middot; <a href="#" id="cookie-settings">Cookies</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<button id="toTop" class="to-top" aria-label="Nahoru">
+  <svg class="to-top-ring" viewBox="0 0 46 46" aria-hidden="true" focusable="false">
+    <circle class="ring-track" cx="23" cy="23" r="22"></circle>
+    <circle class="ring-bar" cx="23" cy="23" r="22"></circle>
+  </svg>
+  <svg class="bi" aria-hidden="true"><use href="#bi-arrow-up"/></svg>
+</button>
+
+<div id="cookie-consent" class="cookie-consent" hidden>
+  <p>Měříme návštěvnost webu. <a href="gdpr.html#cookies">Víc info</a></p>
+  <div class="cookie-consent-btns">
+    <button type="button" id="cookie-decline">Odmítnout</button>
+    <button type="button" id="cookie-accept">Souhlasím</button>
+  </div>
+</div>
+
+<script src="assets/vendor/gsap/gsap.min.js"></script>
+<script src="assets/vendor/gsap/ScrollTrigger.min.js"></script>
+<script src="assets/vendor/gsap/ScrollToPlugin.min.js"></script>
+<script src="page.min.js"></script>
+<script src="cookie-consent.js"></script>
+</body>
+</html>
