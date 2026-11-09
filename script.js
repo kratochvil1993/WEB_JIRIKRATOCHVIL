@@ -468,8 +468,14 @@
 
   var navLinks = document.querySelectorAll('.navbar-custom .nav-link[href^="#"]');
   function updateActiveNavLink(sectionId) {
+    /* Menu už nemá kotvy na jednotlivé sekce (Web/Marketing/Fotograf vedou na podstránky), takže
+       "Úvod" zůstává aktivní po celé úvodní stránce; jen sekce s kontaktem přepne zvýraznění
+       na "Kontakt". Kdyby se zakomentované kotvy vrátily, platí zase přesná shoda s ID sekce. */
+    var hasExact = false;
+    navLinks.forEach(function (link) { if (link.getAttribute("href") === "#" + sectionId) hasExact = true; });
+    var target = hasExact ? "#" + sectionId : "#hero";
     navLinks.forEach(function (link) {
-      link.classList.toggle("active", link.getAttribute("href") === "#" + sectionId);
+      link.classList.toggle("active", link.getAttribute("href") === target);
     });
   }
 

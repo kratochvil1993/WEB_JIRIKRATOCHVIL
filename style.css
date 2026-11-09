@@ -1447,3 +1447,10 @@ footer::after{
   .js .ai-flow{--flow:0;}
   .js .ai-flow__step{opacity:0;}
 }
+
+/* Bez animací (reduced-motion) se grafika v hero nepřepíná, takže se ukáže jen první vrstva
+   (kód / reklama); jinak by se obě vrstvy kreslily přes sebe. */
+@media (prefers-reduced-motion:reduce){
+  .sub-hero-graphic .wireframe-layer,
+  .sub-hero-graphic .dash-layer{opacity:0;}
+}
