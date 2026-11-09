@@ -560,7 +560,24 @@
           var back = stackedPose(n - 2); back.opacity = 0; back.zIndex = 1;
           tl.set(cards[old], back);
           tl.to(cards[old], { opacity: 1, duration: 0.5, ease: "power1.out" });
+          gsap.delayedCall(0.75, afLock); /* nová fotka dosedne, pak "zaostří" */
         };
+        /* políčko autofokusu: najede z odchylky, chvíli "hledá", zamkne se (azurově) a zmizí; jen desktop */
+        var af = gfx.querySelector(".af-box"), afTl = null;
+        var afLock = function () {
+          if (!af || isMobile) return;
+          if (afTl) afTl.kill();
+          af.classList.remove("is-locked");
+          afTl = gsap.timeline();
+          afTl.set(af, { opacity: 0, scale: 1.7, x: gsap.utils.random(-36, 36), y: gsap.utils.random(-28, 28) })
+              .to(af, { opacity: 0.6, duration: 0.15 })
+              .to(af, { x: gsap.utils.random(-14, 14), y: gsap.utils.random(-12, 12), scale: 1.25, duration: 0.3, ease: "power1.inOut" })
+              .to(af, { x: 0, y: 0, scale: 1, opacity: 1, duration: 0.22, ease: "power3.out" })
+              .call(function () { af.classList.add("is-locked"); })
+              .to({}, { duration: 0.3 })
+              .to(af, { opacity: 0, duration: 0.3 });
+        };
+        gsap.delayedCall(1.9, afLock);
         /* zdánlivě prázdný tween jen odměřuje čas mezi kroky (a dá se pozastavit mimo okno) */
         var tlP = gsap.timeline({ repeat: -1, delay: 2.2 });
         tlP.to({}, { duration: 2, onComplete: advance }); /* interval listování fotek v hero (s) */
@@ -686,6 +703,66 @@
       if (!st) return;
       it.classList.remove("is-done");
       ScrollTrigger.create({ trigger: st, start: "top 72%", once: true, onEnter: function () { it.classList.add("is-done"); } });
+    });
+  }
+
+  /* ---------------- Galerie: fotky se při odkrytí "vyvolají" (rozmazané a ztlumené → ostré) ----------------
+     Jen filter na <img> (ne transform: ten má CSS transition pro hover). Na mobilu bez blur, ať to
+     nezatěžuje GPU; po doběhnutí se filter smaže. */
+  if (!reduceMotion) {
+    var devFrom = isMobile ? "brightness(0.55) saturate(0.6)" : "blur(14px) brightness(0.55) saturate(0.6)";
+    gsap.utils.toArray(".photo-gallery figure").forEach(function (fig) {
+      var img = fig.querySelector("img");
+      if (!img) return;
+      gsap.set(img, { filter: devFrom });
+      ScrollTrigger.create({
+        trigger: fig, start: "top 90%", once: true,
+        onEnter: function () {
+          gsap.to(img, { filter: isMobile ? "brightness(1) saturate(1)" : "blur(0px) brightness(1) saturate(1)", duration: 1.4, delay: 0.15, ease: "power2.out", clearProps: "filter" });
+        }
+      });
+    });
+  }
+
+  /* ---------------- Hledáček u postupu (fotografie.html): počítadlo snímků, popisek, expozice, záblesk ----------------
+     V HTML je hotový stav (5/5), takže bez JS / s reduced-motion zůstane vidět; tady se vrátí na začátek
+     a postupuje, jak scroll dojíždí ke krokům (#postup-1..5). */
+  var vf = document.querySelector(".viewfinder");
+  if (vf && !reduceMotion) {
+    var vfCount = vf.querySelector(".vf-count"), vfCap = vf.querySelector(".vf-caption"),
+        vfF = vf.querySelector(".vf-f"), vfS = vf.querySelector(".vf-s"), vfISO = vf.querySelector(".vf-iso"),
+        vfFlash = vf.querySelector(".vf-flash"), vfFocus = vf.querySelector(".vf-focus");
+    var vfSteps = [
+      { cap: "káva a pokec", f: "f/2.8", s: "1/125", iso: "ISO 200", ev: -1, blur: 10 },
+      { cap: "kde je hezké světlo?", f: "f/2.0", s: "1/200", iso: "ISO 160", ev: -0.5, blur: 5 },
+      { cap: "nehlídej se, jen buď", f: "f/1.8", s: "1/250", iso: "ISO 100", ev: 0, blur: 0 },
+      { cap: "vyberu jen ty nejlepší", f: "f/1.8", s: "1/250", iso: "ISO 100", ev: 0.3, blur: 0 },
+      { cap: "hotovo, pochlub se", f: "f/1.8", s: "1/250", iso: "ISO 100", ev: 0, blur: 0 }
+    ];
+    var vfNow = -1, vfLastFlash = -1;
+    var vfShow = function (i) {
+      var d = vfSteps[i];
+      vfCount.textContent = (i + 1) + "/" + vfSteps.length;
+      vfCap.textContent = d.cap; vfF.textContent = d.f; vfS.textContent = d.s; vfISO.textContent = d.iso;
+      gsap.fromTo([vfCount, vfCap, vfF, vfS, vfISO], { opacity: 0.2 }, { opacity: 1, duration: 0.45, ease: "power1.out" });
+      gsap.to(vf, { "--ev": d.ev, "--blur": d.blur, duration: 0.8, ease: "power2.inOut", overwrite: "auto" }); /* fotka se zaostřuje a dostává správnou expozici */
+      gsap.fromTo(vfFocus, { scale: 1.6, opacity: 0.4 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power3.out" });
+      if (gsap.ticker.time - vfLastFlash > 0.35) { /* při skoku přes víc kroků nezáblesknout pětkrát */
+        vfLastFlash = gsap.ticker.time;
+        gsap.fromTo(vfFlash, { opacity: 0.5 }, { opacity: 0, duration: 0.5, ease: "power2.out" });
+      }
+    };
+    /* počáteční stav: nic nevyfoceno, expozice "hledá" */
+    vfCount.textContent = "0/" + vfSteps.length; vfCap.textContent = "připraveno";
+    vfF.textContent = "f/2.8"; vfS.textContent = "1/125"; vfISO.textContent = "ISO 200";
+    gsap.set(vf, { "--ev": -1.4, "--blur": 12 }); /* na začátku rozostřená a podexponovaná fotka */
+    vfSteps.forEach(function (d, i) {
+      var st = document.getElementById("postup-" + (i + 1));
+      if (!st) return;
+      ScrollTrigger.create({
+        trigger: st, start: "top 72%", once: true,
+        onEnter: function () { if (i > vfNow) { vfNow = i; vfShow(i); } }
+      });
     });
   }
 
