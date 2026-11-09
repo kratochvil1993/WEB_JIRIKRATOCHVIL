@@ -542,10 +542,12 @@
           var o = offsetOf(i, 0);
           gsap.set(card, Object.assign({ zIndex: n - o }, poseFor(o)));
         });
-        var advance = function () {
+        var curTl = null;
+        /* dir = ±1: odlet do strany (swipe na mobilu), bez dir odlet nahoru (autoplay) */
+        var advance = function (dir) {
           var old = front;
           front = (front + 1) % n;
-          var tl = gsap.timeline();
+          var tl = curTl = gsap.timeline();
           gsap.set(cards[old], { zIndex: n + 1 });
           cards.forEach(function (card, i) {
             if (i === old) return;
@@ -555,17 +557,18 @@
             pose.duration = 0.8; pose.ease = "power2.inOut";
             tl.to(card, pose, 0);
           });
-          var ex = exitPose(); ex.duration = 0.55; ex.ease = "power2.in";
+          var ex = dir ? { opacity: 0, x: dir * 380, y: -24, rotate: dir * 22, scale: 0.9 } : exitPose();
+          ex.duration = dir ? 0.42 : 0.55; ex.ease = "power2.in";
           tl.to(cards[old], ex, 0);
           var back = stackedPose(n - 2); back.opacity = 0; back.zIndex = 1;
           tl.set(cards[old], back);
           tl.to(cards[old], { opacity: 1, duration: 0.5, ease: "power1.out" });
           gsap.delayedCall(0.75, afLock); /* nová fotka dosedne, pak "zaostří" */
         };
-        /* políčko autofokusu: najede z odchylky, chvíli "hledá", zamkne se (azurově) a zmizí; jen desktop */
+        /* políčko autofokusu: najede z odchylky, chvíli "hledá", zamkne se (azurově) a zmizí */
         var af = gfx.querySelector(".af-box"), afTl = null;
         var afLock = function () {
-          if (!af || isMobile) return;
+          if (!af) return;
           if (afTl) afTl.kill();
           af.classList.remove("is-locked");
           afTl = gsap.timeline();
@@ -580,15 +583,95 @@
         gsap.delayedCall(1.9, afLock);
         /* zdánlivě prázdný tween jen odměřuje čas mezi kroky (a dá se pozastavit mimo okno) */
         var tlP = gsap.timeline({ repeat: -1, delay: 2.2 });
-        tlP.to({}, { duration: 2, onComplete: advance }); /* interval listování fotek v hero (s) */
+        tlP.to({}, { duration: 2, onComplete: function () { advance(); } }); /* interval listování fotek v hero (s) */
         loops.push(tlP);
+
+        /* Swipe (jen mobil/tablet, stejně jako na úvodní stránce): přední fotka jde za prstem, ostatní se
+           úměrně posunou dopředu; po puštění buď odletí (dost daleko/rychle), nebo se pružně vrátí.
+           Vodorovné tažení řeší pointer events, svislé nechává prohlížeči (touch-action: pan-y), takže se
+           stránka dál scrolluje. Autoplay se při dotyku zastaví (`_held`, ScrollTrigger ho pak nerozběhne)
+           a po chvíli klidu naběhne znovu. */
+        if (isMobile) {
+          var blendPose = function (a, b, t) {
+            var out = {};
+            Object.keys(a).forEach(function (key) { out[key] = a[key] + (b[key] - a[key]) * t; });
+            return out;
+          };
+          var tracking = false, dragging = false, sx = 0, sy = 0, st = 0, dx = 0, pid = null, resumeT = null;
+          var settleOthers = function (dur) {
+            cards.forEach(function (card, i) {
+              if (i === front) return;
+              var pose = poseFor(offsetOf(i, front));
+              pose.duration = dur; pose.ease = "power2.out"; pose.overwrite = "auto";
+              gsap.to(card, pose);
+            });
+          };
+          var snapBack = function () {
+            var pose = frontPose();
+            pose.duration = 0.55; pose.ease = "back.out(1.8)"; pose.overwrite = "auto";
+            gsap.to(cards[front], pose);
+            settleOthers(0.4);
+          };
+          var scheduleResume = function (ms) {
+            clearTimeout(resumeT);
+            resumeT = setTimeout(function () {
+              tlP._held = false;
+              var r = hero.getBoundingClientRect();
+              if (r.bottom > 0 && r.top < window.innerHeight) tlP.restart(); /* mimo okno ho rozběhne ScrollTrigger */
+            }, ms);
+          };
+          gfx.style.touchAction = "pan-y";
+          gfx.addEventListener("pointerdown", function (e) {
+            if (e.pointerType === "mouse" && e.button !== 0) return;
+            tracking = true; dragging = false; dx = 0;
+            sx = e.clientX; sy = e.clientY; st = e.timeStamp; pid = e.pointerId;
+            tlP._held = true; tlP.pause(); clearTimeout(resumeT);
+          });
+          gfx.addEventListener("pointermove", function (e) {
+            if (!tracking || e.pointerId !== pid) return;
+            var mx = e.clientX - sx, my = e.clientY - sy;
+            if (!dragging) {
+              if (Math.abs(mx) > 8 && Math.abs(mx) > Math.abs(my) * 1.2) {
+                dragging = true;
+                try { gfx.setPointerCapture(pid); } catch (err) {}
+                /* rozběhnutý krok se doběhne až teď, kdy je jisté, že jde o vodorovný tah (ne o scroll) */
+                if (curTl) { curTl.progress(1); curTl = null; }
+                gsap.killTweensOf(cards[front]);
+                if (afTl) { afTl.kill(); gsap.set(af, { opacity: 0 }); }
+              } else return;
+            }
+            dx = mx;
+            var pr = Math.min(Math.abs(dx) / 140, 1) * 0.6;
+            gsap.set(cards[front], { x: dx, y: -Math.abs(dx) * 0.05, rotate: gsap.utils.clamp(-22, 22, dx * 0.07) });
+            cards.forEach(function (card, i) {
+              if (i === front) return;
+              var o = offsetOf(i, front);
+              gsap.set(card, blendPose(poseFor(o), poseFor(o - 1), pr));
+            });
+          });
+          gfx.addEventListener("pointerup", function (e) {
+            if (!tracking || e.pointerId !== pid) return;
+            tracking = false;
+            if (!dragging) { scheduleResume(1500); return; }
+            dragging = false;
+            var v = Math.abs(dx) / Math.max(e.timeStamp - st, 1);
+            if (Math.abs(dx) > 70 || (v > 0.5 && Math.abs(dx) > 30)) { advance(dx > 0 ? 1 : -1); scheduleResume(4500); }
+            else { snapBack(); scheduleResume(3500); }
+          });
+          gfx.addEventListener("pointercancel", function (e) {
+            if (!tracking || e.pointerId !== pid) return;
+            tracking = false;
+            if (dragging) { dragging = false; snapBack(); }
+            scheduleResume(2500);
+          });
+        }
       }
 
       /* smyčky běží jen dokud je hero v okně */
       if (loops.length) {
         ScrollTrigger.create({
           trigger: hero, start: "top bottom", end: "bottom top",
-          onToggle: function (self) { loops.forEach(function (t) { self.isActive ? t.resume() : t.pause(); }); }
+          onToggle: function (self) { loops.forEach(function (t) { if (self.isActive) { if (!t._held) t.resume(); } else t.pause(); }); }
         });
       }
     }
@@ -679,31 +762,53 @@
     });
   }
 
-  /* ---------------- Git log u postupu (web.html): commit naskočí, když scroll dojede k jeho kroku ----------------
-     .git-commit číslo i odpovídá #postup-(i+1). Bez animací jsou všechny vidět hned. */
-  if (!reduceMotion) {
-    var gitCommits = gsap.utils.toArray(".git-log .git-commit");
-    gsap.set(gitCommits, { opacity: 0, x: -12 });
-    gitCommits.forEach(function (c, i) {
-      var st = document.getElementById("postup-" + (i + 1));
-      if (!st) { gsap.set(c, { opacity: 1, x: 0 }); return; }
-      ScrollTrigger.create({
-        trigger: st, start: "top 72%", once: true,
-        onEnter: function () { gsap.to(c, { opacity: 1, x: 0, duration: 0.55, ease: "power2.out" }); }
-      });
+  /* ---------------- Okna u postupu: git log (web), checklist (marketing), hledáček (fotografie) ----------------
+     Na širokém displeji (>=1200 px) je okno sticky vedle kroků, takže se posouvá po jednotlivých krocích
+     (#postup-1..N, scroll dojede ke kroku -> show(i)). Pod 1200 px je ale okno až POD seznamem kroků: než
+     k němu scroll dojede, všechny kroky by už byly projeté a animace hotová. Tam ji proto spouští samotné
+     okno: jakmile se objeví, přehraje se sekvence show(0..n-1) po `gap` sekundách. Obě cesty jsou
+     zaregistrované a rozhoduje se až při spuštění (podle šířky), guard `now` brání dvojímu přehrání. */
+  var wideMq = window.matchMedia("(min-width: 1200px)");
+  function stepsWithWindow(winEl, n, gap, show) {
+    var now = -1;
+    function go(i) { if (i > now) { now = i; show(i); } }
+    for (var i = 0; i < n; i++) {
+      (function (i) {
+        var st = document.getElementById("postup-" + (i + 1));
+        if (!st) return;
+        ScrollTrigger.create({ trigger: st, start: "top 72%", onEnter: function () { if (wideMq.matches) go(i); } });
+      })(i);
+    }
+    ScrollTrigger.create({
+      trigger: winEl, start: "top 78%", once: true,
+      onEnter: function () {
+        if (wideMq.matches) return;
+        for (var i = 0; i < n; i++) gsap.delayedCall(0.35 + i * gap, go, [i]);
+      }
     });
   }
 
-  /* ---------------- Checklist kampaně u postupu (marketing.html): políčko se odškrtne, když scroll dojede ke kroku ----------------
-     V HTML jsou všechny .is-done (bez JS / reduced-motion vidět hotovo); tady se sundají a vrací po krocích. */
+  /* Git log (web.html): commit naskočí s krokem. Bez animací jsou všechny vidět hned. */
   if (!reduceMotion) {
+    var gitLog = document.querySelector(".git-log");
+    var gitCommits = gsap.utils.toArray(".git-log .git-commit");
+    if (gitLog && gitCommits.length) {
+      gsap.set(gitCommits, { opacity: 0, x: -12 });
+      stepsWithWindow(gitLog, gitCommits.length, 0.55, function (i) {
+        gsap.to(gitCommits[i], { opacity: 1, x: 0, duration: 0.55, ease: "power2.out" });
+      });
+    }
+  }
+
+  /* Checklist kampaně (marketing.html): políčko se odškrtne s krokem. V HTML jsou všechny .is-done
+     (bez JS / reduced-motion vidět hotovo); tady se sundají a vrací po krocích. */
+  if (!reduceMotion) {
+    var todoLog = document.querySelector(".todo-log");
     var todoItems = gsap.utils.toArray(".todo-log .todo-item");
-    todoItems.forEach(function (it, i) {
-      var st = document.getElementById("postup-" + (i + 1));
-      if (!st) return;
-      it.classList.remove("is-done");
-      ScrollTrigger.create({ trigger: st, start: "top 72%", once: true, onEnter: function () { it.classList.add("is-done"); } });
-    });
+    if (todoLog && todoItems.length) {
+      todoItems.forEach(function (it) { it.classList.remove("is-done"); });
+      stepsWithWindow(todoLog, todoItems.length, 0.6, function (i) { todoItems[i].classList.add("is-done"); });
+    }
   }
 
   /* ---------------- Galerie: fotky se při odkrytí "vyvolají" (rozmazané a ztlumené → ostré) ----------------
@@ -739,7 +844,7 @@
       { cap: "vyberu jen ty nejlepší", f: "f/1.8", s: "1/250", iso: "ISO 100", ev: 0.3, blur: 0 },
       { cap: "hotovo, pochlub se", f: "f/1.8", s: "1/250", iso: "ISO 100", ev: 0, blur: 0 }
     ];
-    var vfNow = -1, vfLastFlash = -1;
+    var vfLastFlash = -1;
     var vfShow = function (i) {
       var d = vfSteps[i];
       vfCount.textContent = (i + 1) + "/" + vfSteps.length;
@@ -756,14 +861,7 @@
     vfCount.textContent = "0/" + vfSteps.length; vfCap.textContent = "připraveno";
     vfF.textContent = "f/2.8"; vfS.textContent = "1/125"; vfISO.textContent = "ISO 200";
     gsap.set(vf, { "--ev": -1.4, "--blur": 12 }); /* na začátku rozostřená a podexponovaná fotka */
-    vfSteps.forEach(function (d, i) {
-      var st = document.getElementById("postup-" + (i + 1));
-      if (!st) return;
-      ScrollTrigger.create({
-        trigger: st, start: "top 72%", once: true,
-        onEnter: function () { if (i > vfNow) { vfNow = i; vfShow(i); } }
-      });
-    });
+    stepsWithWindow(vf, vfSteps.length, 1.0, vfShow);
   }
 
   /* ---------------- Karty: záře za kurzorem a jemný náklon ---------------- */
