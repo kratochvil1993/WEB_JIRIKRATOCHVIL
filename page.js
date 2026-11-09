@@ -113,12 +113,26 @@
     });
   }
 
-  /* ---------------- Pozadí: pomalu plovoucí bloby ---------------- */
+  /* ---------------- Pozadí: samo se pomalu posouvající bloby ----------------
+     Čistě časově řízené (nic z toho nezávisí na scrollu) a jen transform/opacity. Každý blob
+     má x a y na vlastní délce (různá čísla → dráha se dlouho neopakuje, nepůsobí mechanicky).
+     Rozsahy jsou ve vw/vh, takže se přizpůsobí velikosti okna. Ladí se objektem `drift`.
+     (Natáčení rozmazané gradientové vrstvy se záměrně nepoužívá — drahé pro GPU a skoro nevidět.) */
   if (!reduceMotion) {
-    gsap.to("#bg-blob-a", { x: 80, y: 60, duration: 14, ease: "sine.inOut", yoyo: true, repeat: -1 });
-    gsap.to("#bg-blob-b", { x: -60, y: -80, duration: 17, ease: "sine.inOut", yoyo: true, repeat: -1 });
-    gsap.to("#bg-gradient", { opacity: 0.85, duration: 6, ease: "sine.inOut", yoyo: true, repeat: -1 });
+    var drift = {
+      a: { x: "13vw", xDur: 23, y: "9vh", yDur: 31 },
+      b: { x: "-11vw", xDur: 27, y: "-12vh", yDur: 19 },
+      glow: { opacity: 0.85, dur: 11 }        /* celé pozadí se velmi pomalu "nadechuje" */
+    };
+    var float = function (sel, c) {
+      gsap.to(sel, { x: c.x, duration: c.xDur, ease: "sine.inOut", yoyo: true, repeat: -1 });
+      gsap.to(sel, { y: c.y, duration: c.yDur, ease: "sine.inOut", yoyo: true, repeat: -1 });
+    };
+    float("#bg-blob-a", drift.a);
+    float("#bg-blob-b", drift.b);
+    gsap.to("#bg-gradient", { opacity: drift.glow.opacity, duration: drift.glow.dur, ease: "sine.inOut", yoyo: true, repeat: -1 });
   }
+
 
   /* ---------------- Kontakt: kopírování, třes neplatných polí, odeslání bez přesměrování ----------------
      Totéž co v script.js (index.html). Formulář pořád patří Netlify Forms (stejný název "contact"
@@ -503,19 +517,6 @@
         });
       }
     }
-  }
-
-  /* ---------------- Pulz pozadí: při vstupu do sekce se na chvilku nadechnou bloby ----------------
-     Obdoba pulzu částic na úvodní stránce, ale jen měkké zvětšení záře (scale; plovoucí pohyb
-     bloobů používá x/y, takže se nepere). Skoro nepostřehnutelné, jen dává stránce život. */
-  if (!reduceMotion) {
-    var blobs = gsap.utils.toArray("#bg-blob-a, #bg-blob-b");
-    var bgPulse = function () {
-      gsap.fromTo(blobs, { scale: 1 }, { scale: 1.14, duration: 0.8, yoyo: true, repeat: 1, ease: "sine.inOut", stagger: 0.12, overwrite: "auto" });
-    };
-    gsap.utils.toArray(".sub-section, .sub-cta").forEach(function (sec) {
-      ScrollTrigger.create({ trigger: sec, start: "top 65%", onEnter: bgPulse, onEnterBack: bgPulse });
-    });
   }
 
   /* ---------------- Nadpisy sekcí: odkrytí zleva (wipe) jako na úvodní stránce ----------------
