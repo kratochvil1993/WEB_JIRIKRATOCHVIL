@@ -410,8 +410,9 @@
           y: function () { return gsap.utils.random(-50, 50) * spread; },
           rotation: function () { return gsap.utils.random(-28, 28); },
           opacity: 0, scale: 0.6,
-          duration: 1.15, ease: "power3.out", delay: 0.1,
-          stagger: { each: 0.028, from: "random" },
+          /* mobil rychleji: nadpis je první, na co se čeká (a kandidát na LCP) */
+          duration: isMobile ? 0.7 : 0.85, ease: "power3.out", delay: isMobile ? 0 : 0.05,
+          stagger: { each: isMobile ? 0.016 : 0.02, from: "random" },
           clearProps: "filter",
           onComplete: function () { startScatter(chars); }
         }, blurIn(8)));
@@ -419,14 +420,14 @@
       /* split až po načtení fontu (jinak by se měřil kerning záložního písma) */
       var fontsReady = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
       fontsReady.then(runTitle);
-      setTimeout(function () { if (!shown) { showH1(); } }, 2500); /* pojistka, ať nadpis nezůstane skrytý */
+      setTimeout(function () { if (!shown) { showH1(); } }, 1200); /* pojistka, ať nadpis nezůstane skrytý */
     }
 
     /* --- ostatní prvky hera naskakují po nadpisu --- */
     gsap.utils.toArray(".sub-hero .hero-in").forEach(function (el, i) {
       gsap.fromTo(el, { y: 26 }, {
-        opacity: 1, y: 0, duration: 0.9, ease: "power3.out",
-        delay: i === 0 ? 0.05 : 0.55 + (i - 1) * 0.14
+        opacity: 1, y: 0, duration: 0.75, ease: "power3.out",
+        delay: i === 0 ? 0.05 : 0.35 + (i - 1) * 0.12
       });
     });
 
