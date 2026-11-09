@@ -557,7 +557,7 @@
         };
         /* zdánlivě prázdný tween jen odměřuje čas mezi kroky (a dá se pozastavit mimo okno) */
         var tlP = gsap.timeline({ repeat: -1, delay: 2.2 });
-        tlP.to({}, { duration: 3.2, onComplete: advance });
+        tlP.to({}, { duration: 2, onComplete: advance }); /* interval listování fotek v hero (s) */
         loops.push(tlP);
       }
 
