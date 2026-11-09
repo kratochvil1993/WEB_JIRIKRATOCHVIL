@@ -349,11 +349,33 @@
 
   /* Jemný "rozpad" nadpisu při odscrollování z hera (obdoba scény na úvodní stránce, ale nic
      neodletí z obrazovky): písmena se lehce rozjedou, rozmažou a zeslábnou, při scrollu zpět se
-     složí. Scrub, vratné. Jen desktop (na mobilu se scroll hlásí hrubě a efekt by škubal).
-     Amplitudy jsou schválně malé — ladí se číslem v `amp`. */
+     složí. Na desktopu scrub, vratné. Na mobilu se scroll hlásí hrubě a pozdě, scrub by škubal, takže tam
+     rozpad není vázaný na scroll: po odscrollování o pár px se přehraje jednorázový časovaný tween
+     (a při návratu nahoru se přehraje zpět), bez blur kvůli GPU. Amplitudy jsou schválně malé — ladí se
+     číslem v `amp` / `ampM`. */
   var amp = { x: 34, y: 24, rot: 12, fade: 0.12, blur: 4, dist: 300 }; /* dist = kolik px scrollu trvá, než je rozpad hotový */
+  var ampM = { x: 22, y: 16, rot: 8, fade: 0.12, dur: 0.6, on: 40, off: 15 }; /* on/off = px scrollu, kdy se rozpad spustí / vrátí (hystereze, ať to na hranici neblikne) */
+  function startScatterMobile(chars) {
+    var offs = chars.map(function () {
+      return { x: gsap.utils.random(-ampM.x, ampM.x), y: gsap.utils.random(-ampM.y, ampM.y * 0.5), r: gsap.utils.random(-ampM.rot, ampM.rot) };
+    });
+    var tw = gsap.to(chars, {
+      x: function (i) { return offs[i].x; },
+      y: function (i) { return offs[i].y; },
+      rotation: function (i) { return offs[i].r; },
+      opacity: ampM.fade, duration: ampM.dur, ease: "power2.out", paused: true
+    });
+    var apart = false;
+    var update = function (y) {
+      if (!apart && y > ampM.on) { apart = true; tw.play(); }
+      else if (apart && y < ampM.off) { apart = false; tw.reverse(); }
+    };
+    ScrollTrigger.create({ start: 0, end: "max", onUpdate: function (self) { update(self.scroll()); } });
+    if (window.scrollY > ampM.on) { apart = true; tw.progress(1); } /* načteno už odscrollované (obnovení pozice) */
+  }
   function startScatter(chars) {
-    if (isMobile || !hero) return;
+    if (!hero) return;
+    if (isMobile) { startScatterMobile(chars); return; }
     var offs = chars.map(function () {
       return { x: gsap.utils.random(-amp.x, amp.x), y: gsap.utils.random(-amp.y, amp.y * 0.5), r: gsap.utils.random(-amp.rot, amp.rot) };
     });
