@@ -227,8 +227,13 @@
   if (miniLines.length) {
     gsap.from(miniLines, { width: 0, duration: 0.8, ease: "steps(24)", stagger: 0.5, delay: 1.0 });
   }
-  var heroTl = gsap.timeline({ defaults: { ease: "power2.out" } })
-    .from("#hero .hero-name", { y: 30, opacity: 0, duration: 0.7 })
+  /* desktop (deskFx): nadpis se při načtení rozletí po písmenech (viz deskTitle níž), proto ho heroTl
+     nechává být; prázdný tween drží stejné časování ostatních prvků jako s původním fade-upem. */
+  var deskFx = !lowPower;
+  var heroTl = gsap.timeline({ defaults: { ease: "power2.out" } });
+  if (deskFx) heroTl.to({}, { duration: 0.7 });
+  else heroTl.from("#hero .hero-name", { y: 30, opacity: 0, duration: 0.7 });
+  heroTl
     /* Překryv kroků je záměrně větší (dřív -0.4/-0.4/-0.3): .lead-text je LCP element,
        takže se objeví o ~0,3 s dřív, a celé intro doběhne za ~1,2 s místo ~1,6 s. */
     .from("#hero .role-line", { y: 30, opacity: 0, duration: 0.7 }, "-=0.55")
@@ -251,6 +256,86 @@
     if (heroTl.progress() < 1) heroTl.progress(1);
     if (mobileFx) buildHeroScrollMobile(); /* progress(1) nemusí vyvolat onComplete */
   }, 1600);
+
+  /* Desktop: písmena nadpisu se při načtení slétnou z náhodných míst (jako na mobilu a na podstránkách).
+     Split až po načtení fontu (jinak by se kerning měřil na záložním písmu). Stejná písmena pak používá
+     i scrollová scéna v buildHeroScroll (getDeskChars) — nadpis se nerozděluje dvakrát — a ta se staví
+     až po doběhnutí heroTl I tohoto slétnutí (obě animují stejná písmena). */
+  var deskChars = null;
+  function getDeskChars() {
+    if (!deskChars) deskChars = splitChars(document.querySelector("#hero h1"));
+    return deskChars;
+  }
+  var deskTitle = { started: false, done: false, tw: null };
+  var deskGfx = { done: false, tw: null }; /* graf vpravo: náběh jako na podstránkách */
+  var heroIntroDone = false;
+  function tryBuildHeroScroll() { if (heroIntroDone && deskTitle.done && deskGfx.done) buildHeroScroll(); }
+  if (deskFx) {
+    var deskH1 = document.querySelector("#hero h1");
+    gsap.set(deskH1, { opacity: 0 });
+    var runDeskTitle = function () {
+      if (deskTitle.started) return;
+      deskTitle.started = true;
+      var chars = getDeskChars();
+      gsap.set(deskH1, { opacity: 1 });
+      var from = {
+        x: function () { return gsap.utils.random(-150, 150); },
+        y: function () { return gsap.utils.random(-100, 100); },
+        rotation: function () { return gsap.utils.random(-80, 80); },
+        scale: function () { return gsap.utils.random(0.4, 1.6); },
+        opacity: 0, duration: 0.85, ease: "power3.out", delay: 0.05,
+        stagger: { amount: 0.45, from: "random" },
+        clearProps: "filter",
+        onComplete: function () { deskTitle.done = true; tryBuildHeroScroll(); }
+      };
+      if (!weakHardware) from.filter = "blur(8px)";
+      deskTitle.tw = gsap.from(chars, from);
+    };
+    var deskFonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    deskFonts.then(runDeskTitle);
+    /* pojistka: font se nenačetl včas -> nadpis se ukáže rovnou (bez slétnutí), ať nezůstane skrytý */
+    setTimeout(function () {
+      if (!deskTitle.started) { deskTitle.started = true; gsap.set(deskH1, { opacity: 1 }); deskTitle.done = true; tryBuildHeroScroll(); }
+    }, 1200);
+    /* Graf vpravo (kód) při načtení přiletí z boku s 3D natočením a po dosednutí dvakrát zapulzuje
+       prstenec — stejný náběh jako hero graf na podstránkách (page.js). Prstence potřebují obal
+       (.pin-graphic má overflow:hidden), stejně jako tam. Náklon za myší tu není: scrollová scéna
+       (buildHeroScroll) grafu sama natáčí rotationY/X a dvě animace téhož by se rvaly. */
+    var deskG = document.querySelector("#hero .hero-graphic");
+    if (deskG) {
+      var gWrap = document.createElement("div");
+      gWrap.className = "sub-hero-gfxwrap";
+      deskG.parentNode.insertBefore(gWrap, deskG);
+      var gRings = [];
+      for (var gri = 0; gri < 2; gri++) {
+        var gRing = document.createElement("div");
+        gRing.className = "sub-pulse";
+        gRing.setAttribute("aria-hidden", "true");
+        gWrap.appendChild(gRing);
+        gRings.push(gRing);
+      }
+      gWrap.appendChild(deskG);
+      var gPulse = function () {
+        gRings.forEach(function (r, i) {
+          gsap.fromTo(r, { scale: 1, opacity: 0.5 }, { scale: 1.16 + i * 0.07, opacity: 0, duration: 1.7, delay: i * 0.22, ease: "power2.out", overwrite: true });
+        });
+      };
+      deskGfx.tw = gsap.fromTo(deskG,
+        { opacity: 0, scale: 0.7, rotationY: 55, rotationX: 10, x: 120, transformPerspective: 1000 },
+        { opacity: 1, scale: 1, rotationY: 0, rotationX: 0, x: 0, duration: 1.3, delay: 0.35, ease: "power3.out",
+          onComplete: function () { gPulse(); deskGfx.done = true; tryBuildHeroScroll(); } });
+    } else {
+      deskGfx.done = true;
+    }
+    /* pojistka pro zdušený rAF (neaktivní záložka): slétnutí a náběh grafu se dokončí silou */
+    setTimeout(function () {
+      if (deskTitle.tw && deskTitle.tw.progress() < 1) deskTitle.tw.progress(1);
+      if (!deskTitle.done) { deskTitle.done = true; }
+      if (deskGfx.tw && deskGfx.tw.progress() < 1) deskGfx.tw.progress(1);
+      deskGfx.done = true;
+      tryBuildHeroScroll();
+    }, 3500);
+  }
 
   /* ---------------- Hero graphic: type-in code, then loop between two code variants ----------------
      Time-based, not scroll-driven (hero isn't pinned). Hidden on mobile via
@@ -308,7 +393,8 @@
   }
 
   if (heroVariants.length > 1 && !isMobile && !reduceMotion) {
-    gsap.delayedCall(0.5, function () {
+    gsap.set(heroVariants[0].lines, { width: 0 }); /* graf přilétá prázdný, řádky se píšou až po dosednutí */
+    gsap.delayedCall(0.5 + 0.6, function () { /* graf přilétá (deskFx) a kód se začne psát, až když skoro dosedl */
       var first = heroVariants[0];
       typeInHeroVariant(first, true);
       gsap.delayedCall(first.typeDuration + heroHold, function () { swapHeroCode(0); });
@@ -1399,9 +1485,12 @@
     return chars;
   }
 
+  var heroScrollBuilt = false;
   function buildHeroScroll() {
+    if (heroScrollBuilt) return;
+    heroScrollBuilt = true;
     var h1 = document.querySelector("#hero h1");
-    var chars = splitChars(h1);
+    var chars = getDeskChars();
     var blur = weakHardware ? "blur(0px)" : "blur(10px)";
     var tl = gsap.timeline({ paused: true, defaults: { ease: "power2.in" } });
 
@@ -1463,7 +1552,7 @@
       }
     });
   }
-  if (!lowPower) heroTl.eventCallback("onComplete", buildHeroScroll);
+  if (!lowPower) heroTl.eventCallback("onComplete", function () { heroIntroDone = true; tryBuildHeroScroll(); });
 
   /* Mobil: odjezd hera při scrollu (obdoba desktopové scény, ale BEZ pinu).
      Pin na mobilu zlobí (schovávající se adresní řádek, hrubé hlášení scrollu,
