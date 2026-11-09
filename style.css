@@ -245,9 +245,31 @@ a:hover{color:var(--purple);}
    glow is already at full strength the moment it clears the navbar and
    the hard edge just reappears below it instead of at the viewport edge. */
 @media (max-width:991px){
+  /* Mobil: záře je klidné pole bez ostrých pruhů. Maska (splynutí se Safari lištou) je delší a hladká (ease), ale jasné
+     jádro skvrn leží až pod jejím koncem (dřív bylo jasné jádro přímo v přechodu: tmavý pruh pod lištou a hned jasná čepice). */
   #bg-layer,#particle-canvas{
-    -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 180px, #000 calc(100% - 140px), transparent 100%);
-    mask-image:linear-gradient(to bottom, transparent 0, #000 180px, #000 calc(100% - 140px), transparent 100%);
+    -webkit-mask-image:linear-gradient(to bottom, transparent 0, rgba(0,0,0,.08) 20px, rgba(0,0,0,.25) 50px, rgba(0,0,0,.5) 85px, rgba(0,0,0,.8) 120px, #000 150px, #000 calc(100% - 120px), rgba(0,0,0,.7) calc(100% - 85px), rgba(0,0,0,.35) calc(100% - 50px), rgba(0,0,0,.1) calc(100% - 20px), transparent 100%);
+    mask-image:linear-gradient(to bottom, transparent 0, rgba(0,0,0,.08) 20px, rgba(0,0,0,.25) 50px, rgba(0,0,0,.5) 85px, rgba(0,0,0,.8) 120px, #000 150px, #000 calc(100% - 120px), rgba(0,0,0,.7) calc(100% - 85px), rgba(0,0,0,.35) calc(100% - 50px), rgba(0,0,0,.1) calc(100% - 20px), transparent 100%);
+  }
+  /* okolní záře: jemný azurový nádech přes celé pozadí (bez nového odstínu), ať telefon není proti desktopu tmavý */
+  #bg-layer{background:linear-gradient(180deg,rgba(var(--magenta-rgb),.07) 0%,rgba(var(--magenta-rgb),.08) 50%,rgba(var(--magenta-rgb),.07) 100%),var(--bg);}
+  /* Bloby ve vw (ne vmax = výška), jádra níž pod masku, slabší špička; bg-gradient s menšími alfa */
+  #bg-gradient{
+    background:
+      radial-gradient(60% 34% at 22% 30%, rgba(var(--purple-rgb),.10), transparent 72%),
+      radial-gradient(60% 34% at 80% 24%, rgba(var(--magenta-rgb),.07), transparent 72%),
+      radial-gradient(70% 36% at 50% 82%, rgba(var(--purple-rgb),.08), transparent 72%),
+      linear-gradient(var(--grad-angle), rgba(var(--purple-rgb),.04), rgba(var(--magenta-rgb),.03));
+  }
+  /* horní záře jako vodorovně rovnoměrný závoj shora (ne kruh/ovál, který byl vidět jako reflektor s tmavými boky):
+     svislý přechod přes celou šířku, bez blur filteru (přechod je sám hladký, a je levnější) */
+  #bg-blob-a{width:100%;height:90vh;top:0;left:0;border-radius:0;filter:none;opacity:calc(var(--glow-a,.5) * .35);}
+  /* spodní skvrna na mobilu pryč: byla to samostatná světlá oválná plocha obklopená tmavým podkladem = flek */
+  #bg-blob-b{display:none;}
+}
+@supports (color:color-mix(in srgb,red 50%,transparent)){
+  @media (max-width:991px){
+    #bg-blob-a{background:linear-gradient(180deg, color-mix(in srgb,var(--grad-a) 40%,transparent) 0%, color-mix(in srgb,var(--grad-a) 55%,transparent) 22%, color-mix(in srgb,var(--grad-a) 28%,transparent) 45%, color-mix(in srgb,var(--grad-a) 10%,transparent) 72%, transparent 100%);}
   }
 }
 

@@ -202,8 +202,10 @@
       gsap.to(sel, { x: c.x, duration: c.xDur, ease: "sine.inOut", yoyo: true, repeat: -1 });
       gsap.to(sel, { y: c.y, duration: c.yDur, ease: "sine.inOut", yoyo: true, repeat: -1 });
     };
-    float("#bg-blob-a", drift.a);
-    float("#bg-blob-b", drift.b);
+    if (!isMobile) { /* na mobilu se bloby nehýbou (skvrna putující přes malý displej působí jako flek) */
+      float("#bg-blob-a", drift.a);
+      float("#bg-blob-b", drift.b);
+    }
     gsap.to("#bg-gradient", { opacity: drift.glow.opacity, duration: drift.glow.dur, ease: "sine.inOut", yoyo: true, repeat: -1 });
   }
 
