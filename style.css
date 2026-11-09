@@ -1311,7 +1311,15 @@ footer::after{
 @media (hover:none), (pointer:coarse){.faq summary{cursor:pointer;}}
 
 /* Závěrečná výzva + odkaz na další podstránky */
-.sub-cta{padding:5rem 0 6rem;text-align:center;}
+.sub-cta{padding:5rem 0 6rem;text-align:center;position:relative;isolation:isolate;}
+/* ztmavení pod CTA: tmavě teal gradient + lehký blur, nahoře plynule do ztracena (žádná ostrá hrana) */
+.sub-cta::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(4,14,20,0) 0%,rgba(4,14,20,.55) 45%,rgba(4,14,20,.75) 100%);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 55%);mask-image:linear-gradient(180deg,transparent 0%,#000 55%);
+}
+@media (max-width:991px){.sub-cta::before{-webkit-backdrop-filter:none;backdrop-filter:none;}} /* na mobilu jen gradient, blur nad hýbajícím se pozadím je zbytečná zátěž */
 .sub-cta h2{font-size:clamp(2.2rem,1.4rem + 3.6vw,4rem);}
 .sub-cta p{max-width:34rem;margin:0 auto 2rem;}
 .sub-next{display:flex;flex-wrap:wrap;gap:.8rem 2rem;justify-content:center;margin-top:2.4rem;padding-top:1.8rem;border-top:1px solid rgba(255,255,255,.08);font-size:.95rem;}
