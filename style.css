@@ -1239,6 +1239,8 @@ footer::after{
 .js .reveal{opacity:0;}
 @media (prefers-reduced-motion:reduce){.js .reveal{opacity:1;}}
 .sub-page .sub-narrow > *{max-width:820px;}
+/* FAQ sekce na pitch podstránkách: stejná šířka, ale celý blok vystředěný (text zůstává zarovnaný vlevo) */
+.sub-page #faq .sub-narrow > *{margin-left:auto;margin-right:auto;}
 .sub-hero{padding:10rem 0 4rem;}
 .sub-hero h1{font-size:clamp(2.4rem,1.3rem + 4.4vw,4.6rem);line-height:1.05;margin-bottom:1.4rem;}
 .sub-lead{font-size:clamp(1.1rem,1rem + .5vw,1.35rem);max-width:38rem;}
@@ -1294,13 +1296,15 @@ footer::after{
 }
 .faq summary::-webkit-details-marker{display:none;}
 .faq summary::after{
-  content:"+";flex:none;width:1.8rem;height:1.8rem;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-weight:400;font-size:1.3rem;line-height:1;color:var(--magenta);
+  /* plus je nakreslený gradienty, ne textem — glyf „+“ se kvůli metrikám písma uprostřed nikdy neusadí přesně */
+  content:"";flex:none;width:1.8rem;height:1.8rem;border-radius:50%;
+  background:
+    linear-gradient(var(--magenta),var(--magenta)) center/46% 2px no-repeat,
+    linear-gradient(var(--magenta),var(--magenta)) center/2px 46% no-repeat;
   border:1px solid rgba(var(--magenta-rgb),.35);
-  transition:transform .25s ease,background .25s ease;
+  transition:transform .25s ease,background-color .25s ease;
 }
-.faq details[open] summary::after{transform:rotate(45deg);background:rgba(var(--magenta-rgb),.14);}
+.faq details[open] summary::after{transform:rotate(45deg);background-color:rgba(var(--magenta-rgb),.14);}
 .faq summary:hover{color:var(--magenta);}
 .faq summary:focus-visible{outline:2px solid var(--magenta);outline-offset:4px;border-radius:6px;}
 .faq details p{margin:0 0 1.3rem;font-size:1.02rem;max-width:42rem;}
@@ -1529,7 +1533,7 @@ html.modal-open{overflow:hidden;}
 
 /* FAQ: obsah je zabalený do .faq-body kvůli animaci výšky (page.js) */
 .faq-body{overflow:hidden;}
-.faq details.is-closing summary::after{transform:none;background:transparent;}
+.faq details.is-closing summary::after{transform:none;background-color:transparent;}
 
 /* Zmenšená (sticky) hlavička na desktopu: aktivní položka bez podtržení a záře. Čára je pěkná hned po
    příchodu na stránku, ale po začátku scrollu se tlačí do okraje skleněné hlavičky, takže plynule zmizí
