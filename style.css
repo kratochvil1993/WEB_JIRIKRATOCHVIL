@@ -245,12 +245,16 @@ a:hover{color:var(--purple);}
    glow is already at full strength the moment it clears the navbar and
    the hard edge just reappears below it instead of at the viewport edge. */
 @media (max-width:991px){
-  /* Mobil: záře je klidné pole bez ostrých pruhů. Maska (splynutí se Safari lištou) je krátká (80 px nahoře, 60 dole) a hladká (ease), ale jasné
+  /* Mobil: záře je klidné pole bez ostrých pruhů. Maska (splynutí se Safari lištou) je krátká (80 px nahoře, dole žádná — spodní lišta Safari je průsvitná) a hladká (ease), ale jasné
      jádro skvrn leží až pod jejím koncem (dřív bylo jasné jádro přímo v přechodu: tmavý pruh pod lištou a hned jasná čepice). */
   #bg-layer,#particle-canvas{
-    -webkit-mask-image:linear-gradient(to bottom, transparent 0, rgba(0,0,0,.12) 12px, rgba(0,0,0,.35) 30px, rgba(0,0,0,.65) 50px, rgba(0,0,0,.88) 68px, #000 80px, #000 calc(100% - 60px), rgba(0,0,0,.75) calc(100% - 45px), rgba(0,0,0,.4) calc(100% - 28px), rgba(0,0,0,.12) calc(100% - 12px), transparent 100%);
-    mask-image:linear-gradient(to bottom, transparent 0, rgba(0,0,0,.12) 12px, rgba(0,0,0,.35) 30px, rgba(0,0,0,.65) 50px, rgba(0,0,0,.88) 68px, #000 80px, #000 calc(100% - 60px), rgba(0,0,0,.75) calc(100% - 45px), rgba(0,0,0,.4) calc(100% - 28px), rgba(0,0,0,.12) calc(100% - 12px), transparent 100%);
+    -webkit-mask-image:linear-gradient(to bottom, transparent 0, rgba(0,0,0,.12) 12px, rgba(0,0,0,.35) 30px, rgba(0,0,0,.65) 50px, rgba(0,0,0,.88) 68px, #000 80px);
+    mask-image:linear-gradient(to bottom, transparent 0, rgba(0,0,0,.12) 12px, rgba(0,0,0,.35) 30px, rgba(0,0,0,.65) 50px, rgba(0,0,0,.88) 68px, #000 80px);
   }
+  /* Plocha pod/za lištami Safari: stavový řádek a plovoucí spodní lišta se tónují barvou stránky (theme-color + html/body).
+     Dřív #0a0a0f, tedy plochý tmavý pruh pod září dole; teď barva záře u spodku (stejná hodnota je v theme-color
+     metě s media="(max-width: 991px)" v každé stránce). Ověřeno na iPhonu (testovací stránka). */
+  html,body{background:#0c1d24;}
   /* okolní záře: jemný azurový nádech přes celé pozadí (bez nového odstínu), ať telefon není proti desktopu tmavý */
   #bg-layer{background:linear-gradient(180deg,rgba(var(--magenta-rgb),.07) 0%,rgba(var(--magenta-rgb),.08) 50%,rgba(var(--magenta-rgb),.07) 100%),var(--bg);}
   /* Bloby ve vw (ne vmax = výška), jádra níž pod masku, slabší špička; bg-gradient s menšími alfa */
