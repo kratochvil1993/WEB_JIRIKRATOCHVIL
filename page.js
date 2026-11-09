@@ -90,15 +90,15 @@
       buildNavText();
       navMenuEl.classList.add("show");
       if (animate) {
-        gsap.fromTo(navMenuEl, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" });
+        gsap.fromTo(navMenuEl, { opacity: 0 }, { opacity: 1, duration: 0.22, ease: "power1.out" });
         gsap.fromTo(navChars, {
           x: function () { return gsap.utils.random(-70, 70); },
           y: function () { return gsap.utils.random(-60, 60); },
           rotation: function () { return gsap.utils.random(-45, 45); },
           scale: 0.5, opacity: 0
-        }, { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1, duration: 0.7, ease: "power3.out",
-             stagger: { amount: 0.4, from: "random" }, delay: 0.08, overwrite: true });
-        gsap.fromTo(navNums, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.07, delay: 0.25, ease: "power2.out", overwrite: true });
+        }, { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1, duration: 0.5, ease: "power3.out",
+             stagger: { amount: 0.25, from: "random" }, delay: 0.03, overwrite: true });
+        gsap.fromTo(navNums, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35, stagger: 0.05, delay: 0.15, ease: "power2.out", overwrite: true });
       } else {
         gsap.set([navMenuEl].concat(navChars, navNums), { clearProps: "all" });
       }
