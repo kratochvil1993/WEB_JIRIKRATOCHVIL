@@ -1368,7 +1368,10 @@ footer::after{
 .sub-hero{padding:10rem 0 4rem;}
 .sub-hero h1{font-size:clamp(2.4rem,1.3rem + 4.4vw,4.6rem);line-height:1.05;margin-bottom:1.4rem;}
 .sub-lead{font-size:clamp(1.1rem,1rem + .5vw,1.35rem);max-width:38rem;}
-.sub-hero .hero-links{display:flex;flex-wrap:wrap;align-items:center;gap:1.2rem 1.6rem;margin-top:2rem;}
+.sub-hero .hero-links{display:flex;flex-wrap:wrap;align-items:center;gap:1.2rem 1.6rem;margin-top:4rem;}
+/* .pill-btn má globálně margin-top:2rem; v řádku s centrováním by tlačítko viselo o 1 rem pod středem odkazu vedle něj.
+   Odsazení od textu proto nese řádek (2rem + 2rem původního okraje tlačítka), tlačítko zůstává na stejném místě. */
+.sub-hero .hero-links .pill-btn{margin-top:0;}
 .sub-hero .hero-links .text-link{font-weight:600;}
 .sub-section{padding:4.5rem 0;}
 .sub-section > .container > .eyebrow{margin-bottom:.8rem;}
