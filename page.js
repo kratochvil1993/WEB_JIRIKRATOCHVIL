@@ -115,7 +115,7 @@
     var animate = !reduceMotion && !instant;
     if (open) {
       buildNavText();
-      navMenuEl.classList.add("show");
+      navMenuEl.classList.add("show", "nav-layer");
       if (animate) {
         var g = navCircle();
         gsap.fromTo(navMenuEl, { clipPath: navCircleCss(g, 0) }, {
@@ -143,14 +143,14 @@
         if (navbar) navbar.classList.add("nav-closing");
         var gc = navCircle();
         gsap.fromTo(navMenuEl, { clipPath: navCircleCss(gc, gc.R) }, {
-          clipPath: navCircleCss(gc, 0), duration: 0.5, ease: "power3.inOut", overwrite: true,
+          clipPath: navCircleCss(gc, 0), duration: 0.45, ease: "power2.inOut", overwrite: true,
           onComplete: function () {
-            navMenuEl.classList.remove("show"); gsap.set(navMenuEl, { clearProps: "opacity,clipPath" });
+            navMenuEl.classList.remove("show", "nav-layer"); gsap.set(navMenuEl, { clearProps: "opacity,clipPath" });
             if (navbar) navbar.classList.remove("nav-closing");
           }
         });
       } else {
-        navMenuEl.classList.remove("show");
+        navMenuEl.classList.remove("show", "nav-layer");
         gsap.set([navMenuEl].concat(navChars, navNums, navFootEls), { clearProps: "all" });
       }
       if (inMenu && navToggler) navToggler.focus({ preventScroll: true });
