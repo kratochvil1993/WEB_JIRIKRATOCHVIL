@@ -1699,6 +1699,64 @@ html.modal-open{overflow:hidden;}
   .navbar-custom.scrolled .nav-link.active::after{opacity:0;transform:scaleX(.35);}
 }
 
+/* ---------- Desktopový nav: skleněná kapsle + kluzká bublina + rolování textu ----------
+   ≥992 px: nahoře průhledná lišta jako dřív; po odscrollování se samotný .container (logo + odkazy) zúží do
+   vycentrované skleněné kapsle (blur a rám přešly z lišty na kapsli). Bublina .nav-pill (JS) jezdí za
+   položkou pod kurzorem, v klidu odpočívá za aktivní. Text odkazů se při hoveru vyroluje (.nl-roll).
+   Pod 992 px se nic z toho neuplatní (mobilní fullscreen menu). */
+.nav-pill{display:none;}
+@media (min-width:992px){
+  .navbar-custom .container{
+    border:1px solid transparent;border-radius:999px;
+    transition:max-width .5s cubic-bezier(.22,1,.36,1),padding .5s cubic-bezier(.22,1,.36,1),background .35s ease,border-color .35s ease,box-shadow .35s ease;
+  }
+  .navbar-custom.scrolled,
+  html.weak-hw .navbar-custom.scrolled{
+    background:transparent;border-bottom-color:transparent;
+    backdrop-filter:none;-webkit-backdrop-filter:none;
+    padding:12px 0;
+  }
+  .navbar-custom.scrolled .container{
+    max-width:880px;
+    padding:6px 10px 6px 24px;
+    background:rgba(10,10,15,.55);
+    border-color:rgba(var(--magenta-rgb),.2);
+    box-shadow:0 10px 34px rgba(0,0,0,.35);
+    backdrop-filter:blur(16px) saturate(140%);
+    -webkit-backdrop-filter:blur(16px) saturate(140%);
+  }
+  html.weak-hw .navbar-custom.scrolled .container{
+    background:rgba(10,10,15,.82);
+    backdrop-filter:blur(6px) saturate(140%);
+    -webkit-backdrop-filter:blur(6px) saturate(140%);
+  }
+  #navMenu > .d-flex{position:relative;}
+  .navbar-custom .nav-link{position:relative;z-index:1;padding:.45rem 1.1rem;}
+  .nav-pill{
+    display:block;position:absolute;top:0;left:0;bottom:0;
+    border-radius:999px;
+    background:rgba(var(--magenta-rgb),.16);
+    box-shadow:inset 0 0 0 1px rgba(var(--magenta-rgb),.38);
+    opacity:0;pointer-events:none;
+    transition:transform .45s cubic-bezier(.22,1,.36,1),width .45s cubic-bezier(.22,1,.36,1),opacity .25s ease;
+  }
+  .nav-pill.no-anim{transition:none;}
+  .nav-pill.rest{opacity:.55;}
+  .navbar-custom:not(.scrolled) .nav-pill.rest{opacity:0;}
+  .nav-pill.on{opacity:1;}
+  .navbar-custom .nl-roll{display:block;overflow:hidden;line-height:1.5;}
+  .navbar-custom .nl-roll-in{display:block;position:relative;transition:transform .4s cubic-bezier(.22,1,.36,1);}
+  .navbar-custom .nl-roll-in::after{content:attr(data-t);position:absolute;left:0;top:100%;}
+  .navbar-custom .nav-link:hover .nl-roll-in,
+  .navbar-custom .nav-link:focus-visible .nl-roll-in{transform:translateY(-100%);}
+}
+@media (min-width:992px) and (prefers-reduced-motion:reduce){
+  .nav-pill{transition:opacity .15s ease;}
+  .navbar-custom .nav-link:hover .nl-roll-in,
+  .navbar-custom .nav-link:focus-visible .nl-roll-in{transform:none;}
+  .navbar-custom .container{transition:none;}
+}
+
 /* ---------- Dekorativní "okna s kódem" (web.html) ----------
    Malá okna s vtipným kódem: vedle sekce "Proč to dělám" (.code-win--aside) a jako chat
    agent ↔ já v AI kartě (.code-win--chat). Řádky se při scrollu "napíšou" (page.js,

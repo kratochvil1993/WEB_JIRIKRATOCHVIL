@@ -141,6 +141,60 @@
   var navMqChange = function (e) { if (!e.matches && navOpen) setNav(false, true); };
   if (navMq.addEventListener) navMq.addEventListener("change", navMqChange); else navMq.addListener(navMqChange);
 
+  /* ---------------- Desktopové menu: kluzká bublina + rolování textu ----------------
+     Na ≥992 px je menu skleněná kapsle (CSS). Bublina .nav-pill jezdí za položkou pod kurzorem/fokusem a
+     v klidu odpočívá za aktivní položkou (viditelná jen u odscrollované lišty). Text každé položky je
+     zabalený do .nl-roll, hover ho vyroluje nahoru a zespodu přijede kopie z data-t. Pod 992 px jsou obě
+     věci vypnuté CSS; mobilní menu si text při prvním otevření stejně přestaví samo. Blok je zrcadlený
+     v script.js a page.js. */
+  (function () {
+    var wrap = document.querySelector("#navMenu > .d-flex");
+    var links = wrap ? Array.prototype.slice.call(wrap.querySelectorAll(".nav-link")) : [];
+    if (!links.length) return;
+    links.forEach(function (a) {
+      var label = a.textContent.replace(/\s+/g, " ").trim();
+      a.setAttribute("aria-label", label);
+      var roll = document.createElement("span");
+      roll.className = "nl-roll"; roll.setAttribute("aria-hidden", "true");
+      var inner = document.createElement("span");
+      inner.className = "nl-roll-in"; inner.setAttribute("data-t", label); inner.textContent = label;
+      roll.appendChild(inner);
+      a.textContent = ""; a.appendChild(roll);
+    });
+    var pill = document.createElement("span");
+    pill.className = "nav-pill"; pill.setAttribute("aria-hidden", "true");
+    wrap.insertBefore(pill, wrap.firstChild);
+    var placed = false;
+    function place(a) {
+      if (!placed) {   /* první umístění bez jízdy z nuly */
+        pill.classList.add("no-anim");
+        pill.style.width = a.offsetWidth + "px";
+        pill.style.transform = "translateX(" + a.offsetLeft + "px)";
+        void pill.offsetWidth;
+        pill.classList.remove("no-anim");
+        placed = true;
+      } else {
+        pill.style.width = a.offsetWidth + "px";
+        pill.style.transform = "translateX(" + a.offsetLeft + "px)";
+      }
+    }
+    function rest() {
+      var act = wrap.querySelector(".nav-link.active");
+      pill.classList.remove("on");
+      if (act) { place(act); pill.classList.add("rest"); } else pill.classList.remove("rest");
+    }
+    function hover(a) { place(a); pill.classList.add("on"); }
+    links.forEach(function (a) {
+      a.addEventListener("mouseenter", function () { hover(a); });
+      a.addEventListener("focus", function () { hover(a); });
+    });
+    wrap.addEventListener("mouseleave", rest);
+    wrap.addEventListener("focusout", function (e) { if (!wrap.contains(e.relatedTarget)) rest(); });
+    rest();
+    window.addEventListener("resize", function () { placed = false; rest(); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { placed = false; rest(); });
+  })();
+
   /* ---------------- Go to top button (s prstencem postupu) ---------------- */
   var toTopBtn = document.getElementById("toTop");
   if (toTopBtn) {
