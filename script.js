@@ -641,9 +641,9 @@
 
   var navLinks = document.querySelectorAll('.navbar-custom .nav-link[href^="#"]');
   function updateActiveNavLink(sectionId) {
-    /* Menu už nemá kotvy na jednotlivé sekce (Web/Marketing/Fotograf vedou na podstránky), takže
-       "Úvod" zůstává aktivní po celé úvodní stránce; jen sekce s kontaktem přepne zvýraznění
-       na "Kontakt". Kdyby se zakomentované kotvy vrátily, platí zase přesná shoda s ID sekce. */
+    /* Z kotev v menu zbyl jen "Úvod" (ostatní položky včetně Kontaktu vedou na podstránky), takže
+       "Úvod" zůstává aktivní po celé úvodní stránce. Kdyby se zakomentované kotvy vrátily,
+       platí zase přesná shoda s ID sekce. */
     var hasExact = false;
     navLinks.forEach(function (link) { if (link.getAttribute("href") === "#" + sectionId) hasExact = true; });
     var target = hasExact ? "#" + sectionId : "#hero";
