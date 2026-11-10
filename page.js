@@ -81,7 +81,10 @@
       navToggler.setAttribute("aria-label", open ? "Zavřít menu" : "Otevřít menu");
       navToggler.classList.toggle("collapsed", !open);
     }
-    if (navbar) navbar.classList.toggle("nav-open", open);
+    if (navbar) {
+      navbar.classList.toggle("nav-open", open);
+      navbar.classList.remove("nav-closing");   /* případné dozívání předchozího zavření */
+    }
     document.documentElement.classList.toggle("nav-open", open);
     navInert(open);
     gsap.killTweensOf([navMenuEl].concat(navChars, navNums));
@@ -106,9 +109,15 @@
     } else {
       var inMenu = navMenuEl.contains(document.activeElement);
       if (animate) {
+        /* odscrollovaná lišta má blur (= containing block pro fixed vrstvu); do konce odeznění ho držíme vypnutý,
+           jinak by se mizející menu v půlce fade-outu smrsklo na výšku lišty */
+        if (navbar) navbar.classList.add("nav-closing");
         gsap.to(navMenuEl, {
           opacity: 0, duration: 0.25, ease: "power1.in",
-          onComplete: function () { navMenuEl.classList.remove("show"); gsap.set(navMenuEl, { clearProps: "opacity" }); }
+          onComplete: function () {
+            navMenuEl.classList.remove("show"); gsap.set(navMenuEl, { clearProps: "opacity" });
+            if (navbar) navbar.classList.remove("nav-closing");
+          }
         });
       } else {
         navMenuEl.classList.remove("show");

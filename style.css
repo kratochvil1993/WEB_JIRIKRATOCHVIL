@@ -460,11 +460,13 @@ html.weak-hw .navbar-custom.scrolled{
   /* pod otevřenou vrstvou nesmí mít lišta vlastní blur: backdrop-filter by z ní udělal containing block
      a position:fixed vrstva by přestala mít velikost obrazovky */
   .navbar-custom.nav-open,
-  html.weak-hw .navbar-custom.scrolled.nav-open{
+  html.weak-hw .navbar-custom.scrolled.nav-open,
+  .navbar-custom.nav-closing,
+  html.weak-hw .navbar-custom.scrolled.nav-closing{
     background:transparent;border-bottom-color:transparent;
     backdrop-filter:none;-webkit-backdrop-filter:none;transition:none;
   }
-  .navbar-custom.nav-open::after{display:none;}
+  .navbar-custom.nav-open::after,.navbar-custom.nav-closing::after{display:none;}
   /* hlavička v otevřeném menu vypadá jako nahoře na stránce: logo 70 px místo 32 px ze sticky lišty a ×
      o 22 px níž (střed logo i tlačítka na stejné ose). Přes transform, ne výšku: layout lišty se nemění
      (8 px padding + 38 px rozdíl výšek loga = posun 22 px) a nic neskáče. */
