@@ -859,7 +859,7 @@
       win.querySelectorAll(".code-line").forEach(function (line) {
         var n = line.textContent.trim().length;
         if (!n) return;
-        var gap = first ? 0.5 : parseFloat(line.getAttribute("data-gap") || "0.15");
+        var gap = first ? parseFloat(win.getAttribute("data-type-delay") || "0.5") : parseFloat(line.getAttribute("data-gap") || "0.15");
         first = false;
         tl.from(line, { width: 0, duration: Math.max(0.3, n * 0.032), ease: "steps(" + n + ")", clearProps: "width" }, ">+" + gap);
       });

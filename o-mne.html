@@ -51,6 +51,12 @@
   /* Roky nad nadpisem kroku v časové ose (číslo v kroužku zůstává pořadí) */
   .step-when{display:block;margin-top:.45rem;font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--purple);}
   .step .step-when + h3{margin-top:.2rem;}
+  /* Kódové okno v hero: větší písmo než u malých oken na web.html, vpravo od textu */
+  .code-win--hero{margin:0;font-size:.86rem;height:auto;}  /* height:auto přebíjí pevnou výšku .sub-hero-graphic (420/280 px) */
+  .col-lg-5 > .sub-hero-gfxwrap{max-width:25rem;}         /* obal vytvoří page.js (pulz prstenců), drží šířku okna */
+  .sub-hero-gfxwrap .sub-pulse{border-radius:14px;}       /* prstence kopírují zaoblení okna */
+  @media (min-width:992px){.col-lg-5 > .sub-hero-gfxwrap{margin-left:auto;}}
+  @media (max-width:399.98px){.code-win--hero{font-size:.8rem;}}
 </style>
 <script type="application/ld+json">
 {
@@ -148,8 +154,8 @@
   <section class="sub-hero">
     <div class="sub-ghost" aria-hidden="true" style="--n:2">JÁ</div>
     <div class="container">
-      <div class="row">
-        <div class="col-lg-8">
+      <div class="row align-items-center gy-5 gx-lg-5">
+        <div class="col-lg-7">
           <p class="eyebrow hero-in">Web developer &amp; fotograf · Plzeň</p>
           <h1>Jiří <span class="gradient-text">Kratochvíl</span></h1>
           <p class="sub-lead hero-in">Dělám weby, e-shopy a online reklamu a fotím portréty. Dvě řemesla, jeden přístup: dotáhnout detaily a jednat napřímo.</p>
@@ -165,6 +171,21 @@
             </a>
             <a href="#co-delam" class="text-link">Co dělám &darr;</a>
           </div>
+        </div>
+        <div class="col-lg-5">
+          <aside class="code-win code-win--hero sub-hero-graphic" data-type-code data-type-delay="1.5" aria-hidden="true">
+            <div class="code-win__bar"><i></i><i></i><i></i><span class="code-win__name">jiri.js</span></div>
+            <div class="code-win__body">
+              <div class="code-line"><span class="tok-kw">const</span> <span class="tok-var">jiri</span> <span class="tok-op">=</span> <span class="tok-punc">{</span></div>
+              <div class="code-line indent"><span class="tok-var">mesto</span><span class="tok-punc">:</span> <span class="tok-str">"Plzeň"</span><span class="tok-punc">,</span></div>
+              <div class="code-line indent"><span class="tok-var">weby</span><span class="tok-punc">:</span> <span class="tok-str">"od 2015"</span><span class="tok-punc">,</span></div>
+              <div class="code-line indent"><span class="tok-var">eshopy</span><span class="tok-punc">:</span> <span class="tok-str">"Shoptet"</span><span class="tok-punc">,</span></div>
+              <div class="code-line indent"><span class="tok-var">reklama</span><span class="tok-punc">:</span> <span class="tok-str">"Google Ads"</span><span class="tok-punc">,</span></div>
+              <div class="code-line indent"><span class="tok-var">foceni</span><span class="tok-punc">:</span> <span class="tok-str">"portréty"</span></div>
+              <div class="code-line"><span class="tok-punc">};</span></div>
+              <div class="code-line"><span class="tok-comment">// napište mi</span><span class="code-caret"></span></div>
+            </div>
+          </aside>
         </div>
       </div>
     </div>
