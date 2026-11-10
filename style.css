@@ -428,16 +428,16 @@ html.weak-hw .navbar-custom.scrolled{
   .navbar-custom .brand,.navbar-custom .navbar-toggler{position:relative;z-index:2;}
   .navbar-custom .navbar-collapse{
     position:fixed;inset:0;z-index:1;margin:0;
-    padding:6.5rem 1.7rem 3rem;
+    padding:6.5rem 1.7rem calc(1.6rem + env(safe-area-inset-bottom,0px));
     flex-direction:column;justify-content:center;align-items:stretch;
-    overflow:hidden;overscroll-behavior:contain;
+    overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;
     background:radial-gradient(120% 55% at 85% 0%,rgba(var(--magenta-rgb),.20),transparent 62%),rgba(4,14,20,.93);
     backdrop-filter:blur(14px) saturate(140%);
     -webkit-backdrop-filter:blur(14px) saturate(140%);
     border:0;border-radius:0;
   }
   .navbar-custom .navbar-collapse.show{display:flex;}
-  .navbar-custom .navbar-collapse > .d-flex{position:relative;z-index:1;gap:.2rem;}
+  .navbar-custom .navbar-collapse > .d-flex{position:relative;z-index:1;gap:.2rem;margin-block:auto;}
   /* obrysové "MENU" vzadu (jako .sub-ghost), pomalu pluje; jen s povolenou animací */
   .navbar-custom .navbar-collapse::before{
     content:"MENU";position:absolute;left:0;top:50%;transform:translate(0,-50%);
@@ -467,13 +467,10 @@ html.weak-hw .navbar-custom.scrolled{
     backdrop-filter:none;-webkit-backdrop-filter:none;transition:none;
   }
   .navbar-custom.nav-open::after,.navbar-custom.nav-closing::after{display:none;}
-  /* hlavička v otevřeném menu vypadá jako nahoře na stránce: logo 70 px místo 32 px ze sticky lišty a ×
-     o 22 px níž (střed logo i tlačítka na stejné ose). Přes transform, ne výšku: layout lišty se nemění
-     (8 px padding + 38 px rozdíl výšek loga = posun 22 px) a nic neskáče. */
-  .navbar-custom .brand-logo{transition:height .3s ease,transform .35s ease;transform-origin:left center;}
-  .navbar-custom .navbar-toggler{transition:transform .35s ease,box-shadow .15s ease-in-out;}
-  .navbar-custom.scrolled.nav-open .brand-logo{transform:translateY(22px) scale(2.1875);}
-  .navbar-custom.scrolled.nav-open .navbar-toggler{transform:translateY(22px);}
+  /* logo i tlačítko zůstávají v otevřeném menu tam, kde jsou (kapsle / horní lišta) — kruh se rozlévá přesně
+     z tlačítka (JS: navCircle), takže se hlavička nepřeskládává */
+  .navbar-custom .brand-logo{transition:height .3s ease;}
+  .navbar-custom .navbar-toggler{transition:box-shadow .15s ease-in-out;}
   html.nav-open{overflow:hidden;}
   html.js.nav-open{scrollbar-gutter:auto;} /* bez rezervy pro posuvník, ať vrstva zabere celou šířku */
   /* hamburger → × (tři čárky kreslené CSS, prostřední zmizí) */
@@ -498,6 +495,78 @@ html.weak-hw .navbar-custom.scrolled{
 }
 @media (max-width:991.98px) and (prefers-reduced-motion:reduce){
   .navbar-custom .navbar-toggler-icon,.navbar-custom .navbar-toggler-icon::before,.navbar-custom .navbar-toggler-icon::after{transition:none;}
+}
+/* Mobil: stejná skleněná kapsle jako na desktopu. Nahoře průhledná lišta s velkým logem, po odscrollování se
+   .container zúží do kapsle (sklo je na jeho ::before, NE na lište ani na kontejneru: backdrop-filter by z nich
+   udělal containing block pro position:fixed #navMenu — ten leží uvnitř .container — a vrstva by se smrštila).
+   Tlačítko menu je kulaté s kroužkem postupu scrollu (--scroll-progress). */
+.nav-foot{display:none;}
+@media (max-width:991.98px){
+  .navbar-custom.scrolled,
+  html.weak-hw .navbar-custom.scrolled{
+    background:transparent;border-bottom-color:transparent;
+    backdrop-filter:none;-webkit-backdrop-filter:none;
+    padding:10px 0;
+  }
+  .navbar-custom::after{display:none;}
+  .navbar-custom .container{
+    position:relative;
+    transition:width .45s cubic-bezier(.22,1,.36,1),padding .45s cubic-bezier(.22,1,.36,1);
+  }
+  .navbar-custom.scrolled .container{width:calc(100% - 24px);padding:5px 5px 5px 18px;}
+  .navbar-custom .container::before{
+    content:"";position:absolute;inset:0;z-index:-1;border-radius:999px;
+    background:rgba(10,10,15,.55);
+    box-shadow:inset 0 0 0 1px rgba(var(--magenta-rgb),.2),0 10px 30px rgba(0,0,0,.35);
+    backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);
+    opacity:0;pointer-events:none;
+    transition:opacity .35s ease,visibility 0s linear 0s;
+  }
+  .navbar-custom.scrolled .container::before{opacity:1;}
+  /* pod otevřenou vrstvou sklo kapsle nepotřebujeme (druhý blur navíc) — schová se, až je vrstva roztažená */
+  .navbar-custom.nav-open .container::before{visibility:hidden;transition-delay:0s,.7s;}
+  html.weak-hw .navbar-custom .container::before{
+    background:rgba(10,10,15,.82);backdrop-filter:blur(6px) saturate(140%);-webkit-backdrop-filter:blur(6px) saturate(140%);
+  }
+  .navbar-custom .navbar-toggler{
+    position:relative;width:42px;height:42px;padding:0;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14);
+  }
+  .navbar-custom .navbar-toggler::before{
+    content:"";position:absolute;inset:-1px;border-radius:50%;padding:2px;pointer-events:none;
+    background:conic-gradient(var(--magenta) calc(var(--scroll-progress,0) * 1turn),rgba(255,255,255,.14) 0);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;
+    opacity:0;transition:opacity .3s ease;
+  }
+  .navbar-custom.scrolled:not(.nav-open) .navbar-toggler::before{opacity:1;}
+  /* patička otevřeného menu (staví ji JS: buildNavText) */
+  .nav-foot{
+    display:flex;flex-direction:column;gap:.85rem;position:relative;z-index:1;margin-top:1rem;
+  }
+  .nav-foot-rule{display:block;height:1px;background:rgba(var(--purple-rgb),.25);}
+  .nav-foot-lines{display:flex;flex-direction:column;gap:.75rem;}
+  .nav-foot-line{
+    display:flex;flex-direction:column;gap:.1rem;width:fit-content;
+    color:#fff;text-decoration:none;font-size:1.05rem;font-weight:600;
+  }
+  .nav-foot-line small{font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:rgba(var(--purple-rgb),.75);}
+  .nav-foot-line:hover,.nav-foot-line:focus-visible{color:var(--purple);}
+  .nav-foot-line:focus-visible{outline:2px solid var(--magenta);outline-offset:4px;border-radius:6px;}
+  .nav-foot-socials{display:flex;gap:.75rem;}
+  .nav-foot-socials .social-ico{width:44px;height:44px;font-size:1.1rem;}
+  .nav-foot-socials .social-ico:focus-visible{outline:2px solid var(--magenta);outline-offset:3px;}
+}
+@media (max-width:991.98px) and (max-height:700px){
+  .navbar-custom .navbar-collapse{padding-top:5.5rem;}
+  .navbar-custom .nav-link{font-size:clamp(1.8rem,8.6vw,2.6rem);}
+}
+@media (max-width:991.98px) and (max-height:560px){
+  .nav-foot{display:none;}
+}
+@media (max-width:991.98px) and (prefers-reduced-motion:reduce){
+  .navbar-custom .container,.navbar-custom .container::before{transition:none;}
 }
 /* slabší zařízení: místo blur plocha skoro bez průhlednosti */
 @media (max-width:991.98px){
@@ -1197,6 +1266,9 @@ footer::after{
 }
 .to-top:hover{color:var(--fg);}
 .to-top:hover .ring-bar{stroke:var(--ring-blue-hover);}
+/* Mobil: postup scrollu ukazuje kroužek kolem tlačítka menu v kapsli — tady zůstane jen jeho podklad jako obyčejný
+   border (script.js/page.js dál píšou stroke-dashoffset, ale není vidět). Desktop má kroužek jen tady. */
+@media (max-width:991.98px){.ring-bar{display:none;}}
 
 
 /* Reduced motion / mobile fallback */

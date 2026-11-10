@@ -81,7 +81,7 @@
      ESC zavírá a focus se vrací na tlačítko. */
   var navMenuEl = document.getElementById("navMenu");
   var navToggler = document.querySelector(".navbar-toggler");
-  var navOpen = false, navBuilt = false, navChars = [], navNums = [], navLinkEls = [];
+  var navOpen = false, navBuilt = false, navChars = [], navNums = [], navLinkEls = [], navFootEls = [], navFootLinks = [];
   var navMq = window.matchMedia("(max-width: 991.98px)");
   function buildNavText() {
     if (navBuilt || !navMenuEl) return;
@@ -111,7 +111,31 @@
       a.appendChild(num); a.appendChild(txt);
       navNums.push(num);
     });
+    /* patička vrstvy: telefon + e-mail jako přímé akce a ikony Instagramu a LinkedInu (na desktopu skrytá CSS) */
+    var foot = document.createElement("div");
+    foot.className = "nav-foot";
+    foot.innerHTML =
+      '<span class="nav-foot-item nav-foot-rule" aria-hidden="true"></span>' +
+      '<div class="nav-foot-lines">' +
+        '<a class="nav-foot-item nav-foot-line" href="tel:+420728544881"><small>Telefon</small><span>+420 728 544 881</span></a>' +
+        '<a class="nav-foot-item nav-foot-line" href="mailto:info@jirikratochvil.eu"><small>E-mail</small><span>info@jirikratochvil.eu</span></a>' +
+      '</div>' +
+      '<div class="nav-foot-item nav-foot-socials">' +
+        '<a class="social-ico" href="https://www.instagram.com/ochmi" target="_blank" rel="noopener" aria-label="Instagram"><svg class="bi" aria-hidden="true"><use href="#bi-instagram"/></svg></a>' +
+        '<a class="social-ico" href="https://www.linkedin.com/in/ji%C5%99%C3%AD-kratochv%C3%ADl-a61a87208" target="_blank" rel="noopener" aria-label="LinkedIn"><svg class="bi" aria-hidden="true"><use href="#bi-linkedin"/></svg></a>' +
+      '</div>';
+    navMenuEl.appendChild(foot);
+    navFootEls = Array.prototype.slice.call(foot.querySelectorAll(".nav-foot-item"));
+    navFootLinks = Array.prototype.slice.call(foot.querySelectorAll("a"));
   }
+  /* střed a poloměr kruhu, který se rozlévá z tlačítka menu přes celou obrazovku */
+  function navCircle() {
+    var r = navToggler ? navToggler.getBoundingClientRect() : null;
+    var w = document.documentElement.clientWidth, h = window.innerHeight;
+    var cx = r ? r.left + r.width / 2 : w - 40, cy = r ? r.top + r.height / 2 : 40;
+    return { cx: cx, cy: cy, R: Math.ceil(Math.hypot(Math.max(cx, w - cx), Math.max(cy, h - cy))) + 40 };
+  }
+  function navCircleCss(g, rad) { return "circle(" + rad + "px at " + g.cx + "px " + g.cy + "px)"; }
   function navInert(on) {
     document.querySelectorAll("main, footer, body > section").forEach(function (el) {
       if (on) el.setAttribute("inert", ""); else el.removeAttribute("inert");
@@ -131,23 +155,28 @@
     }
     document.documentElement.classList.toggle("nav-open", open);
     navInert(open);
-    gsap.killTweensOf([navMenuEl].concat(navChars, navNums));
+    gsap.killTweensOf([navMenuEl].concat(navChars, navNums, navFootEls));
     var animate = !reduceMotion && !instant;
     if (open) {
       buildNavText();
       navMenuEl.classList.add("show");
       if (animate) {
-        gsap.fromTo(navMenuEl, { opacity: 0 }, { opacity: 1, duration: 0.22, ease: "power1.out" });
+        var g = navCircle();
+        gsap.fromTo(navMenuEl, { clipPath: navCircleCss(g, 0) }, {
+          clipPath: navCircleCss(g, g.R), duration: 0.7, ease: "power3.inOut", overwrite: true,
+          onComplete: function () { gsap.set(navMenuEl, { clearProps: "clipPath" }); }
+        });
         gsap.fromTo(navChars, {
           x: function () { return gsap.utils.random(-70, 70); },
           y: function () { return gsap.utils.random(-60, 60); },
           rotation: function () { return gsap.utils.random(-45, 45); },
           scale: 0.5, opacity: 0
         }, { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1, duration: 0.5, ease: "power3.out",
-             stagger: { amount: 0.25, from: "random" }, delay: 0.03, overwrite: true });
-        gsap.fromTo(navNums, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35, stagger: 0.05, delay: 0.15, ease: "power2.out", overwrite: true });
+             stagger: { amount: 0.25, from: "random" }, delay: 0.14, overwrite: true });
+        gsap.fromTo(navNums, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35, stagger: 0.05, delay: 0.25, ease: "power2.out", overwrite: true });
+        gsap.fromTo(navFootEls, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45, stagger: 0.07, delay: 0.4, ease: "power2.out", overwrite: true });
       } else {
-        gsap.set([navMenuEl].concat(navChars, navNums), { clearProps: "all" });
+        gsap.set([navMenuEl].concat(navChars, navNums, navFootEls), { clearProps: "all" });
       }
       if (navLinkEls[0]) navLinkEls[0].focus({ preventScroll: true });
     } else {
@@ -156,16 +185,17 @@
         /* odscrollovaná lišta má blur (= containing block pro fixed vrstvu); do konce odeznění ho držíme vypnutý,
            jinak by se mizející menu v půlce fade-outu smrsklo na výšku lišty */
         if (navbar) navbar.classList.add("nav-closing");
-        gsap.to(navMenuEl, {
-          opacity: 0, duration: 0.25, ease: "power1.in",
+        var gc = navCircle();
+        gsap.fromTo(navMenuEl, { clipPath: navCircleCss(gc, gc.R) }, {
+          clipPath: navCircleCss(gc, 0), duration: 0.5, ease: "power3.inOut", overwrite: true,
           onComplete: function () {
-            navMenuEl.classList.remove("show"); gsap.set(navMenuEl, { clearProps: "opacity" });
+            navMenuEl.classList.remove("show"); gsap.set(navMenuEl, { clearProps: "opacity,clipPath" });
             if (navbar) navbar.classList.remove("nav-closing");
           }
         });
       } else {
         navMenuEl.classList.remove("show");
-        gsap.set([navMenuEl].concat(navChars, navNums), { clearProps: "all" });
+        gsap.set([navMenuEl].concat(navChars, navNums, navFootEls), { clearProps: "all" });
       }
       if (inMenu && navToggler) navToggler.focus({ preventScroll: true });
     }
@@ -176,7 +206,7 @@
     if (e.key === "Escape") { setNav(false); return; }
     if (e.key !== "Tab") return;
     var brand = document.querySelector(".navbar-custom .brand");
-    var ring = [brand, navToggler].concat(navLinkEls).filter(Boolean);
+    var ring = [brand, navToggler].concat(navLinkEls, navFootLinks).filter(Boolean);
     var i = ring.indexOf(document.activeElement);
     if (e.shiftKey && (i <= 0)) { e.preventDefault(); ring[ring.length - 1].focus(); }
     else if (!e.shiftKey && (i === ring.length - 1)) { e.preventDefault(); ring[0].focus(); }
