@@ -497,7 +497,9 @@ html.weak-hw .navbar-custom.scrolled{
   .navbar-custom .navbar-toggler-icon,.navbar-custom .navbar-toggler-icon::before,.navbar-custom .navbar-toggler-icon::after{transition:none;}
 }
 /* slabší zařízení: místo blur plocha skoro bez průhlednosti */
-html.weak-hw .navbar-custom .navbar-collapse{backdrop-filter:none;-webkit-backdrop-filter:none;background:radial-gradient(120% 55% at 85% 0%,rgba(var(--magenta-rgb),.20),transparent 62%),rgba(4,14,20,.98);}
+@media (max-width:991.98px){
+  html.weak-hw .navbar-custom .navbar-collapse{backdrop-filter:none;-webkit-backdrop-filter:none;background:radial-gradient(120% 55% at 85% 0%,rgba(var(--magenta-rgb),.20),transparent 62%),rgba(4,14,20,.98);}
+}
 
 /* ---------- Sections ---------- */
 section{position:relative;z-index:1;}

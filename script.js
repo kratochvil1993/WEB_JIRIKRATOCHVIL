@@ -26,7 +26,12 @@
      be checked against `weakHardware` too, same as lowPower's own mirroring
      rule below. */
   var weakHardware = !lowPower && !!(navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
-  document.documentElement.classList.toggle("weak-hw", weakHardware);
+  /* The CSS class follows the core count alone, NOT weakHardware: phones are
+     always lowPower (weakHardware is false there), but the weak-hw CSS rules
+     (lighter navbar blur, mobile menu overlay without backdrop-filter) are
+     meant for them too. page.js sets the same class on the subpages. */
+  var fewCores = !!(navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
+  document.documentElement.classList.toggle("weak-hw", fewCores);
 
   /* Visible in the browser console for anyone (dev, or a visitor asked to
      "check what mode you're getting") diagnosing performance — the three
@@ -792,7 +797,7 @@
     });
     requestAnimationFrame(drawParticles);
   }
-  if (!lowPower || true) drawParticles(); // always draw, just fewer particles when lowPower
+  drawParticles(); // always draw, just fewer particles when lowPower
 
   /* ---------------- Pinned scrollytelling: section 2 (web/e-shop) a 3 (portrét) ----------------
      Text se odhaluje přes onEnter/onLeave (jistý jednorázový tween, nezávislý na scrubu),

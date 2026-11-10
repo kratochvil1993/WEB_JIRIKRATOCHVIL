@@ -353,6 +353,7 @@
      Reduced-motion uživatelé dostanou obsah rovnou: CSS (.js .hero-in, .reveal-wipe, …)
      skrývá věci jen mimo @media (prefers-reduced-motion: reduce). */
   var weakHw = !!(navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
+  document.documentElement.classList.toggle("weak-hw", weakHw);   /* stejná třída jako na homepage (script.js): CSS ztišení blur navbaru a mobilního menu */
   var blurOk = !weakHw;
   var blurIn = function (px) { return blurOk ? { filter: "blur(" + px + "px)" } : {}; };
 
