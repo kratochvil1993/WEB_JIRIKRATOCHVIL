@@ -1706,8 +1706,13 @@ html.modal-open{overflow:hidden;}
   .contact-modal[open]::backdrop{animation:modalBackdrop .35s ease both;}
 }
 @keyframes modalBackdrop{from{opacity:0;}to{opacity:1;}}
+/* Vlastní kroužek nahrazuje systémový kurzor i nad klikacími prvky — UA styl odkazů
+   a pravidla tlačítek jinak vrátí ručičku dovnitř kroužku. Stojí před pravidly modalu (stejná specificita, vyhrává pozdější), ty kroužek vrací systémový kurzor. */
+@media (hover:hover) and (pointer:fine){
+  a,button,button:not(:disabled),[type=button]:not(:disabled),[type=submit]:not(:disabled),summary,label,[role=button],.pill-btn,.copy-btn,.to-top,.navbar-toggler{cursor:none;}
+}
 .contact-modal,.contact-modal *{cursor:auto;}
-.contact-modal a,.contact-modal button,.contact-modal summary,.contact-modal label,.contact-modal input[type=checkbox]{cursor:pointer;}
+.contact-modal a,.contact-modal button,.contact-modal button:not(:disabled),.contact-modal [type=button]:not(:disabled),.contact-modal [type=submit]:not(:disabled),.contact-modal summary,.contact-modal label,.contact-modal input[type=checkbox]{cursor:pointer;}
 .contact-modal__panel{
   position:relative;outline:none;overflow:auto;
   max-height:calc(100vh - 1.5rem);max-height:calc(100dvh - 1.5rem);
