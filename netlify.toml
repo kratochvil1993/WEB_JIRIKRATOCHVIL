@@ -87,19 +87,69 @@
 # na dnešní ekvivalenty.
 [[redirects]]
   from = "/cz/gdpr/"
-  to = "/gdpr.html"
+  to = "/gdpr"
   status = 301
   force = true
 
 [[redirects]]
   from = "/cz/sitemap-cz/"
-  to = "/sitemap.html"
+  to = "/sitemap"
   status = 301
   force = true
 
 # Stránka o focení se dřív jmenovala fotografie.html.
 [[redirects]]
   from = "/fotografie.html"
-  to = "/foceni.html"
+  to = "/foceni"
+  status = 301
+  force = true
+
+# Jedna adresa na stránku: bez přípony .html (shodně s canonical, sitemapou a interními odkazy).
+# Soubory se nepřejmenovávají, Netlify /web obslouží ze souboru web.html.
+[[redirects]]
+  from = "/web.html"
+  to = "/web"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/marketing.html"
+  to = "/marketing"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/foceni.html"
+  to = "/foceni"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/o-mne.html"
+  to = "/o-mne"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/kontakt.html"
+  to = "/kontakt"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/faq.html"
+  to = "/faq"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/gdpr.html"
+  to = "/gdpr"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/sitemap.html"
+  to = "/sitemap"
   status = 301
   force = true
