@@ -251,9 +251,10 @@ a:hover{color:var(--purple);}
    masky vypadalo jako čepice), skvrna B dole je pryč, bloby se na mobilu nehýbou (drift vypíná script.js) a v pozadí
    je jemný azurový nádech. Měřeno mřížkou jasu (viz "Testing" v CLAUDE.md). */
 @media (max-width:991px){
+  /* Spodní okraj: smoothstep místo lineární rampy (lineární má ostrý začátek, který oko čte jako tmavý pruh nad lištou Safari) */
   html.is-home #bg-layer,html.is-home #particle-canvas{
-    -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 180px, #000 calc(100% - 140px), transparent 100%);
-    mask-image:linear-gradient(to bottom, transparent 0, #000 180px, #000 calc(100% - 140px), transparent 100%);
+    -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 180px, rgba(0,0,0,1) calc(100% - 220px), rgba(0,0,0,0.972) calc(100% - 198px), rgba(0,0,0,0.896) calc(100% - 176px), rgba(0,0,0,0.784) calc(100% - 154px), rgba(0,0,0,0.648) calc(100% - 132px), rgba(0,0,0,0.5) calc(100% - 110px), rgba(0,0,0,0.352) calc(100% - 88px), rgba(0,0,0,0.216) calc(100% - 66px), rgba(0,0,0,0.104) calc(100% - 44px), rgba(0,0,0,0.028) calc(100% - 22px), rgba(0,0,0,0) calc(100% - 0px));
+    mask-image:linear-gradient(to bottom, transparent 0, #000 180px, rgba(0,0,0,1) calc(100% - 220px), rgba(0,0,0,0.972) calc(100% - 198px), rgba(0,0,0,0.896) calc(100% - 176px), rgba(0,0,0,0.784) calc(100% - 154px), rgba(0,0,0,0.648) calc(100% - 132px), rgba(0,0,0,0.5) calc(100% - 110px), rgba(0,0,0,0.352) calc(100% - 88px), rgba(0,0,0,0.216) calc(100% - 66px), rgba(0,0,0,0.104) calc(100% - 44px), rgba(0,0,0,0.028) calc(100% - 22px), rgba(0,0,0,0) calc(100% - 0px));
   }
   html.is-home #bg-layer{background:linear-gradient(180deg,rgba(var(--magenta-rgb),.06) 0%,rgba(var(--magenta-rgb),.07) 50%,rgba(var(--magenta-rgb),.06) 100%),var(--bg);}
   html.is-home #bg-gradient{
