@@ -141,7 +141,13 @@
       if (on) el.setAttribute("inert", ""); else el.removeAttribute("inert");
     });
   }
-  function setNav(open, instant) {
+  /* uvolní stav "menu otevřené" mimo samotnou vrstvu: odemkne scroll, sundá inert, vrátí lištu */
+  function navRelease() {
+    if (navbar) navbar.classList.remove("nav-open", "nav-closing");
+    document.documentElement.classList.remove("nav-open");
+    navInert(false);
+  }
+  function setNav(open, instant, releaseNow) {
     if (!navMenuEl || open === navOpen) return;
     navOpen = open;
     if (navToggler) {
@@ -149,14 +155,21 @@
       navToggler.setAttribute("aria-label", open ? "Zavřít menu" : "Otevřít menu");
       navToggler.classList.toggle("collapsed", !open);
     }
-    if (navbar) {
-      navbar.classList.toggle("nav-open", open);
-      navbar.classList.remove("nav-closing");   /* případné dozívání předchozího zavření */
-    }
-    document.documentElement.classList.toggle("nav-open", open);
-    navInert(open);
     gsap.killTweensOf([navMenuEl].concat(navChars, navNums, navFootEls));
     var animate = !reduceMotion && !instant;
+    /* Při animovaném zavírání zůstává nav-open na liště i na html (zámek scrollu, inert, lišta) až do konce
+       kruhu. Odemknutí scrollu a změny lišty uprostřed animace spouštěly v Safari přepočet stránky pod ní
+       a zavírání se kolem tří čtvrtin zaseklo. */
+    if (open || !animate || releaseNow) {
+      if (navbar) {
+        navbar.classList.toggle("nav-open", open);
+        navbar.classList.remove("nav-closing");   /* případné dozívání předchozího zavření */
+      }
+      document.documentElement.classList.toggle("nav-open", open);
+      navInert(open);
+    } else if (navbar) {
+      navbar.classList.add("nav-closing");
+    }
     if (open) {
       buildNavText();
       navMenuEl.classList.add("show", "nav-layer");
@@ -184,13 +197,12 @@
       if (animate) {
         /* odscrollovaná lišta má blur (= containing block pro fixed vrstvu); do konce odeznění ho držíme vypnutý,
            jinak by se mizející menu v půlce fade-outu smrsklo na výšku lišty */
-        if (navbar) navbar.classList.add("nav-closing");
-        var gc = navCircle();
-        gsap.fromTo(navMenuEl, { clipPath: navCircleCss(gc, gc.R) }, {
-          clipPath: navCircleCss(gc, 0), duration: 0.45, ease: "power2.inOut", overwrite: true,
+        /* zavírání záměrně jen rozplynutím (opacity jede na GPU); kruh (clip-path) se v Safari při zavírání sekal */
+        gsap.fromTo(navMenuEl, { opacity: 1 }, {
+          opacity: 0, duration: 0.25, ease: "power1.out", overwrite: true,
           onComplete: function () {
             navMenuEl.classList.remove("show", "nav-layer"); gsap.set(navMenuEl, { clearProps: "opacity,clipPath" });
-            if (navbar) navbar.classList.remove("nav-closing");
+            navRelease();
           }
         });
       } else {
@@ -315,7 +327,7 @@
       var target = document.querySelector(id);
       if (!target) return;
       e.preventDefault();
-      if (navOpen) setNav(false);
+      if (navOpen) setNav(false, false, true);
       /* Resolve to a fixed pixel offset up front rather than handing the
          element itself to ScrollToPlugin: once scroll enters a pinned
          section's active range the element is position:fixed, so its

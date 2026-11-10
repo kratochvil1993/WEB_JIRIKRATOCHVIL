@@ -438,7 +438,7 @@ html.weak-hw .navbar-custom.scrolled{
   /* po dobu, co je menu otevřené (JS: nav-layer), drží vrstvu na GPU — žádné povyšování/snižování uprostřed animace */
   .navbar-custom .navbar-collapse.nav-layer{will-change:clip-path;transform:translateZ(0);}
   /* obrysové MENU vzadu při zavírání hned zmizí (méně k překreslování) */
-  .navbar-custom.nav-closing .navbar-collapse::before{opacity:0;transition:opacity .15s ease;}
+  .navbar-custom.nav-closing .navbar-collapse::before{opacity:0;transition:opacity .15s ease;animation:none;}
   .navbar-custom .navbar-collapse.show{display:flex;}
   .navbar-custom .navbar-collapse > .d-flex{position:relative;z-index:1;gap:.2rem;margin-block:auto;}
   /* obrysové "MENU" vzadu (jako .sub-ghost), pomalu pluje; jen s povolenou animací */
