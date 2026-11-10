@@ -1548,6 +1548,22 @@ footer::after{
 .principle-card:hover .principle-num{opacity:1;}
 .principles .principle-card h3{font-size:1.2rem;margin-bottom:.45rem;}
 .principles .principle-card p{font-size:1rem;line-height:1.6;}
+/* Mobil (1 sloupec): karty se při scrollu zasekávají pod navbarem a překrývají jako balíček
+   (stejný princip jako "Proč já" na homepage, ale čistě CSS — bez ztmavování přes filter, které
+   se v Safari třese). Sticky nefunguje na prvku mřížky (jeho containing block je jen vlastní
+   buňka), proto je zde flex sloupec. Bez pohybu u prefers-reduced-motion. */
+@media (max-width:599.98px) and (prefers-reduced-motion:no-preference){
+  .principles{display:flex;flex-direction:column;}
+  .principles .principle-card{
+    position:sticky;top:5.5rem;
+    transform-style:flat; /* preserve-3d by s backdrop-filter nešel dohromady */
+    background:rgba(255,255,255,.06);
+    -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px); /* text karty pod ní zmizí rozmazáním */
+  }
+  .principles .principle-card:nth-child(2){top:6.7rem;}
+  .principles .principle-card:nth-child(3){top:7.9rem;}
+  .principles .principle-card:nth-child(4){top:9.1rem;}
+}
 
 /* Široká AI karta (web.html): vlevo text, vpravo schéma rozdělení práce (page.js ho jednou odkryje) */
 .sub-grid .card-split{display:grid;gap:1.8rem 2.6rem;align-items:center;padding:1.8rem 1.6rem;}
