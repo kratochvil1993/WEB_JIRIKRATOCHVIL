@@ -1195,12 +1195,6 @@ footer::after{
 .to-top:hover{color:var(--fg);}
 .to-top:hover .ring-bar{stroke:var(--ring-blue-hover);}
 
-/* GDPR page */
-.gdpr-page section{padding:6rem 0;}
-.gdpr-page h1{font-size:clamp(2rem,4vw,2.8rem);}
-.gdpr-page h2{font-size:1.4rem;margin-top:2.2rem;}
-.gdpr-page .back-link{display:inline-block;margin-bottom:2rem;color:var(--fg-dim);}
-.gdpr-page .back-link:hover{color:var(--magenta);}
 
 /* Reduced motion / mobile fallback */
 @media (max-width:991px){

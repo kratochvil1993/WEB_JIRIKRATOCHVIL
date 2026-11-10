@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#0c1d24" media="(max-width: 991px)">
 <meta name="theme-color" content="#0a0a0f">
 <meta name="color-scheme" content="dark">
+<script>document.documentElement.classList.add("js");</script>
 <!-- Google Consent Mode v2 — výchozí stav (musí být před GTM, viz cookie-consent.js) -->
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -45,7 +46,16 @@
 <link rel="preload" href="assets/fonts/inter-latin-ext.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.min.css">
 <style>
-  #bg-gradient{opacity:.6;filter:blur(80px) saturate(120%);}
+  /* Právní text: klidné čtení, bloky oddělené jemnou linkou */
+  .legal{max-width:820px;}
+  .legal-block{padding:1.9rem 0;border-top:1px solid rgba(255,255,255,.08);scroll-margin-top:6.5rem;}
+  .legal-block:first-child{border-top:0;padding-top:0;}
+  .legal-block h2{font-size:1.35rem;letter-spacing:normal;margin:0 0 .7rem;color:var(--fg);}
+  .legal-block p{margin:0;}
+  .legal-block p + p{margin-top:1rem;}
+  .legal-block a{text-decoration:underline;text-underline-offset:3px;}
+  .legal-card{padding:1.5rem 1.6rem;}
+  .legal-card p{line-height:1.8;}
 </style>
 <script type="application/ld+json">
 {
@@ -73,76 +83,153 @@
 }
 </script>
 </head>
-<body class="gdpr-page">
+<body class="sub-page">
+<svg id="bi-sprite" xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="bi-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5"/></symbol>
+  <symbol id="bi-envelope" viewBox="0 0 16 16"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/></symbol>
+  <symbol id="bi-instagram" viewBox="0 0 16 16"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/></symbol>
+  <symbol id="bi-linkedin" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z"/></symbol>
+  <symbol id="bi-telephone" viewBox="0 0 16 16"><path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.6 17.6 0 0 0 4.168 6.608 17.6 17.6 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.68.68 0 0 0-.58-.122l-2.19.547a1.75 1.75 0 0 1-1.657-.459L5.482 8.062a1.75 1.75 0 0 1-.46-1.657l.548-2.19a.68.68 0 0 0-.122-.58zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z"/></symbol>
+</svg>
 
 <div id="bg-layer">
   <div id="bg-gradient"></div>
+  <div id="bg-blob-a"></div>
+  <div id="bg-blob-b"></div>
 </div>
+<div id="bg-noise"></div>
 <div id="cursor"></div>
 
-<section>
-  <div class="container" style="max-width:820px;">
-    <a href="/" class="back-link">&larr; Zpět na hlavní stránku</a>
-    <h1>Zpracování osobních údajů</h1>
-    <p>Tyto zásady popisují, jak Jiří Kratochvíl zpracovává osobní údaje návštěvníků webu jirikratochvil.eu, zejména v souvislosti s kontaktním formulářem.</p>
-
-    <h2>Správce osobních údajů</h2>
-    <p>Jiří Kratochvíl<br>
-    IČ: 17870267<br>
-    Datová schránka: rdtxzgn<br>
-    E-mail: <a href="mailto:info@jirikratochvil.eu">info@jirikratochvil.eu</a><br>
-    Telefon: <a href="tel:+420728544881">+420 728 544 881</a></p>
-
-    <h2>Jaké údaje zpracováváme</h2>
-    <p>Prostřednictvím kontaktního formuláře zpracováváme údaje, které nám sami poskytnete: jméno, e-mailovou adresu, nepovinně telefonní číslo a obsah vaší zprávy.</p>
-
-    <h2>Účel zpracování</h2>
-    <p>Údaje slouží výhradně k tomu, abychom vás mohli kontaktovat zpět a vyřídit váš dotaz nebo poptávku týkající se tvorby webu, e-shopu nebo fotografických služeb.</p>
-
-    <h2>Právní základ</h2>
-    <p>Zpracování je založeno na vašem souhlasu uděleném zaškrtnutím políčka v kontaktním formuláři a na oprávněném zájmu vyřídit vaši poptávku.</p>
-
-    <h2>Doba uchování</h2>
-    <p>Osobní údaje z kontaktního formuláře uchováváme po dobu nezbytnou k vyřízení vaší poptávky, nejdéle však 24 měsíců od posledního kontaktu, pokud mezi námi nevznikne obchodní vztah vyžadující delší archivaci dle zákona.</p>
-
-    <h2>Předávání třetím stranám</h2>
-    <p>Osobní údaje nepředáváme třetím stranám s výjimkou poskytovatelů technické infrastruktury (např. Netlify, hosting a zpracování formuláře), kteří data zpracovávají v souladu s GDPR.</p>
-
-    <h2>Vaše práva</h2>
-    <p>Máte právo na přístup ke svým osobním údajům, jejich opravu či výmaz, omezení zpracování, přenositelnost údajů a právo vznést námitku proti zpracování. Svá práva můžete uplatnit e-mailem na info@jirikratochvil.eu.</p>
-    <p>Pokud se domníváte, že vaše údaje zpracováváme v rozporu se zákonem, máte právo podat stížnost u Úřadu pro ochranu osobních údajů (uoou.cz).</p>
-
-    <h2 id="cookies">Cookies</h2>
-    <p>Web používá Google Tag Manager a Google Analytics k měření návštěvnosti. Tyto nástroje se načítají hned při otevření stránky, ale bez vašeho souhlasu běží v režimu bez cookies (Google Consent Mode v2) — neukládají do prohlížeče žádné analytické ani reklamní cookies a Googlu odesílají jen omezené anonymní údaje bez identifikace vašeho zařízení. Analytické a reklamní cookies se aktivují teprve po vašem souhlasu v cookie liště. Souhlas můžete kdykoli odvolat vymazáním cookies a položky „cookieConsent“ z úložiště webu ve vašem prohlížeči. Technické cookies mohou být využity i bez souhlasu, a to pouze pro zajištění základní funkčnosti formuláře a ochrany proti spamu.</p>
-
-    <h2>Kontakt</h2>
-    <p>V případě dotazů ke zpracování osobních údajů nás kontaktujte na e-mailu <a href="mailto:info@jirikratochvil.eu">info@jirikratochvil.eu</a> nebo telefonu <a href="tel:+420728544881">+420 728 544 881</a>.</p>
-
-    <p class="mt-4 mb-0"><a href="#" id="cookie-settings">Cookies</a></p>
-
-    <a href="/" class="back-link mt-4 d-inline-block">&larr; Zpět na hlavní stránku</a>
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom" id="mainNav">
+  <div class="container d-flex justify-content-between align-items-center">
+    <a class="brand d-flex align-items-center gap-2" href="/">
+      <img src="assets/logo.webp" alt="Jiří Kratochvíl" class="brand-logo" width="200" height="145" style="filter:brightness(10);" decoding="async">
+    </a>
+    <button class="navbar-toggler" type="button" aria-controls="navMenu" aria-expanded="false" aria-label="Otevřít menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse flex-grow-0" id="navMenu">
+      <div class="d-flex flex-column flex-lg-row">
+        <a class="nav-link" href="/">Úvod</a>
+        <a class="nav-link" href="web.html">Web &amp; e-shop</a>
+        <a class="nav-link" href="marketing.html">Online marketing</a>
+        <a class="nav-link" href="fotografie.html">Fotograf</a>
+        <a class="nav-link" href="o-mne.html">O mně</a>
+        <a class="nav-link" href="kontakt.html">Kontakt</a>
+      </div>
+    </div>
   </div>
-</section>
+</nav>
 
-<script src="assets/vendor/gsap/gsap.min.js"></script>
-<script>
-  /* Minimal custom-cursor driver, mirroring script.js's cursor logic.
-     Not the full script.js: it assumes index.html-only elements
-     (#mainNav, #particle-canvas, pinned sections) and would throw here. */
-  (function () {
-    "use strict";
-    var isMobile = window.matchMedia("(max-width: 991px)").matches;
-    var cursor = document.getElementById("cursor");
-    if (!cursor || isMobile) return;
-    window.addEventListener("mousemove", function (e) {
-      gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.15, ease: "power2.out" });
-    });
-    document.querySelectorAll("a, button").forEach(function (el) {
-      el.addEventListener("mouseenter", function () { cursor.classList.add("hover"); });
-      el.addEventListener("mouseleave", function () { cursor.classList.remove("hover"); });
-    });
-  })();
-</script>
+<main>
+  <section class="sub-hero" style="padding-bottom:2rem;">
+    <div class="sub-ghost" aria-hidden="true" style="--n:4">GDPR</div>
+    <div class="container">
+      <p class="eyebrow hero-in">Ochrana soukromí</p>
+      <h1>Zpracování <span class="gradient-text">osobních údajů</span></h1>
+      <p class="sub-lead hero-in">Tyto zásady popisují, jak Jiří Kratochvíl zpracovává osobní údaje návštěvníků webu jirikratochvil.eu, zejména v souvislosti s kontaktním formulářem.</p>
+    </div>
+  </section>
+
+  <section class="sub-section" style="padding-top:1.5rem;">
+    <div class="container sub-narrow">
+      <div class="legal">
+        <div class="legal-block reveal">
+          <h2>Správce osobních údajů</h2>
+          <div class="feature-card legal-card">
+            <p>Jiří Kratochvíl<br>
+            IČ: 17870267<br>
+            Datová schránka: rdtxzgn<br>
+            E-mail: <a href="mailto:info@jirikratochvil.eu">info@jirikratochvil.eu</a><br>
+            Telefon: <a href="tel:+420728544881">+420 728 544 881</a></p>
+          </div>
+        </div>
+
+        <div class="legal-block reveal">
+          <h2>Jaké údaje zpracováváme</h2>
+          <p>Prostřednictvím kontaktního formuláře zpracováváme údaje, které nám sami poskytnete: jméno, e-mailovou adresu, nepovinně telefonní číslo a obsah vaší zprávy.</p>
+        </div>
+
+        <div class="legal-block reveal">
+          <h2>Účel zpracování</h2>
+          <p>Údaje slouží výhradně k tomu, abychom vás mohli kontaktovat zpět a vyřídit váš dotaz nebo poptávku týkající se tvorby webu, e-shopu nebo fotografických služeb.</p>
+        </div>
+
+        <div class="legal-block reveal">
+          <h2>Právní základ</h2>
+          <p>Zpracování je založeno na vašem souhlasu uděleném zaškrtnutím políčka v kontaktním formuláři a na oprávněném zájmu vyřídit vaši poptávku.</p>
+        </div>
+
+        <div class="legal-block reveal">
+          <h2>Doba uchování</h2>
+          <p>Osobní údaje z kontaktního formuláře uchováváme po dobu nezbytnou k vyřízení vaší poptávky, nejdéle však 24 měsíců od posledního kontaktu, pokud mezi námi nevznikne obchodní vztah vyžadující delší archivaci dle zákona.</p>
+        </div>
+
+        <div class="legal-block reveal">
+          <h2>Předávání třetím stranám</h2>
+          <p>Osobní údaje nepředáváme třetím stranám s výjimkou poskytovatelů technické infrastruktury (např. Netlify, hosting a zpracování formuláře), kteří data zpracovávají v souladu s GDPR.</p>
+        </div>
+
+        <div class="legal-block reveal">
+          <h2>Vaše práva</h2>
+          <p>Máte právo na přístup ke svým osobním údajům, jejich opravu či výmaz, omezení zpracování, přenositelnost údajů a právo vznést námitku proti zpracování. Svá práva můžete uplatnit e-mailem na info@jirikratochvil.eu.</p>
+          <p>Pokud se domníváte, že vaše údaje zpracováváme v rozporu se zákonem, máte právo podat stížnost u Úřadu pro ochranu osobních údajů (uoou.cz).</p>
+        </div>
+
+        <div class="legal-block reveal" id="cookies">
+          <h2>Cookies</h2>
+          <p>Web používá Google Tag Manager a Google Analytics k měření návštěvnosti. Tyto nástroje se načítají hned při otevření stránky, ale bez vašeho souhlasu běží v režimu bez cookies (Google Consent Mode v2) — neukládají do prohlížeče žádné analytické ani reklamní cookies a Googlu odesílají jen omezené anonymní údaje bez identifikace vašeho zařízení. Analytické a reklamní cookies se aktivují teprve po vašem souhlasu v cookie liště. Souhlas můžete kdykoli odvolat vymazáním cookies a položky „cookieConsent“ z úložiště webu ve vašem prohlížeči. Technické cookies mohou být využity i bez souhlasu, a to pouze pro zajištění základní funkčnosti formuláře a ochrany proti spamu.</p>
+        </div>
+
+        <div class="legal-block reveal">
+          <h2>Kontakt</h2>
+          <p>V případě dotazů ke zpracování osobních údajů nás kontaktujte na e-mailu <a href="mailto:info@jirikratochvil.eu">info@jirikratochvil.eu</a> nebo telefonu <a href="tel:+420728544881">+420 728 544 881</a>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="row g-4 align-items-start">
+      <div class="col-md-4">
+        <div class="brand mb-2">Jiří Kratochvíl</div>
+        <div class="footer-contact">
+          <a href="tel:+420728544881"><svg class="bi" aria-hidden="true"><use href="#bi-telephone"/></svg>+420 728 544 881</a>
+          <a href="mailto:info@jirikratochvil.eu"><svg class="bi" aria-hidden="true"><use href="#bi-envelope"/></svg>info@jirikratochvil.eu</a>
+        </div>
+      </div>
+      <div class="col-md-4 footer-nav">
+        <p class="footer-nav-title">Menu</p>
+        <ul>
+          <li><a href="web.html">Web &amp; e-shop</a></li>
+          <li><a href="marketing.html">Online marketing</a></li>
+          <li><a href="fotografie.html">Fotograf</a></li>
+          <li><a href="o-mne.html">O mně</a></li>
+          <li><a href="kontakt.html">Kontakt</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4 text-md-end">
+        <div class="d-flex gap-3 justify-content-md-end">
+          <a class="social-ico" href="https://www.instagram.com/ochmi" target="_blank" rel="noopener" aria-label="Instagram"><svg class="bi" aria-hidden="true"><use href="#bi-instagram"/></svg></a>
+          <a class="social-ico" href="https://www.linkedin.com/in/ji%C5%99%C3%AD-kratochv%C3%ADl-a61a87208" target="_blank" rel="noopener" aria-label="LinkedIn"><svg class="bi" aria-hidden="true"><use href="#bi-linkedin"/></svg></a>
+        </div>
+        <p class="mt-3 mb-0" style="font-size:.85rem;">&copy; 2026 Jiří Kratochvíl</p>
+        <p class="mb-0" style="font-size:.85rem;"><a href="gdpr.html">GDPR</a> &middot; <a href="sitemap.html">Sitemap</a> &middot; <a href="#" id="cookie-settings">Cookies</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<button id="toTop" class="to-top" aria-label="Nahoru">
+  <svg class="to-top-ring" viewBox="0 0 46 46" aria-hidden="true" focusable="false">
+    <circle class="ring-track" cx="23" cy="23" r="22"></circle>
+    <circle class="ring-bar" cx="23" cy="23" r="22"></circle>
+  </svg>
+  <svg class="bi" aria-hidden="true"><use href="#bi-arrow-up"/></svg>
+</button>
 
 <div id="cookie-consent" class="cookie-consent" hidden>
   <p>Měříme návštěvnost webu. <a href="#cookies">Víc info</a></p>
@@ -151,6 +238,11 @@
     <button type="button" id="cookie-accept">Souhlasím</button>
   </div>
 </div>
+
+<script src="assets/vendor/gsap/gsap.min.js"></script>
+<script src="assets/vendor/gsap/ScrollTrigger.min.js"></script>
+<script src="assets/vendor/gsap/ScrollToPlugin.min.js"></script>
+<script src="page.min.js"></script>
 <script src="cookie-consent.js"></script>
 </body>
 </html>
