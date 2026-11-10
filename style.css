@@ -1350,7 +1350,7 @@ footer::after{
   #copyToast{transition:none;}
 }
 
-/* ---------- Podstránky (web.html, marketing.html, fotografie.html) ----------
+/* ---------- Podstránky (web.html, marketing.html, foceni.html) ----------
    Klidnější, čtecí varianta: žádné pinování, jen odkrývání při scrollu (page.js).
    .js na <html> nastavuje inline skript v <head>, aby se obsah nezobrazil a hned
    neschoval. */
@@ -1454,7 +1454,7 @@ footer::after{
   .step::after{left:1.4rem;top:2.8rem;}
 }
 
-/* Galerie portrétů (fotografie.html) — CSS columns = jednoduchý masonry pro smíšené orientace */
+/* Galerie portrétů (foceni.html) — CSS columns = jednoduchý masonry pro smíšené orientace */
 .photo-gallery{column-count:3;column-gap:1rem;margin-top:2rem;}
 .photo-gallery figure{margin:0 0 1rem;break-inside:avoid;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);}
 .photo-gallery img{display:block;width:100%;height:auto;transition:transform .6s ease;}
@@ -1752,7 +1752,7 @@ html.modal-open{overflow:hidden;}
 .todo-item.is-done{color:rgba(255,255,255,.88);}
 .todo-item.is-done::before{background:var(--purple);border-color:var(--purple);box-shadow:0 0 8px rgba(var(--purple-rgb),.55);}
 .todo-item.is-done::after{opacity:1;transform:none;}
-/* fotografie.html: hledáček u postupu s fotkou pod HUDem (page.js: počítadlo snímků, popisek, expozice, záblesk
+/* foceni.html: hledáček u postupu s fotkou pod HUDem (page.js: počítadlo snímků, popisek, expozice, záblesk
    a zaostřování fotky podle kroků; --ev = expozice, --blur = rozostření v px, obě animuje page.js) */
 .viewfinder{
   position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:.75rem;

@@ -90,3 +90,10 @@
   to = "/sitemap.html"
   status = 301
   force = true
+
+# Stránka o focení se dřív jmenovala fotografie.html.
+[[redirects]]
+  from = "/fotografie.html"
+  to = "/foceni.html"
+  status = 301
+  force = true

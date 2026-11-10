@@ -933,7 +933,7 @@
     });
   }
 
-  /* ---------------- Hledáček u postupu (fotografie.html): počítadlo snímků, popisek, expozice, záblesk ----------------
+  /* ---------------- Hledáček u postupu (foceni.html): počítadlo snímků, popisek, expozice, záblesk ----------------
      V HTML je hotový stav (5/5), takže bez JS / s reduced-motion zůstane vidět; tady se vrátí na začátek
      a postupuje, jak scroll dojíždí ke krokům (#postup-1..5). */
   var vf = document.querySelector(".viewfinder");
