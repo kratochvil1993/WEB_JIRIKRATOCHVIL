@@ -251,6 +251,10 @@ a:hover{color:var(--purple);}
    masky vypadalo jako čepice), skvrna B dole je pryč, bloby se na mobilu nehýbou (drift vypíná script.js) a v pozadí
    je jemný azurový nádech. Měřeno mřížkou jasu (viz "Testing" v CLAUDE.md). */
 @media (max-width:991px){
+  /* Na mobilu bez blur() na pozadí: tvar dělají už samotné radial-gradienty, rozmazání (70/90 px přes velké plochy) vizuálně
+     nic nepřidá (měřeno mřížkou jasu: průměr 33,5 → 33,4, max 50 → 52), ale v Safari stálo ~400 ms při odkrytí stránky
+     po zavření menu (stránka nevykreslila žádný snímek). */
+  #bg-gradient,#bg-blob-a,#bg-blob-b{filter:none;}
   /* Spodní okraj: smoothstep místo lineární rampy (lineární má ostrý začátek, který oko čte jako tmavý pruh nad lištou Safari) */
   html.is-home #bg-layer,html.is-home #particle-canvas{
     -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 180px, rgba(0,0,0,1) calc(100% - 220px), rgba(0,0,0,0.972) calc(100% - 198px), rgba(0,0,0,0.896) calc(100% - 176px), rgba(0,0,0,0.784) calc(100% - 154px), rgba(0,0,0,0.648) calc(100% - 132px), rgba(0,0,0,0.5) calc(100% - 110px), rgba(0,0,0,0.352) calc(100% - 88px), rgba(0,0,0,0.216) calc(100% - 66px), rgba(0,0,0,0.104) calc(100% - 44px), rgba(0,0,0,0.028) calc(100% - 22px), rgba(0,0,0,0) calc(100% - 0px));
@@ -474,39 +478,43 @@ html.weak-hw .navbar-custom.scrolled{
   .navbar-custom .navbar-toggler{transition:box-shadow .15s ease-in-out;}
   html.nav-open{overflow:hidden;}
   html.js.nav-open{scrollbar-gutter:auto;} /* bez rezervy pro posuvník, ať vrstva zabere celou šířku */
-  /* hamburger → × (tři čárky kreslené CSS, prostřední zmizí) */
+  /* hamburger → × (tři čárky kreslené CSS, prostřední zmizí). Všechny tři se animují jen přes transform (GPU, žádné
+     překreslování): krajní jsou ::before/::after ikony, prostřední je ::after tlačítka (scaleX). Dřív se prostřední
+     kreslila jako background-size a animace top/background-size se v Safari při zavírání zadrhávala. */
   .navbar-custom .navbar-toggler-icon{
-    position:relative;width:28px;height:28px;background-image:linear-gradient(rgba(255,255,255,.85),rgba(255,255,255,.85));
-    background-repeat:no-repeat;background-position:center;background-size:calc(100% - 6px) 2px;
-    /* zavírání (× → ☰): prostřední čárka naskočí až s malým zpožděním, kdy už mají krajní čárky mezi sebou místo */
-    transition:background-size .2s ease .1s;
+    position:relative;width:28px;height:28px;background:none;
   }
-  .navbar-custom .navbar-toggler-icon::before,.navbar-custom .navbar-toggler-icon::after{
-    content:"";position:absolute;left:3px;right:3px;height:2px;border-radius:2px;background:rgba(255,255,255,.85);
+  .navbar-custom .navbar-toggler-icon::before,.navbar-custom .navbar-toggler-icon::after,
+  .navbar-custom .navbar-toggler::after{
+    content:"";position:absolute;height:2px;border-radius:2px;background:rgba(255,255,255,.85);
+    will-change:transform;
     /* zavírání: rychlý start (menu se rozplyne za .25 s), pomalý start by nechal čárky slepené u sebe a pak je vystřelil */
-    transition:top .28s cubic-bezier(.2,0,.2,1),transform .28s cubic-bezier(.2,0,.2,1);
+    transition:transform .28s cubic-bezier(.2,0,.2,1);
   }
+  .navbar-custom .navbar-toggler-icon::before,.navbar-custom .navbar-toggler-icon::after{left:3px;right:3px;top:13px;}
+  .navbar-custom .navbar-toggler-icon::before{transform:translateY(-6px) rotate(0deg);}
+  .navbar-custom .navbar-toggler-icon::after{transform:translateY(6px) rotate(0deg);}
+  /* prostřední čárka: střed tlačítka (= střed ikony), 22 px široká */
+  .navbar-custom .navbar-toggler::after{left:50%;top:50%;width:22px;margin:-1px 0 0 -11px;transform:scaleX(1);pointer-events:none;}
   /* otevírání (☰ → ×): původní časování, prostřední čárka mizí hned */
-  .navbar-custom .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon{transition:background-size .25s ease;}
   .navbar-custom .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::before,
-  .navbar-custom .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::after{
-    transition:top .3s cubic-bezier(.7,0,.2,1),transform .3s cubic-bezier(.7,0,.2,1);
+  .navbar-custom .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::after,
+  .navbar-custom .navbar-toggler[aria-expanded="true"]::after{
+    transition:transform .3s cubic-bezier(.7,0,.2,1);
   }
-  .navbar-custom .navbar-toggler-icon::before{top:7px;}
-  .navbar-custom .navbar-toggler-icon::after{top:19px;}
-  .navbar-custom .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon{background-size:0 2px;}
-  .navbar-custom .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::before{top:13px;transform:rotate(45deg);}
-  .navbar-custom .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::after{top:13px;transform:rotate(-45deg);}
+  .navbar-custom .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::before{transform:translateY(0) rotate(45deg);}
+  .navbar-custom .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::after{transform:translateY(0) rotate(-45deg);}
+  .navbar-custom .navbar-toggler[aria-expanded="true"]::after{transform:scaleX(0);transition-duration:.25s;}
 }
 @media (max-width:991.98px) and (prefers-reduced-motion:no-preference){
   .navbar-custom .navbar-collapse.show::before{animation:nav-ghost 9s ease-in-out infinite alternate;}
   @keyframes nav-ghost{from{transform:translate(6vw,-50%);}to{transform:translate(-9vw,-50%);}}
 }
 @media (max-width:991.98px) and (prefers-reduced-motion:reduce){
-  .navbar-custom .navbar-toggler-icon,.navbar-custom .navbar-toggler-icon::before,.navbar-custom .navbar-toggler-icon::after,
-  .navbar-custom .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon,
+  .navbar-custom .navbar-toggler-icon::before,.navbar-custom .navbar-toggler-icon::after,.navbar-custom .navbar-toggler::after,
   .navbar-custom .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::before,
-  .navbar-custom .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::after{transition:none;}
+  .navbar-custom .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::after,
+  .navbar-custom .navbar-toggler[aria-expanded="true"]::after{transition:none;}
 }
 /* Mobil: stejná skleněná kapsle jako na desktopu. Nahoře průhledná lišta s velkým logem, po odscrollování se
    .container zúží do kapsle (sklo je na jeho ::before, NE na lište ani na kontejneru: backdrop-filter by z nich
