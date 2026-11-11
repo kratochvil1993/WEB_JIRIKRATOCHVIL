@@ -1345,37 +1345,6 @@ footer::after{
   #section-marketing p.fade-el + p.fade-el{display:none;}
   .pin-graphic{height:250px;}
 }
-/* Mobil: karty "Proč já" jako sticky stack (třídu values-stack přidává script.js
-   jen při mobileFx a šířce ≤767px). overflow:visible je nutné — overflow:hidden
-   na .pin-section by z něj udělalo scroll kontejner a sticky by nefungoval. */
-@media (max-width:767.98px){
-  #section-values.values-stack{overflow:visible;overflow-x:clip;}
-  #section-values.values-stack #valuesGrid > div{position:sticky;top:5.5rem;}
-  #section-values.values-stack #valuesGrid > div:nth-child(2){top:6.6rem;}
-  #section-values.values-stack #valuesGrid > div:nth-child(3){top:7.7rem;}
-  #section-values.values-stack #valuesGrid > div:nth-child(4){top:8.8rem;}
-  /* původní průsvitný "skleněný" vzhled; text předchozí karty pod ní zmizí díky
-     rozmazání pozadí (neprůhledné pozadí vypadalo příliš tmavě) */
-  #section-values.values-stack .value-card{
-    background:rgba(255,255,255,.06);
-    -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
-  }
-  /* Číslo 01–04 v rohu karty: obrysové, a jakmile je karta nahoře (.is-active,
-     přepíná script.js podle scrollu), vyplní se barvou. */
-  #section-values.values-stack #valuesGrid{counter-reset:vc;}
-  #section-values.values-stack #valuesGrid > div{counter-increment:vc;}
-  #section-values.values-stack .value-card::after{
-    content:counter(vc,decimal-leading-zero);
-    position:absolute;top:.6rem;right:1rem;
-    font-size:2.5rem;font-weight:800;line-height:1;letter-spacing:-.03em;
-    color:transparent;-webkit-text-stroke:1.2px rgba(255,255,255,.22);
-    transition:color .45s ease,-webkit-text-stroke-color .45s ease;
-    pointer-events:none;
-  }
-  #section-values.values-stack .value-card.is-active::after{
-    color:rgba(var(--magenta-rgb),.9);-webkit-text-stroke-color:transparent;
-  }
-}
 /* Mobil: odlesk karty řídí script.js přes --glare/--mx/--my podle polohy na
    obrazovce a náklonu telefonu (dřív jen hover/klepnutí). Klepnutí pořád přebije. */
 @media (max-width:991.98px){

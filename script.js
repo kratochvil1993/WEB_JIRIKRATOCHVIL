@@ -1824,14 +1824,10 @@
   var valuesSection = document.getElementById("section-values");
   var valuesCards = gsap.utils.toArray("#valuesGrid .value-card");
   var valuesEls = gsap.utils.toArray("#section-values .fade-el");
-  /* mobil: nadpis wipe podle scrollu; karty (jen 1 sloupec, ≤767px) jako sticky
-     stack — CSS `position: sticky` + scrub zmenšování předchozí karty. Obojí
-     je vyňaté z jednorázového revealIn. */
+  /* mobil: nadpis wipe podle scrollu (karty jedou jako obyčejný seznam; sticky stack
+     se zrušil — na iOS Safari se při scrollu klepal, viz CLAUDE.md). */
   var valuesH2 = mobileFx ? document.querySelector("#section-values h2") : null;
-  var stackMode = mobileFx && window.matchMedia("(max-width: 767.98px)").matches;
-  var valuesPlain = valuesEls.filter(function (el) {
-    return el !== valuesH2 && !(stackMode && el.classList.contains("value-card"));
-  });
+  var valuesPlain = valuesEls.filter(function (el) { return el !== valuesH2; });
   if (lowPower) gsap.set(valuesPlain, { y: 40, opacity: 0 }); else epicInit(valuesEls);
   var valuesGhost = document.querySelector("#section-values .section-ghost");
   if (valuesGhost && !lowPower) gsap.set(valuesGhost, { xPercent: 10 });
@@ -1868,38 +1864,9 @@
       onEnter: function () { revealIn(valuesPlain); },
       once: true
     });
-    if (!stackMode) valuesCards.forEach(function (card) { card.classList.add("is-active"); });
+    valuesCards.forEach(function (card) { card.classList.add("is-active"); });
     if (valuesH2) mobileWipe(valuesH2);
     if (valuesGhost && mobileFx) mobileGhost(valuesGhost, valuesSection);
-    if (stackMode) {
-      valuesSection.classList.add("values-stack");
-      /* Aktivní je poslední karta, která už vyjela do horní poloviny okna (zpět při
-         scrollu nahoru se přepne o kartu dřív): přepíná glow rámečku i vyplnění
-         čísla (CSS). */
-      var vcActive = -1;
-      ScrollTrigger.create({
-        trigger: "#valuesGrid", start: "top bottom", end: "bottom top",
-        onUpdate: function () {
-          var idx = -1;
-          valuesCards.forEach(function (card, i) {
-            if (card.parentElement.getBoundingClientRect().top < window.innerHeight * 0.55) idx = i;
-          });
-          if (idx === vcActive) return;
-          vcActive = idx;
-          valuesCards.forEach(function (card, i) { card.classList.toggle("is-active", i === idx); });
-        }
-      });
-      valuesCards.forEach(function (card, i) {
-        var next = valuesCards[i + 1];
-        if (!next) return;
-        /* jemné ztmavení (ne průhlednost): zakryté karty zůstávají čitelně světlé a
-           po průchodu stackem nezůstanou příliš tmavé */
-        gsap.fromTo(card, { scale: 1, filter: "brightness(1)" }, {
-          scale: 0.92, filter: "brightness(0.8)", transformOrigin: "50% 0%", ease: "none",
-          scrollTrigger: { trigger: next.parentElement, start: "top 85%", end: "top 25%", scrub: 0.6 }
-        });
-      });
-    }
   } else {
     var valuesShown = false;
     function valuesShow(self) {
