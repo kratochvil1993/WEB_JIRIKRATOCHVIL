@@ -16,3 +16,6 @@ Thumbs.db
 
 # Claude Code local settings (per-machine permissions, not part of the published site)
 .claude/
+
+# Local dev server with Netlify-style clean URLs (/web -> web.html), not published
+serve.py

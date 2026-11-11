@@ -6,11 +6,11 @@ Statický one-page web [jirikratochvil.eu](https://jirikratochvil.eu) — Jiří
 
 ## Lokální náhled
 
-`index.html` přes `file://` nefunguje (relativní fetch / CORS), servíruj kořen přes HTTP:
+`index.html` přes `file://` nefunguje (relativní fetch / CORS), servíruj kořen přes HTTP. Odkazy na podstránky jsou bez `.html` (`/web`, `/kontakt`, …), což umí Netlify, ale ne `python3 -m http.server` (vrací 404). Proto je v kořeni `serve.py` (git-ignored, nenasazuje se), který `/web` servíruje jako `web.html`:
 
 ```bash
-python3 -m http.server 8000
-# http://localhost:8000/index.html
+python3 serve.py 1111
+# http://localhost:1111/
 ```
 
 ## Úpravy CSS / JS
