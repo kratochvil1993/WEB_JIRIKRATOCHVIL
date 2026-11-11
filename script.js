@@ -1824,10 +1824,15 @@
   var valuesSection = document.getElementById("section-values");
   var valuesCards = gsap.utils.toArray("#valuesGrid .value-card");
   var valuesEls = gsap.utils.toArray("#section-values .fade-el");
-  /* mobil: nadpis wipe podle scrollu (karty jedou jako obyčejný seznam; sticky stack
-     se zrušil — na iOS Safari se při scrollu klepal, viz CLAUDE.md). */
+  /* mobil: nadpis wipe podle scrollu; karty (1 sloupec, ≤767px) jsou "časová osa":
+     každá se po příjezdu na obrazovku jednou rozsvítí (třída is-in → CSS přechody),
+     bez sticky a bez čehokoli řízeného scrollem — sticky stack se na iOS Safari klepal
+     (viz CLAUDE.md). Karty proto nejsou v jednorázovém revealIn. */
   var valuesH2 = mobileFx ? document.querySelector("#section-values h2") : null;
-  var valuesPlain = valuesEls.filter(function (el) { return el !== valuesH2; });
+  var timelineMode = mobileFx && window.matchMedia("(max-width: 767.98px)").matches;
+  var valuesPlain = valuesEls.filter(function (el) {
+    return el !== valuesH2 && !(timelineMode && el.classList.contains("value-card"));
+  });
   if (lowPower) gsap.set(valuesPlain, { y: 40, opacity: 0 }); else epicInit(valuesEls);
   var valuesGhost = document.querySelector("#section-values .section-ghost");
   if (valuesGhost && !lowPower) gsap.set(valuesGhost, { xPercent: 10 });
@@ -1864,7 +1869,16 @@
       onEnter: function () { revealIn(valuesPlain); },
       once: true
     });
-    valuesCards.forEach(function (card) { card.classList.add("is-active"); });
+    if (timelineMode) {
+      valuesSection.classList.add("values-timeline");
+      valuesCards.forEach(function (card) {
+        var col = card.parentElement;
+        var show = function () { col.classList.add("is-in"); card.classList.add("is-active"); };
+        ScrollTrigger.create({ trigger: col, start: "top 82%", once: true, onEnter: show });
+      });
+    } else {
+      valuesCards.forEach(function (card) { card.classList.add("is-active"); });
+    }
     if (valuesH2) mobileWipe(valuesH2);
     if (valuesGhost && mobileFx) mobileGhost(valuesGhost, valuesSection);
   } else {

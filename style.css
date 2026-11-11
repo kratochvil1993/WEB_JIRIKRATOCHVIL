@@ -1345,6 +1345,62 @@ footer::after{
   #section-marketing p.fade-el + p.fade-el{display:none;}
   .pin-graphic{height:250px;}
 }
+/* Mobil: karty "Proč já" jako časová osa (třídu values-timeline přidává script.js jen při
+   mobileFx a šířce ≤767px; bez JS / s reduced-motion zůstává obyčejný seznam). Čas-řízené CSS
+   přechody spouští třída .is-in (jednou, při příjezdu karty) — žádný sticky a nic podle scrollu,
+   protože sticky stack se na iOS Safari klepal. Vlevo kolečko s číslem + úsek čáry k další kartě,
+   karta vyjede z boku (střídavě), ikona jednou "ožije". */
+@media (max-width:767.98px){
+  #section-values.values-timeline #valuesGrid{counter-reset:vc;}
+  #section-values.values-timeline #valuesGrid > div{
+    counter-increment:vc;position:relative;padding-left:3.5rem;
+  }
+  /* kolečko s číslem */
+  #section-values.values-timeline #valuesGrid > div::before{
+    content:counter(vc,decimal-leading-zero);
+    position:absolute;left:.75rem;top:1.1rem;width:34px;height:34px;border-radius:50%;
+    display:grid;place-items:center;
+    font-size:.72rem;font-weight:700;letter-spacing:.02em;
+    color:rgba(255,255,255,.55);background:rgba(8,20,26,.92);
+    border:1.5px solid rgba(255,255,255,.22);
+    transition:background-color .5s ease,color .4s ease,border-color .4s ease,box-shadow .5s ease;
+    z-index:1;
+  }
+  /* úsek čáry od tohoto kolečka k dalšímu; vyplní se azurovou, až karta přijede */
+  #section-values.values-timeline #valuesGrid > div::after{
+    content:"";position:absolute;left:calc(.75rem + 16px);width:2px;border-radius:2px;
+    top:calc(1.1rem + 34px + 4px);height:calc(100% + 1.5rem - 1.1rem - 34px - 8px);
+    background-image:linear-gradient(var(--purple),var(--accent2)),linear-gradient(rgba(255,255,255,.1),rgba(255,255,255,.1));
+    background-repeat:no-repeat;background-position:top;background-size:100% 0%,100% 100%;
+  }
+  #section-values.values-timeline #valuesGrid > div:last-child::after{display:none;}
+  /* výchozí (skrytý) stav karty: vyjede z boku; JS přidá .is-in */
+  #section-values.values-timeline .value-card{
+    opacity:0;transform:translateX(-26px);
+    transition:opacity .6s ease,transform .8s cubic-bezier(.2,.8,.2,1),border-color .4s ease,box-shadow .4s ease;
+  }
+  #section-values.values-timeline #valuesGrid > div:nth-child(even) .value-card{transform:translateX(26px);}
+  #section-values.values-timeline #valuesGrid > div.is-in .value-card{opacity:1;transform:none;}
+  #section-values.values-timeline #valuesGrid > div.is-in::before{
+    background-color:var(--purple);background-image:linear-gradient(135deg,var(--purple),var(--accent2));
+    color:#04141a;border-color:transparent;box-shadow:0 0 18px rgba(var(--purple-rgb),.5);
+    animation:vtPop .6s cubic-bezier(.3,1.5,.5,1) both;
+  }
+  #section-values.values-timeline #valuesGrid > div.is-in::after{
+    background-size:100% 100%,100% 100%;transition:background-size .8s ease .45s;
+  }
+  /* ikony: každá po příjezdu jednou udělá, co znamená */
+  #section-values.values-timeline #valuesGrid > div.is-in .icon svg{animation-duration:.9s;animation-delay:.25s;animation-fill-mode:both;animation-timing-function:cubic-bezier(.3,1.4,.5,1);}
+  #section-values.values-timeline #valuesGrid > div:nth-child(1).is-in .icon svg{animation-name:vtRocket;}
+  #section-values.values-timeline #valuesGrid > div:nth-child(2).is-in .icon svg{animation-name:vtChat;}
+  #section-values.values-timeline #valuesGrid > div:nth-child(3).is-in .icon svg{animation-name:vtPiggy;}
+  #section-values.values-timeline #valuesGrid > div:nth-child(4).is-in .icon svg{animation-name:vtShield;}
+}
+@keyframes vtPop{0%{transform:scale(.55);}100%{transform:scale(1);}}
+@keyframes vtRocket{0%{transform:translate(-9px,10px) scale(.7);opacity:0;}60%{transform:translate(2px,-4px) scale(1.08);opacity:1;}100%{transform:none;opacity:1;}}
+@keyframes vtChat{0%{transform:scale(.3);opacity:0;}60%{transform:scale(1.2);opacity:1;}100%{transform:scale(1);opacity:1;}}
+@keyframes vtPiggy{0%{transform:rotate(-16deg) scale(.7);opacity:0;}45%{transform:rotate(10deg) scale(1.08);opacity:1;}75%{transform:rotate(-5deg);}100%{transform:none;opacity:1;}}
+@keyframes vtShield{0%{transform:scale(.4) rotateY(90deg);opacity:0;}65%{transform:scale(1.12) rotateY(-8deg);opacity:1;}100%{transform:none;opacity:1;}}
 /* Mobil: odlesk karty řídí script.js přes --glare/--mx/--my podle polohy na
    obrazovce a náklonu telefonu (dřív jen hover/klepnutí). Klepnutí pořád přebije. */
 @media (max-width:991.98px){
