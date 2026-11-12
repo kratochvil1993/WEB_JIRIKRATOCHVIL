@@ -693,6 +693,23 @@ p{color:var(--fg-dim);line-height:1.7;font-size:1.1rem;text-wrap:pretty;}
 }
 @keyframes blink{50%{opacity:0;}}
 #hero p.lead-text{max-width:640px;font-size:1.2rem;margin-top:1.2rem;}
+/* Startovní stav intra (třídu hero-pre dává inline skript v <head>, script.js ji sundá po nastavení GSAP startů):
+   prvky, které intro rozjíždí od opacity 0, nesmí před spuštěním skriptu problikávat v cílovém stavu.
+   Schováno přes visibility, NE opacity: GSAP čte u from() cílovou opacity z computed stylu v prvním ticku, takže by opacity:0 z CSS udělalo animaci 0 → 0.
+   Podmínky kopírují větve v script.js (deskFx = bez reduced-motion a > 991 px; mobileFx = bez reduced-motion a ≤ 991 px). */
+html.hero-pre #hero h1,
+html.hero-pre #hero .role-line,
+html.hero-pre #hero .lead-text,
+html.hero-pre #hero .pill-btn{visibility:hidden;}
+@media (max-width:991.98px),(prefers-reduced-motion:reduce){
+  html.hero-pre #hero .eyebrow.hero-name{visibility:hidden;}
+}
+@media (min-width:992px) and (prefers-reduced-motion:no-preference){
+  html.hero-pre #hero .hero-graphic{visibility:hidden;}
+}
+@media (max-width:991.98px) and (prefers-reduced-motion:no-preference){
+  html.hero-pre #hero .hero-mini-code{visibility:hidden;}
+}
 #hero .hero-contact{margin-top:1.8rem;}
 #hero .social-ico,#hero .btn-vcard{font-size:1.05rem;}
 

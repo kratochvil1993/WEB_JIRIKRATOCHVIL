@@ -6,6 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0a0a0f">
   <meta name="color-scheme" content="dark">
+  <!-- hero-pre: hero se do spuštění script.js drží skryté (viz style.css), ať před animací neproblikne hotový obsah.
+       script.js třídu sundá hned po nastavení startovních stavů; timeout je pojistka, kdyby se skript nenačetl. -->
+  <script>document.documentElement.classList.add("hero-pre");setTimeout(function(){document.documentElement.classList.remove("hero-pre")},3000)</script>
   <!-- Google Consent Mode v2 — výchozí stav (musí být před GTM, viz cookie-consent.js) -->
   <script>
     window.dataLayer = window.dataLayer || [];

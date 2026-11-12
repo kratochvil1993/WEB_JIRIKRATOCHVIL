@@ -517,6 +517,18 @@
     }, 3500);
   }
 
+  /* CSS startovní stav hera (html.hero-pre) se sundá až po druhém ticku GSAP: GSAP vykresluje from/fromTo
+     "líně" až v nejbližším ticku, takže dřív by mezi sundáním třídy a inline opacity 0 problikl hotový obsah. */
+  (function () {
+    var ticks = 0;
+    function releaseHeroPre() {
+      if (++ticks < 2) return;
+      gsap.ticker.remove(releaseHeroPre);
+      document.documentElement.classList.remove("hero-pre"); /* root se přiřazuje až níž */
+    }
+    gsap.ticker.add(releaseHeroPre);
+  })();
+
   /* ---------------- Hero graphic: type-in code, then loop between two code variants ----------------
      Time-based, not scroll-driven (hero isn't pinned). Hidden on mobile via
      the `d-none d-lg-block` wrapper in the markup (same 991px cutoff as
@@ -616,6 +628,9 @@
     return "rgb(" + r + "," + g + "," + b + ")";
   }
   function lerpNum(n1, n2, t) { return n1 + (n2 - n1) * t; }
+  var bgLayerEl = document.getElementById("bg-layer");
+  var pinBlobs = document.querySelectorAll(".pin-graphic .blob");
+  var progressEl = document.querySelector(".navbar-custom"); /* čte ho ::after navbaru i kroužek na togglerech (potomek) */
   ScrollTrigger.create({
     start: 0,
     end: "max",
@@ -624,12 +639,22 @@
       var idx = Math.min(Math.floor(p), stops.length - 2);
       var t = p - idx;
       var from = stops[idx], to = stops[idx + 1];
-      root.style.setProperty("--grad-a", lerpColor(from.a, to.a, t));
-      root.style.setProperty("--grad-b", lerpColor(from.b, to.b, t));
-      root.style.setProperty("--grad-angle", (from.angle + (to.angle - from.angle) * t) + "deg");
-      root.style.setProperty("--glow-a", lerpNum(from.glowA, to.glowA, t));
-      root.style.setProperty("--glow-b", lerpNum(from.glowB, to.glowB, t));
-      if (isMobile) root.style.setProperty("--scroll-progress", self.progress);
+      var ga = lerpColor(from.a, to.a, t), gb = lerpColor(from.b, to.b, t);
+      /* proměnné se píšou jen na ty elementy, které je čtou: vlastnosti se dědí, takže zápis na :root
+         zneplatňoval styly celého dokumentu při každém ticku scrollu */
+      if (bgLayerEl) {
+        var st = bgLayerEl.style;
+        st.setProperty("--grad-a", ga);
+        st.setProperty("--grad-b", gb);
+        st.setProperty("--grad-angle", (from.angle + (to.angle - from.angle) * t) + "deg");
+        st.setProperty("--glow-a", lerpNum(from.glowA, to.glowA, t));
+        st.setProperty("--glow-b", lerpNum(from.glowB, to.glowB, t));
+      }
+      for (var bi = 0; bi < pinBlobs.length; bi++) {
+        pinBlobs[bi].style.setProperty("--grad-a", ga);
+        pinBlobs[bi].style.setProperty("--grad-b", gb);
+      }
+      if (isMobile && progressEl) progressEl.style.setProperty("--scroll-progress", self.progress);
       currentSectionProgress = self.progress;
     }
   });
