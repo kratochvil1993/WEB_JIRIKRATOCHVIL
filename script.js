@@ -1138,22 +1138,22 @@
     function onUp(e) {
       if (!tracking || e.pointerId !== pid) return;
       tracking = false;
-      if (!dragging) { scheduleResume(1500); return; }
+      if (!dragging) { scheduleResume(0); return; }
       dragging = false;
       var v = Math.abs(dx) / Math.max(e.timeStamp - st, 1);
       if (Math.abs(dx) > 70 || (v > 0.5 && Math.abs(dx) > 30)) {
         advance(dx > 0 ? 1 : -1);
-        scheduleResume(4500);
+        scheduleResume(0);
       } else {
         snapBack();
-        scheduleResume(3500);
+        scheduleResume(0);
       }
     }
     function onCancel(e) {
       if (!tracking || e.pointerId !== pid) return;
       tracking = false;
       if (dragging) { dragging = false; snapBack(); }
-      scheduleResume(2500);
+      scheduleResume(0);
     }
     box.style.touchAction = "pan-y";
     box.addEventListener("pointerdown", onDown);

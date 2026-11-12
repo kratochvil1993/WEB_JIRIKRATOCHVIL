@@ -855,7 +855,7 @@
            úměrně posunou dopředu; po puštění buď odletí (dost daleko/rychle), nebo se pružně vrátí.
            Vodorovné tažení řeší pointer events, svislé nechává prohlížeči (touch-action: pan-y), takže se
            stránka dál scrolluje. Autoplay se při dotyku zastaví (`_held`, ScrollTrigger ho pak nerozběhne)
-           a po chvíli klidu naběhne znovu. Myší jde fotka táhnout, nebo se na ni dá kliknout (další fotka). */
+           a po puštění naběhne znovu s běžným intervalem (2 s). Myší jde fotka táhnout, nebo se na ni dá kliknout (další fotka). */
         {
           var blendPose = function (a, b, t) {
             var out = {};
@@ -882,14 +882,14 @@
             resumeT = setTimeout(function () {
               tlP._held = false;
               var r = hero.getBoundingClientRect();
-              if (r.bottom > 0 && r.top < window.innerHeight) tlP.restart(); /* mimo okno ho rozběhne ScrollTrigger */
+              if (r.bottom > 0 && r.top < window.innerHeight) tlP.restart(false); /* bez úvodní prodlevy; mimo okno ho rozběhne ScrollTrigger */
             }, ms);
           };
           gfx.style.touchAction = "pan-y";
           var nextByClick = function () {
             if (curTl) { curTl.progress(1); curTl = null; }
             gsap.killTweensOf(cards[front]);
-            advance(); scheduleResume(4500);
+            advance(); scheduleResume(0);
           };
           gfx.addEventListener("pointerdown", function (e) {
             if (e.pointerType === "mouse" && e.button !== 0) return;
@@ -923,19 +923,19 @@
             if (!tracking || e.pointerId !== pid) return;
             tracking = false;
             if (!dragging) {
-              if (e.pointerType === "mouse") nextByClick(); else scheduleResume(1500);
+              if (e.pointerType === "mouse") nextByClick(); else scheduleResume(0);
               return;
             }
             dragging = false;
             var v = Math.abs(dx) / Math.max(e.timeStamp - st, 1);
-            if (Math.abs(dx) > 70 || (v > 0.5 && Math.abs(dx) > 30)) { advance(dx > 0 ? 1 : -1); scheduleResume(4500); }
-            else { snapBack(); scheduleResume(3500); }
+            if (Math.abs(dx) > 70 || (v > 0.5 && Math.abs(dx) > 30)) { advance(dx > 0 ? 1 : -1); scheduleResume(0); }
+            else { snapBack(); scheduleResume(0); }
           });
           gfx.addEventListener("pointercancel", function (e) {
             if (!tracking || e.pointerId !== pid) return;
             tracking = false;
             if (dragging) { dragging = false; snapBack(); }
-            scheduleResume(2500);
+            scheduleResume(0);
           });
         }
       }
