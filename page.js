@@ -331,7 +331,7 @@
     window.addEventListener("mousemove", function (e) {
       gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.15, ease: "power2.out" });
     });
-    document.querySelectorAll("a, button, summary, input, textarea, .feature-card").forEach(function (el) {
+    document.querySelectorAll("a, button, summary, input, textarea, .feature-card, .pin-graphic-cards").forEach(function (el) {
       el.addEventListener("mouseenter", function () { cursor.classList.add("hover"); });
       el.addEventListener("mouseleave", function () { cursor.classList.remove("hover"); });
     });
@@ -798,10 +798,20 @@
           gsap.set(card, Object.assign({ zIndex: n - o }, poseFor(o)));
         });
         var curTl = null;
+        /* Tečky pod balíčkem (stejné jako na úvodní stránce): ukazují, kolikátá fotka je vpředu, a naznačují,
+           že jde o balíček, který se dá listovat. Styl `.deck-dots` je v style.css. */
+        var dotsWrap = document.createElement("div");
+        dotsWrap.className = "deck-dots";
+        dotsWrap.setAttribute("aria-hidden", "true");
+        var dots = cards.map(function () { var d = document.createElement("i"); dotsWrap.appendChild(d); return d; });
+        gfx.appendChild(dotsWrap);
+        var updateDots = function () { dots.forEach(function (d, i) { d.classList.toggle("is-on", i === front); }); };
+        updateDots();
         /* dir = ±1: odlet do strany (swipe na mobilu), bez dir odlet nahoru (autoplay) */
         var advance = function (dir) {
           var old = front;
           front = (front + 1) % n;
+          updateDots();
           var tl = curTl = gsap.timeline();
           gsap.set(cards[old], { zIndex: n + 1 });
           cards.forEach(function (card, i) {
@@ -841,12 +851,12 @@
         tlP.to({}, { duration: 2, onComplete: function () { advance(); } }); /* interval listování fotek v hero (s) */
         loops.push(tlP);
 
-        /* Swipe (jen mobil/tablet, stejně jako na úvodní stránce): přední fotka jde za prstem, ostatní se
+        /* Ruční listování (prst i myš): přední fotka jde za prstem/kurzorem, ostatní se
            úměrně posunou dopředu; po puštění buď odletí (dost daleko/rychle), nebo se pružně vrátí.
            Vodorovné tažení řeší pointer events, svislé nechává prohlížeči (touch-action: pan-y), takže se
            stránka dál scrolluje. Autoplay se při dotyku zastaví (`_held`, ScrollTrigger ho pak nerozběhne)
-           a po chvíli klidu naběhne znovu. */
-        if (isMobile) {
+           a po chvíli klidu naběhne znovu. Myší jde fotka táhnout, nebo se na ni dá kliknout (další fotka). */
+        {
           var blendPose = function (a, b, t) {
             var out = {};
             Object.keys(a).forEach(function (key) { out[key] = a[key] + (b[key] - a[key]) * t; });
@@ -876,6 +886,11 @@
             }, ms);
           };
           gfx.style.touchAction = "pan-y";
+          var nextByClick = function () {
+            if (curTl) { curTl.progress(1); curTl = null; }
+            gsap.killTweensOf(cards[front]);
+            advance(); scheduleResume(4500);
+          };
           gfx.addEventListener("pointerdown", function (e) {
             if (e.pointerType === "mouse" && e.button !== 0) return;
             tracking = true; dragging = false; dx = 0;
@@ -907,7 +922,10 @@
           gfx.addEventListener("pointerup", function (e) {
             if (!tracking || e.pointerId !== pid) return;
             tracking = false;
-            if (!dragging) { scheduleResume(1500); return; }
+            if (!dragging) {
+              if (e.pointerType === "mouse") nextByClick(); else scheduleResume(1500);
+              return;
+            }
             dragging = false;
             var v = Math.abs(dx) / Math.max(e.timeStamp - st, 1);
             if (Math.abs(dx) > 70 || (v > 0.5 && Math.abs(dx) > 30)) { advance(dx > 0 ? 1 : -1); scheduleResume(4500); }

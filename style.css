@@ -942,7 +942,7 @@ html.hero-pre #hero .pill-btn{visibility:hidden;}
   width:100%;height:100%;
   object-fit:cover;
 }
-/* Tečky pod balíčkem fotek (vytváří script.js jen na mobilu při autoplayi) */
+/* Tečky pod balíčkem fotek (vytváří je script.js na mobilu při autoplayi a page.js na foceni.html) */
 .deck-dots{
   position:absolute;left:0;right:0;bottom:10px;z-index:20;
   display:flex;justify-content:center;gap:6px;pointer-events:none;
@@ -1653,9 +1653,13 @@ footer::after{
   will-change:transform,opacity;
 }
 .sub-hero-graphic{height:420px;}
+/* Tečky balíčku: přední fotka (scale .94) končí ~3 % výšky nad spodkem grafiky, na desktopu tedy ~13 px;
+   při výchozích 10 px by tečky seděly na její hraně a špatně by byly vidět. */
+.sub-hero-graphic .deck-dots{bottom:24px;}
 @media (max-width:991.98px){
   .sub-hero{padding-bottom:3rem;}
   .sub-hero-graphic{height:280px;}
+  .sub-hero-graphic .deck-dots{bottom:10px;}
   .sub-ghost{font-size:min(9rem,calc(94vw / (var(--n,5) * .66)));-webkit-text-stroke-color:rgba(var(--purple-rgb),.2);}
 }
 @media (prefers-reduced-motion:no-preference){
