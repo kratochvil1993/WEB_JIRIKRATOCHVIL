@@ -5,6 +5,27 @@
 (function () {
   "use strict";
 
+  /* Galerie (foceni.html): pořadí fotek v HTML je sloupec po sloupci pro 3 sloupce (desktop, .col-start).
+     Pod 768 px jsou sloupce dva a mají jiné rozložení (.col-start-m) → fotky se přeskládají podle data-m
+     (1…n). Bez JS zůstává desktopové pořadí. Běží před GSAP kontrolou, ať to nezávisí na animacích. */
+  (function () {
+    var g = document.querySelector(".photo-gallery");
+    if (!g) return;
+    var figs = Array.prototype.slice.call(g.querySelectorAll("figure"));
+    if (!figs.length || !figs.every(function (f) { return f.hasAttribute("data-m"); })) return;
+    var mobileOrder = figs.slice().sort(function (a, b) { return a.getAttribute("data-m") - b.getAttribute("data-m"); });
+    var mq = window.matchMedia("(max-width: 767.98px)");
+    var place = function () {
+      (mq.matches ? mobileOrder : figs).forEach(function (f) { g.appendChild(f); });
+    };
+    if (mq.matches) place();
+    var onChange = function () {
+      place();
+      if (typeof ScrollTrigger !== "undefined") ScrollTrigger.refresh();
+    };
+    if (mq.addEventListener) mq.addEventListener("change", onChange); else if (mq.addListener) mq.addListener(onChange);
+  })();
+
   /* Bez GSAP (výpadek načtení) nesmí zůstat obsah schovaný přes .js .reveal. */
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
     document.documentElement.classList.remove("js");
