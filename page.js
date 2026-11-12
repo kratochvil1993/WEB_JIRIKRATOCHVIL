@@ -17,6 +17,42 @@
   gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
   ScrollTrigger.config({ ignoreMobileResize: true });
 
+  /* ---------------- Plynulý scroll (Lenis) – jen desktop s myší ----------------
+     Vyhlazuje kolečko myši, scroll zůstává nativní (sticky, ScrollTrigger i kotvy fungují dál).
+     Skript Lenis se stahuje dynamicky až po `load`. Vypnuto na dotyku/mobilu (iOS Safari tam nativní scroll nechceme měnit), při reduced-motion
+     a na slabém hardware. Na homepage (script.js) záměrně není. */
+  var lenis = null;
+  var lenisEase = function (t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }; /* power2.inOut */
+  var startLenis = function () {
+    lenis = new Lenis({ autoRaf: false, lerp: 0.1, smoothWheel: true, syncTouch: false, anchors: false });
+    lenis.on("scroll", ScrollTrigger.update);
+    gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
+    /* zámky scrollu (modal, mobilní menu) jsou třídy na <html> – Lenis se při nich zastaví */
+    new MutationObserver(function () {
+      var c = document.documentElement.classList;
+      if (c.contains("modal-open") || c.contains("nav-open")) lenis.stop(); else lenis.start();
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  };
+  /* Skript se stahuje až po načtení stránky a jen když se použije (mobil, reduced-motion a slabý HW ho nestahují –
+     bez toho stál ~150 ms LCP na mobilním Lighthouse, aniž by tam běžel). */
+  if (!reduceMotion && !isMobile &&
+      window.matchMedia("(hover: hover) and (pointer: fine)").matches &&
+      !(navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)) {
+    var ls = document.createElement("script");
+    ls.src = "/assets/vendor/lenis/lenis-1.3.20.min.js";
+    ls.onload = function () { startLenis(); };
+    var loadLenis = function () { document.head.appendChild(ls); };
+    if (document.readyState === "complete") loadLenis(); else window.addEventListener("load", loadLenis);
+  }
+  /* skok na pozici: přes Lenis (když běží), jinak GSAP ScrollTo */
+  var scrollToPos = function (target, dur, offsetY, done) {
+    if (lenis) {
+      lenis.scrollTo(target, { offset: -(offsetY || 0), duration: dur, easing: lenisEase, onComplete: done });
+    } else {
+      gsap.to(window, { duration: dur, scrollTo: offsetY ? { y: target, offsetY: offsetY } : { y: target }, ease: "power2.inOut", onComplete: done });
+    }
+  };
+
   /* ---------------- Navbar blur on scroll ---------------- */
   var navbar = document.getElementById("mainNav");
   if (navbar) {
@@ -272,7 +308,7 @@
       ScrollTrigger.create({ start: 0, end: "max", onUpdate: setRing, onRefresh: setRing });
     }
     toTopBtn.addEventListener("click", function () {
-      gsap.to(window, { duration: reduceMotion ? 0.01 : 0.8, scrollTo: { y: 0 }, ease: "power2.inOut" });
+      scrollToPos(0, reduceMotion ? 0.01 : 0.8);
     });
   }
 
@@ -285,12 +321,7 @@
       if (!target) return;
       e.preventDefault();
       if (navOpen) setNav(false, false, true);
-      gsap.to(window, {
-        duration: reduceMotion ? 0.01 : 0.6,
-        scrollTo: { y: target, offsetY: 80 },
-        ease: "power2.inOut",
-        onComplete: function () { history.pushState(null, "", id); }
-      });
+      scrollToPos(target, reduceMotion ? 0.01 : 0.6, 80, function () { history.pushState(null, "", id); });
     });
   });
 
@@ -442,6 +473,7 @@
     var panel = modal.querySelector(".contact-modal__panel");
     var modalForm = modal.querySelector("form");
     var closing = false;
+    modal.setAttribute("data-lenis-prevent", "");   /* kolečko v dialogu nesmí řešit Lenis (scrolluje se uvnitř panelu) */
     var openModal = function (e) {
       e.preventDefault();
       if (modal.open) return;
