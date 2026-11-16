@@ -1244,8 +1244,19 @@
       if (navigator.vibrate) navigator.vibrate(8);
       hideHint();
     });
+    /* Portrét se stahuje až když ho někdo chce: data-src → src při najetí/dotyku na záložku (předběhnutí) nebo při přepnutí.
+       Fotka je jinak jen skrytá a prohlížeč by ji stáhl hned při načtení stránky (~44 kB navíc, horší LCP). */
+    var fotoLoaded = false;
+    var loadFoto = function () {
+      if (fotoLoaded) return;
+      fotoLoaded = true;
+      Array.prototype.forEach.call(foto.querySelectorAll("img[data-src]"), function (im) { im.src = im.getAttribute("data-src"); im.removeAttribute("data-src"); });
+    };
+    var fotoTab = tabs.querySelector("[data-foto='1']");
+    ["pointerenter", "touchstart", "focus"].forEach(function (ev) { fotoTab.addEventListener(ev, loadFoto, { passive: true, once: true }); });
     var show = function (isFoto) {
       if (win.classList.contains("is-foto") === isFoto) return;
+      if (isFoto) loadFoto();
       win.classList.add("tabs-used");
       foto.style.top = bar.offsetHeight + "px";
       win.classList.toggle("is-foto", isFoto);
