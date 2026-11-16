@@ -1102,6 +1102,88 @@
     return { start: function () { var c = log.querySelector(".code-caret"); if (c) c.remove(); propose(false); } };
   }
 
+  /* ---------------- Hero okno na o-mne.html: záložky jiri.js ⇄ foto.raw + řádky jako rozcestník ----------------
+     Záložka foto.raw překlopí okno na malý hledáček s portrétem (výška okna se nemění, hledáček leží přes tělo
+     okna); záblesk a "zaostření" jako ve hledáčku na foceni. Po dopsání kódu jsou řádky klikací (data-go):
+     weby/eshopy → web, reklama → marketing, foceni → foceni, poslední řádek otevře kontaktní modal.
+     Dekorativní (aria-hidden, tlačítka tabindex -1); s reduced-motion se nevytváří. */
+  function buildHeroTabs(win) {
+    var bar = win.querySelector(".code-win__bar"), name = bar.querySelector(".code-win__name");
+    var foto = win.querySelector(".hero-foto"), flash = foto.querySelector(".vf-flash"), focus = foto.querySelector(".vf-focus");
+    var mouse = window.matchMedia("(hover:hover) and (pointer:fine)").matches;
+    var tabs = document.createElement("div"); tabs.className = "code-win__tabs";
+    [["jiri.js", false], ["foto.raw", true]].forEach(function (t, i) {
+      var b = document.createElement("button");
+      b.type = "button"; b.tabIndex = -1; b.className = "code-win__tab" + (i === 0 ? " is-on" : ""); b.textContent = t[0]; b.setAttribute("data-foto", t[1] ? "1" : "");
+      tabs.appendChild(b);
+    });
+    name.parentNode.replaceChild(tabs, name);
+    var note = win.querySelector(".q-note .tok-comment");
+    if (note) note.textContent = mouse ? "// napište mi · klikni na řádek" : "// napište mi · klepni na řádek";
+    /* Selektivní ostření: pod fotkou je rozmazaná kopie (.vf-base), nahoře ostrá (.vf-sharp) odkrytá maskou kolem bodu
+       (--fx/--fy v %, --r = poloměr v px). Klik/ťuknutí na fotku posune políčko autofokusu a ostrost: kruh se na starém místě
+       sevře, přeskočí na nové a znovu se rozšíří ("hledání zaostření"). */
+    var focusTl = null, hint = null, hintGone = false;
+    var R_ALL = 1200, R_FOCUS = 170; /* R_ALL = maska přes celou fotku (originál bez efektu), R_FOCUS = ostrý kruh po kliknutí */
+    var resetFocus = function () {
+      if (focusTl) focusTl.kill();
+      gsap.set(foto, { "--fx": 44, "--fy": 41, "--r": R_ALL });
+      gsap.set(focus, { left: "44%", top: "41%" });
+    };
+    resetFocus();
+    var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
+    var hideHint = function () {
+      if (!hint || hintGone) return;
+      hintGone = true; gsap.to(hint, { opacity: 0, duration: 0.4, overwrite: true });
+    };
+    var focusAt = function (fx, fy) {
+      if (focusTl) focusTl.kill();
+      focusTl = gsap.timeline();
+      focusTl.to(foto, { "--r": 55, duration: 0.18, ease: "power2.in" })
+             .set(foto, { "--fx": fx, "--fy": fy })
+             .to(foto, { "--r": R_FOCUS, duration: 0.55, ease: "power2.out" });
+      gsap.to(focus, { left: fx + "%", top: fy + "%", duration: 0.45, delay: 0.1, ease: "back.out(1.6)", overwrite: "auto" });
+      gsap.fromTo(focus, { scale: 1.5, opacity: 0.5 }, { scale: 1, opacity: 1, duration: 0.35, delay: 0.1, ease: "power3.out" });
+    };
+    foto.addEventListener("click", function (e) {
+      if (!win.classList.contains("is-foto")) return;
+      var r = foto.getBoundingClientRect();
+      focusAt(clamp((e.clientX - r.left) / r.width * 100, 10, 90), clamp((e.clientY - r.top) / r.height * 100, 24, 68));
+      if (navigator.vibrate) navigator.vibrate(8);
+      hideHint();
+    });
+    var show = function (isFoto) {
+      if (win.classList.contains("is-foto") === isFoto) return;
+      win.classList.add("tabs-used");
+      foto.style.top = bar.offsetHeight + "px";
+      win.classList.toggle("is-foto", isFoto);
+      Array.prototype.forEach.call(tabs.children, function (b) { b.classList.toggle("is-on", !!b.getAttribute("data-foto") === isFoto); });
+      if (navigator.vibrate) navigator.vibrate(8);
+      if (isFoto) {
+        gsap.fromTo(flash, { opacity: 0.5 }, { opacity: 0, duration: 0.5, ease: "power2.out" });
+        gsap.fromTo(focus, { scale: 1.7, opacity: 0.4 }, { scale: 1, opacity: 1, duration: 0.45, ease: "power3.out", delay: 0.1 });
+        resetFocus(); /* při každém otevření záložky je fotka originál, bez efektu, dokud na ni uživatel neklikne */
+        if (!hint && !hintGone) { /* nápověda, dokud si to uživatel nevyzkouší */
+          hint = document.createElement("span");
+          hint.className = "vf-caption hero-foto__hint";
+          hint.textContent = mouse ? "klikni a zaostři" : "klepni a zaostři";
+          foto.appendChild(hint);
+          gsap.fromTo(hint, { opacity: 0 }, { opacity: 1, duration: 0.5, delay: 0.9 });
+          gsap.to(hint, { opacity: 0, duration: 0.5, delay: 5.5, onComplete: function () { hintGone = true; } });
+        }
+      }
+    };
+    tabs.addEventListener("click", function (e) { var b = e.target.closest(".code-win__tab"); if (b) show(!!b.getAttribute("data-foto")); });
+    win.addEventListener("click", function (e) {
+      var l = e.target.closest("[data-go]");
+      if (!l || !win.classList.contains("is-ready") || win.classList.contains("is-foto")) return;
+      var go = l.getAttribute("data-go");
+      if (go === "contact") { var c = document.querySelector("[data-open-contact]"); if (c) c.click(); }
+      else window.location.href = go;
+    });
+    return { ready: function () { win.classList.add("is-ready"); } };
+  }
+
   /* ---------------- Hledané dotazy (marketing.html): vyřazování zbytečných dotazů ----------------
      S JS a pohybem začíná okno "nevytříděné" (všechny dotazy ✓) a po dopsání lze klepnutím/kliknutím dotaz vyřadit
      (✕, přeškrtnutý) nebo vrátit. Ukazatel dole = kolik dotazů je zařazených správně (zbytečné = [data-bad]);
@@ -1149,6 +1231,8 @@
   if (!reduceMotion) {
     gsap.utils.toArray("[data-type-code]").forEach(function (win) {
       var tl = gsap.timeline({ scrollTrigger: { trigger: win, start: "top 85%", once: true } });
+      var ht = win.querySelector(".hero-foto") ? buildHeroTabs(win) : null;
+      if (ht) tl.eventCallback("onComplete", ht.ready);
       var qs = win.querySelector(".q-line") ? buildQueries(win) : null;
       if (qs) tl.eventCallback("onComplete", qs.ready);
       if (win.classList.contains("code-win--chat")) {
@@ -1258,7 +1342,7 @@
   /* ---------------- Hledáček u postupu (foceni.html): počítadlo snímků, popisek, expozice, záblesk ----------------
      V HTML je hotový stav (5/5), takže bez JS / s reduced-motion zůstane vidět; tady se vrátí na začátek
      a postupuje, jak scroll dojíždí ke krokům (#postup-1..5). */
-  var vf = document.querySelector(".viewfinder");
+  var vf = document.querySelector(".viewfinder:not(.hero-foto)"); /* hero-foto = portrét v okně na o-mne.html, bez kroků */
   if (vf && !reduceMotion) {
     var vfCount = vf.querySelector(".vf-count"), vfCap = vf.querySelector(".vf-caption"),
         vfF = vf.querySelector(".vf-f"), vfS = vf.querySelector(".vf-s"), vfISO = vf.querySelector(".vf-iso"),
