@@ -501,6 +501,42 @@
     var openModal = function (e) {
       e.preventDefault();
       if (modal.open) return;
+      var shutter = e.currentTarget && e.currentTarget.classList && e.currentTarget.classList.contains("cta-shutter") ? e.currentTarget : null;
+      if (shutter && !reduceMotion) {   /* spoušť na foceni: clona (6 lamel) se zavře, na zavřeném snímku se otevře modal a clona se rozevře */
+        if (shutter._snap) return;
+        shutter._snap = true;
+        shutter.classList.add("is-snap");
+        var vw = window.innerWidth, vh = window.innerHeight;
+        var R = Math.hypot(vw, vh) / 2 + 6, S = R * 2 + 12;        /* R = vzdálenost hrany lamely od středu, když je clona celá otevřená */
+        var iris = document.createElement("div");
+        iris.className = "cta-iris";
+        var ring = document.createElement("div");
+        ring.className = "cta-iris__ring";
+        iris.appendChild(ring);
+        var blades = [];
+        for (var i = 0; i < 6; i++) {
+          var bl = document.createElement("div");
+          bl.className = "cta-iris__blade";
+          bl.style.width = S + "px"; bl.style.height = S + "px"; bl.style.marginTop = (-S / 2) + "px";
+          ring.appendChild(bl); blades.push(bl);
+        }
+        var st = { d: R, rot: 0 };
+        var paint = function () {
+          ring.style.transform = "rotate(" + st.rot + "deg)";
+          for (var j = 0; j < 6; j++) blades[j].style.transform = "rotate(" + (j * 60) + "deg) translateX(" + st.d + "px)";
+        };
+        paint();
+        document.body.appendChild(iris);
+        gsap.timeline({ onUpdate: paint, onComplete: function () { iris.remove(); shutter.classList.remove("is-snap"); shutter._snap = false; } })
+          .to(st, { d: 0, rot: 28, duration: 0.3, ease: "power2.in" })
+          .add(function () { showContact(); })
+          .to(st, { d: R, rot: 64, duration: 0.55, ease: "power2.out" }, "+=0.06");
+        return;
+      }
+      showContact();
+    };
+    var showContact = function () {
+      if (modal.open) return;
       document.documentElement.classList.add("modal-open");
       modal.showModal();
       if (!reduceMotion) {

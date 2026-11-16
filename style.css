@@ -2131,3 +2131,36 @@ html.modal-open{overflow:hidden;}
   .code-caret{animation:code-blink 1s steps(1) infinite;}
   @keyframes code-blink{50%{opacity:0;}}
 }
+
+/* CTA na foceni.html: velká spoušť místo pill tlačítka (stejná řeč jako .vf-shutter v hledáčku) */
+.sub-cta p + .cta-shutter{margin-top:.4rem;}
+.cta-shutter{display:inline-flex;flex-direction:column;align-items:center;gap:1.7rem;color:#fff;text-decoration:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.cta-shutter__btn{position:relative;display:flex;align-items:center;justify-content:center;width:5.4rem;height:5.4rem;border-radius:50%;
+  border:2.5px solid rgba(255,255,255,.88);background:rgba(6,12,18,.4);box-shadow:0 0 0 0 rgba(var(--purple-rgb),0);transition:border-color .3s ease,box-shadow .3s ease,transform .2s ease;}
+.cta-shutter__dot{width:3.9rem;height:3.9rem;border-radius:50%;background:#fff;transition:transform .15s ease,background .3s ease;}
+/* dva azurové prstence pulzují jako u spouště v hledáčku */
+.cta-shutter__btn::before,.cta-shutter__btn::after{content:"";position:absolute;inset:-2.5px;border-radius:50%;pointer-events:none;
+  border:1.5px solid rgba(var(--purple-rgb),.6);opacity:0;animation:vfPulse 2.8s ease-out infinite;}
+.cta-shutter__btn::after{animation-delay:.35s;}
+/* rohy autofokusu: při hoveru/focusu se zaostří kolem spouště */
+.cta-shutter__af{position:absolute;inset:-1.35rem;pointer-events:none;opacity:0;transform:scale(1.28);transition:opacity .3s ease,transform .35s cubic-bezier(.2,.8,.2,1);
+  --c:rgba(var(--purple-rgb),.95);
+  background:
+    linear-gradient(var(--c),var(--c)) 0 0/1.1rem 2px no-repeat,linear-gradient(var(--c),var(--c)) 0 0/2px 1.1rem no-repeat,
+    linear-gradient(var(--c),var(--c)) 100% 0/1.1rem 2px no-repeat,linear-gradient(var(--c),var(--c)) 100% 0/2px 1.1rem no-repeat,
+    linear-gradient(var(--c),var(--c)) 0 100%/1.1rem 2px no-repeat,linear-gradient(var(--c),var(--c)) 0 100%/2px 1.1rem no-repeat,
+    linear-gradient(var(--c),var(--c)) 100% 100%/1.1rem 2px no-repeat,linear-gradient(var(--c),var(--c)) 100% 100%/2px 1.1rem no-repeat;}
+.cta-shutter__label{font-size:1.05rem;font-weight:600;letter-spacing:.02em;color:var(--fg-dim);transition:color .3s ease;}
+.cta-shutter:focus-visible{outline:none;}
+.cta-shutter:focus-visible .cta-shutter__btn{outline:2px solid var(--purple);outline-offset:6px;}
+.cta-shutter:focus-visible .cta-shutter__af,.cta-shutter:hover .cta-shutter__af{opacity:1;transform:scale(1);}
+.cta-shutter:hover .cta-shutter__btn,.cta-shutter:focus-visible .cta-shutter__btn{border-color:var(--purple);box-shadow:0 0 28px 2px rgba(var(--purple-rgb),.28);}
+.cta-shutter:hover .cta-shutter__label,.cta-shutter:focus-visible .cta-shutter__label{color:#fff;}
+.cta-shutter:active .cta-shutter__dot,.cta-shutter.is-snap .cta-shutter__dot{transform:scale(.84);}
+@media (hover:none){.cta-shutter__af{inset:-1.1rem;opacity:.55;transform:none;}} /* na dotyku není hover: rohy jsou vidět pořád, jen tlumeně */
+@media (prefers-reduced-motion:reduce){.cta-shutter__btn::before,.cta-shutter__btn::after{animation:none;}.cta-shutter__af,.cta-shutter__btn,.cta-shutter__dot{transition:none;}}
+/* clona po stisku (page.js staví 6 lamel; d = vzdálenost hrany lamely od středu) */
+.cta-iris{position:fixed;inset:0;z-index:9999;pointer-events:none;overflow:hidden;}
+.cta-iris__ring{position:absolute;inset:0;}
+.cta-iris__blade{position:absolute;left:50%;top:50%;transform-origin:0 50%;border-left:1px solid rgba(var(--purple-rgb),.35);
+  background:linear-gradient(90deg,#1c2e36 0,#0a161d 5%,#050c11 40%);will-change:transform;}
