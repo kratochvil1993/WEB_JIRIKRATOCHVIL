@@ -550,6 +550,25 @@
           .to({}, { duration: 0.6 });   /* stav se vrátí až za otevřeným modalem */
         return;
       }
+      var search = e.currentTarget && e.currentTarget.classList && e.currentTarget.classList.contains("cta-search") ? e.currentTarget : null;
+      if (search && !reduceMotion) {   /* marketing: dotaz se doplní, našeptávač se změní na výsledek s mým jménem, pak se otevře modal */
+        if (search._run) return;
+        search._run = true;
+        var sTxt = search.querySelector(".cta-search__txt");
+        var sSug = search.querySelector(".cta-search__sug");
+        var sRes = search.querySelector(".cta-search__res");
+        var sPick = search.querySelector(".cta-search__s");
+        var sGo = search.querySelector(".cta-search__go");
+        gsap.timeline({ onComplete: function () { sTxt.textContent = "google ads"; sPick.classList.remove("is-pick"); gsap.set([sSug, sRes, sGo], { clearProps: "all" }); search._run = false; } })
+          .fromTo(sGo, { scale: 1 }, { scale: 0.94, duration: 0.08, yoyo: true, repeat: 1, ease: "power1.inOut" }, 0)
+          .add(function () { sPick.classList.add("is-pick"); }, 0.05)
+          .add(function () { sTxt.textContent = "google ads plzeň"; }, 0.2)
+          .to(sSug, { opacity: 0, duration: 0.12, ease: "power1.in" }, 0.2)
+          .fromTo(sRes, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.22, ease: "power2.out" }, 0.28)
+          .add(function () { showContact(); }, 0.8)
+          .to({}, { duration: 0.6 });   /* stav se vrátí až za otevřeným modalem */
+        return;
+      }
       showContact();
     };
     var showContact = function () {

@@ -2192,3 +2192,33 @@ html.modal-open{overflow:hidden;}
 .cta-deploy:active .cta-deploy__btn{transform:scale(.94);}
 @media (hover:none){.cta-deploy__ln:first-child{opacity:.6;}.cta-deploy__br{opacity:.55;transform:translate(0,-52%);}} /* na dotyku není hover */
 @media (prefers-reduced-motion:reduce){.cta-deploy__btn::before,.cta-deploy__btn::after{animation:none;}.cta-deploy__br,.cta-deploy__ln,.cta-deploy__btn{transition:none;}}
+
+/* CTA na marketing.html: vyhledávací pole (hledáte → našli jste mě); klik "odešle" dotaz, ukáže výsledek a otevře modal (page.js) */
+.cta-search{display:flex;flex-direction:column;gap:.8rem;width:min(22rem,100%);margin-left:auto;margin-right:auto;color:#fff;text-decoration:none;text-align:left;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.cta-search__bar{display:flex;align-items:center;gap:.7rem;height:3.7rem;padding:.4rem .4rem .4rem 1.15rem;border-radius:999px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);transition:border-color .3s ease,box-shadow .3s ease,background .3s ease;}
+.cta-search__lens{display:flex;flex:none;width:1.1rem;height:1.1rem;color:var(--fg-dim);}
+.cta-search__lens svg,.cta-search__s svg{width:100%;height:100%;display:block;}
+.cta-search__q{display:flex;align-items:center;flex:1;min-width:0;font-size:1rem;white-space:nowrap;overflow:hidden;}
+.cta-search__caret{display:block;flex:none;width:2px;height:1.15em;margin-left:2px;background:var(--purple);animation:ctaCaret 1.1s steps(1) infinite;}
+@keyframes ctaCaret{50%{opacity:0;}}
+.cta-search__go{flex:none;display:flex;align-items:center;height:100%;padding:0 1.25rem;border-radius:999px;font-weight:700;font-size:.95rem;color:#041016;
+  background:linear-gradient(135deg,var(--purple),var(--accent2));transition:transform .2s ease,box-shadow .3s ease;}
+.cta-search:hover .cta-search__bar,.cta-search:focus-visible .cta-search__bar{border-color:rgba(var(--purple-rgb),.7);background:rgba(255,255,255,.1);box-shadow:0 0 28px 2px rgba(var(--purple-rgb),.22);}
+.cta-search:hover .cta-search__go,.cta-search:focus-visible .cta-search__go{box-shadow:0 0 18px rgba(var(--purple-rgb),.45);}
+.cta-search:active .cta-search__go{transform:scale(.94);}
+.cta-search:focus-visible{outline:none;}
+.cta-search:focus-visible .cta-search__bar{outline:2px solid #fff;outline-offset:4px;}
+/* našeptávač pod polem; výška je rezervovaná, ať se při kliku nic neposune */
+.cta-search__drop{position:relative;display:block;height:5.6rem;padding:.35rem 0;border-radius:1.2rem;background:rgba(6,14,20,.55);border:1px solid rgba(255,255,255,.1);}
+.cta-search__sug,.cta-search__res{position:absolute;inset:.35rem 0;display:flex;flex-direction:column;justify-content:center;padding:0 1.15rem;}
+.cta-search__sug{gap:.2rem;opacity:.55;transition:opacity .3s ease;}
+.cta-search:hover .cta-search__sug,.cta-search:focus-visible .cta-search__sug{opacity:1;}
+.cta-search__s{display:flex;align-items:center;gap:.7rem;padding:.38rem .6rem;margin:0 -.6rem;border-radius:.6rem;font-size:.95rem;color:var(--fg-dim);transition:background .2s ease;}
+.cta-search__s svg{flex:none;width:.95rem;height:.95rem;opacity:.7;}
+.cta-search__s b{color:#fff;font-weight:600;}
+.cta-search__s.is-pick{background:rgba(var(--purple-rgb),.16);}
+.cta-search__res{gap:.15rem;opacity:0;}
+.cta-search__url{font-size:.78rem;color:var(--fg-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cta-search__title{font-size:1.08rem;font-weight:600;color:var(--purple);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media (prefers-reduced-motion:reduce){.cta-search__caret{animation:none;}.cta-search__bar,.cta-search__go,.cta-search__sug,.cta-search__s{transition:none;}}
