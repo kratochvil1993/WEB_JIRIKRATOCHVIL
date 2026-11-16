@@ -533,6 +533,23 @@
           .to(st, { d: R, rot: 64, duration: 0.55, ease: "power2.out" }, "+=0.06");
         return;
       }
+      var deploy = e.currentTarget && e.currentTarget.classList && e.currentTarget.classList.contains("cta-deploy") ? e.currentTarget : null;
+      if (deploy && !reduceMotion) {   /* web: šipka "odletí", v terminálu naběhne build ✓ / testy ✓ / nasazuji… a pak se otevře modal */
+        if (deploy._run) return;
+        deploy._run = true;
+        var ico = deploy.querySelector(".cta-deploy__ico");
+        var lns = deploy.querySelectorAll(".cta-deploy__ln");
+        gsap.timeline({ onComplete: function () { gsap.set([ico, lns], { clearProps: "all" }); deploy._run = false; } })
+          .set(lns[0], { opacity: 1 })
+          .to(ico, { y: -34, opacity: 0, duration: 0.3, ease: "power2.in" })
+          .fromTo(lns[1], { opacity: 0, x: -6 }, { opacity: 1, x: 0, duration: 0.2, ease: "power1.out" }, 0.12)
+          .fromTo(lns[2], { opacity: 0, x: -6 }, { opacity: 1, x: 0, duration: 0.2, ease: "power1.out" }, 0.36)
+          .fromTo(lns[3], { opacity: 0, x: -6 }, { opacity: 1, x: 0, duration: 0.2, ease: "power1.out" }, 0.6)
+          .fromTo(ico, { y: 34, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "power2.out" }, 0.75)
+          .add(function () { showContact(); }, 0.95)
+          .to({}, { duration: 0.6 });   /* stav se vrátí až za otevřeným modalem */
+        return;
+      }
       showContact();
     };
     var showContact = function () {

@@ -2164,3 +2164,31 @@ html.modal-open{overflow:hidden;}
 .cta-iris__ring{position:absolute;inset:0;}
 .cta-iris__blade{position:absolute;left:50%;top:50%;transform-origin:0 50%;border-left:1px solid rgba(var(--purple-rgb),.35);
   background:linear-gradient(90deg,#1c2e36 0,#0a161d 5%,#050c11 40%);will-change:transform;}
+
+/* CTA na web.html: "deploy" tlačítko — klik pustí průběh v terminálu a pak otevře modal (page.js) */
+.cta-deploy{display:inline-flex;flex-direction:column;align-items:center;gap:1.1rem;color:#fff;text-decoration:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.cta-deploy__btn{position:relative;display:flex;align-items:center;justify-content:center;width:5.2rem;height:5.2rem;border-radius:50%;color:#041016;
+  background:linear-gradient(135deg,var(--purple),var(--accent2));box-shadow:0 0 0 0 rgba(var(--purple-rgb),0);transition:box-shadow .3s ease,transform .2s ease;}
+.cta-deploy__btn::before,.cta-deploy__btn::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;
+  border:1.5px solid rgba(var(--purple-rgb),.6);opacity:0;animation:vfPulse 2.8s ease-out infinite;}
+.cta-deploy__btn::after{animation-delay:.35s;}
+.cta-deploy__ico{width:2.3rem;height:2.3rem;display:block;}
+/* složené závorky po stranách se při hoveru rozjedou od tlačítka */
+.cta-deploy__br{position:absolute;top:50%;font:600 2.6rem/1 "SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;color:var(--purple);opacity:0;pointer-events:none;
+  transition:opacity .3s ease,transform .35s cubic-bezier(.2,.8,.2,1);}
+.cta-deploy__br--l{right:100%;transform:translate(.9rem,-52%);}
+.cta-deploy__br--r{left:100%;transform:translate(-.9rem,-52%);}
+.cta-deploy__label{font-size:1.05rem;font-weight:600;letter-spacing:.02em;color:var(--fg-dim);transition:color .3s ease;}
+.cta-deploy__term{display:block;text-align:left;width:max-content;height:6.2em;padding:.15rem 0;font:.8rem/1.55 "SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;color:var(--fg-dim);}
+.cta-deploy__ln{display:block;white-space:nowrap;opacity:0;transition:opacity .3s ease;}
+.cta-deploy__ln:first-child{color:var(--purple);}
+.cta-deploy__ln b{color:var(--purple);font-weight:600;}
+.cta-deploy:hover .cta-deploy__btn,.cta-deploy:focus-visible .cta-deploy__btn{box-shadow:0 0 30px 2px rgba(var(--purple-rgb),.35);}
+.cta-deploy:hover .cta-deploy__br,.cta-deploy:focus-visible .cta-deploy__br{opacity:.9;transform:translate(0,-52%);}
+.cta-deploy:hover .cta-deploy__label,.cta-deploy:focus-visible .cta-deploy__label{color:#fff;}
+.cta-deploy:hover .cta-deploy__ln:first-child,.cta-deploy:focus-visible .cta-deploy__ln:first-child{opacity:1;}
+.cta-deploy:focus-visible{outline:none;}
+.cta-deploy:focus-visible .cta-deploy__btn{outline:2px solid #fff;outline-offset:6px;}
+.cta-deploy:active .cta-deploy__btn{transform:scale(.94);}
+@media (hover:none){.cta-deploy__ln:first-child{opacity:.6;}.cta-deploy__br{opacity:.55;transform:translate(0,-52%);}} /* na dotyku není hover */
+@media (prefers-reduced-motion:reduce){.cta-deploy__btn::before,.cta-deploy__btn::after{animation:none;}.cta-deploy__br,.cta-deploy__ln,.cta-deploy__btn{transition:none;}}
