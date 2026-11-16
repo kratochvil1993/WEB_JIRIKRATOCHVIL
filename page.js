@@ -1309,7 +1309,7 @@
     var sync = function () {
       var ok = lines.filter(function (l) { return l.hasAttribute("data-bad") === l.classList.contains("q-no"); }).length;
       var done = ok === lines.length;
-      gsap.to(fill, { scaleX: ok / lines.length, duration: 0.45, ease: "power2.out", overwrite: "auto" });
+      gsap.to(fill, { scaleX: ok / lines.length, duration: 0.3, ease: "power2.out", overwrite: "auto" });
       txt.textContent = done ? "jen správné dotazy ✓" : "správné dotazy " + ok + "/" + lines.length;
       win.classList.toggle("is-solved", done);
       note.textContent = done ? "// hotovo, přehled bez omáčky" : (acted ? "// zbytečné vyřazuju" : hint);
@@ -1320,7 +1320,7 @@
       if (!l || !win.classList.contains("is-ready")) return;
       acted = true;
       setLine(l, l.classList.contains("q-no"));
-      gsap.fromTo(l.querySelector(".q-mark"), { scale: 1.8 }, { scale: 1, duration: 0.35, ease: "back.out(3)" });
+      gsap.fromTo(l.querySelector(".q-mark"), { scale: 1.8 }, { scale: 1, duration: 0.25, ease: "back.out(3)" });
       if (navigator.vibrate) navigator.vibrate(8);
       sync();
     });
@@ -1342,7 +1342,7 @@
         var chat = buildChat(win);
         tl.eventCallback("onComplete", function () { gsap.delayedCall(0.3, chat.start); });
       }
-      var first = true, k = win.classList.contains("code-win--chat") ? 0.32 : (win.querySelector(".q-line") ? 0.5 : 1); /* chat a dotazy píšou rychleji: čeká se na interakci */
+      var first = true, k = win.classList.contains("code-win--chat") ? 0.32 : (win.querySelector(".q-line") ? 0.3 : (parseFloat(win.getAttribute("data-type-speed")) || 1)); /* chat a dotazy píšou rychleji: čeká se na interakci */
       win.querySelectorAll(".code-line").forEach(function (line) {
         var n = line.textContent.trim().length;
         if (!n) return;
@@ -1387,8 +1387,8 @@
     var gitCommits = gsap.utils.toArray(".git-log .git-commit");
     if (gitLog && gitCommits.length) {
       gsap.set(gitCommits, { opacity: 0, x: -12 });
-      stepsWithWindow(gitLog, gitCommits.length, 0.55, function (i) {
-        gsap.to(gitCommits[i], { opacity: 1, x: 0, duration: 0.55, ease: "power2.out" });
+      stepsWithWindow(gitLog, gitCommits.length, 0.3, function (i) {
+        gsap.to(gitCommits[i], { opacity: 1, x: 0, duration: 0.35, ease: "power2.out" });
       });
     }
   }
@@ -1400,7 +1400,7 @@
     var todoItems = gsap.utils.toArray(".todo-log .todo-item");
     if (todoLog && todoItems.length) {
       todoItems.forEach(function (it) { it.classList.remove("is-done"); });
-      var todoSeq = stepsWithWindow(todoLog, todoItems.length, 0.6, function (i) { todoItems[i].classList.add("is-done"); });
+      var todoSeq = stepsWithWindow(todoLog, todoItems.length, 0.32, function (i) { todoItems[i].classList.add("is-done"); });
       /* ručně: klepnutí na úkol ho odškrtne / vrátí; první zásah přebírá řízení (zruší časovanou sekvenci i krokování scrollem).
          Hlavička okna slouží jako nápověda a na konci jako potvrzení. */
       var todoHead = todoLog.querySelector(".git-cmd .tok-comment"), todoActed = false;
