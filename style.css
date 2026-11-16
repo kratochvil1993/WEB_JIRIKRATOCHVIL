@@ -2009,6 +2009,17 @@ html.modal-open{overflow:hidden;}
 .code-win .q-no .q-term{text-decoration:line-through;color:rgba(255,255,255,.4);}
 .code-win .q-no .q-mark{color:rgba(255,255,255,.4);}
 .code-win .q-yes .q-term{color:#fff;}
+.code-win .q-term,.code-win .q-mark{transition:color .3s ease;}
+.code-win .q-mark{display:inline-block;}
+/* interaktivní dotazy (page.js buildQueries): po dopsání je klikací celý řádek, dole ukazatel správně zařazených */
+.code-win.is-ready .q-line{width:calc(100% + .8rem);max-width:none;margin:0 -.4rem;padding:.12em .4rem;border-radius:6px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-user-select:none;user-select:none;transition:background .2s ease;}
+.code-win.is-ready .q-line:hover{background:rgba(255,255,255,.06);}
+.q-meter{display:flex;align-items:center;gap:.7rem;margin-top:.6rem;opacity:0;transition:opacity .5s ease;}
+.is-ready .q-meter{opacity:1;}
+.q-meter-bar{flex:0 0 5.5rem;height:.4rem;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;}
+.q-meter-bar i{display:block;height:100%;width:100%;transform-origin:0 50%;background:var(--purple);box-shadow:0 0 8px rgba(var(--purple-rgb),.6);}
+.q-meter-txt{font-size:.66rem;color:rgba(255,255,255,.55);transition:color .3s ease;}
+.is-solved .q-meter-txt{color:var(--purple);font-weight:700;}
 .todo-log{font-size:.7rem;}
 .todo-item{position:relative;white-space:pre;padding-left:1.5rem;color:rgba(255,255,255,.4);transition:color .5s;}
 .todo-item::before{content:"";position:absolute;left:.05rem;top:calc((1.75em - .8rem) / 2);width:.8rem;height:.8rem;border-radius:3px;border:1px solid rgba(255,255,255,.3);transition:background .4s,border-color .4s,box-shadow .4s;}
@@ -2016,6 +2027,11 @@ html.modal-open{overflow:hidden;}
 .todo-item.is-done{color:rgba(255,255,255,.88);}
 .todo-item.is-done::before{background:var(--purple);border-color:var(--purple);box-shadow:0 0 8px rgba(var(--purple-rgb),.55);}
 .todo-item.is-done::after{opacity:1;transform:none;}
+/* klikací checklist (page.js, jen s JS a pohybem): celý řádek je cíl, tap = odškrtnout / vrátit */
+.todo-log.is-tap .todo-item{padding-top:.1em;padding-bottom:.1em;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-user-select:none;user-select:none;}
+.todo-log.is-tap .todo-item::before,.todo-log.is-tap .todo-item::after{top:calc((1.95em - .8rem) / 2);}
+.todo-log.is-tap .todo-item:hover{color:rgba(255,255,255,.7);}
+.todo-log.is-tap .todo-item.is-done:hover{color:#fff;}
 /* foceni.html: hledáček u postupu s fotkou pod HUDem (page.js: počítadlo snímků, popisek, expozice, záblesk
    a zaostřování fotky podle kroků; --ev = expozice, --blur = rozostření v px, obě animuje page.js) */
 .viewfinder{

@@ -1102,6 +1102,46 @@
     return { start: function () { var c = log.querySelector(".code-caret"); if (c) c.remove(); propose(false); } };
   }
 
+  /* ---------------- Hledané dotazy (marketing.html): vyřazování zbytečných dotazů ----------------
+     S JS a pohybem začíná okno "nevytříděné" (všechny dotazy ✓) a po dopsání lze klepnutím/kliknutím dotaz vyřadit
+     (✕, přeškrtnutý) nebo vrátit. Ukazatel dole = kolik dotazů je zařazených správně (zbytečné = [data-bad]);
+     při 6/6 poznámka "hotovo". Bez JS / s reduced-motion zůstane hotový stav z HTML (3× ✓, 3× ✕). */
+  function buildQueries(win) {
+    var lines = Array.prototype.slice.call(win.querySelectorAll(".q-line"));
+    var note = win.querySelector(".q-note .tok-comment");
+    var mouse = window.matchMedia("(hover:hover) and (pointer:fine)").matches;
+    var hint = mouse ? "// klikni na zbytečné dotazy" : "// klepni na zbytečné dotazy";
+    var meter = document.createElement("div"); meter.className = "q-meter";
+    meter.innerHTML = '<span class="q-meter-bar"><i></i></span><span class="q-meter-txt"></span>';
+    win.querySelector(".code-win__body").appendChild(meter);
+    var fill = meter.querySelector("i"), txt = meter.querySelector(".q-meter-txt");
+    var setLine = function (l, yes) {
+      l.classList.toggle("q-yes", yes); l.classList.toggle("q-no", !yes);
+      l.querySelector(".q-mark").textContent = yes ? "✓" : "✕";
+    };
+    lines.forEach(function (l) { setLine(l, true); }); /* začátek: nic nevyřazeno */
+    var acted = false;
+    var sync = function () {
+      var ok = lines.filter(function (l) { return l.hasAttribute("data-bad") === l.classList.contains("q-no"); }).length;
+      var done = ok === lines.length;
+      gsap.to(fill, { scaleX: ok / lines.length, duration: 0.45, ease: "power2.out", overwrite: "auto" });
+      txt.textContent = done ? "jen správné dotazy ✓" : "správné dotazy " + ok + "/" + lines.length;
+      win.classList.toggle("is-solved", done);
+      note.textContent = done ? "// hotovo, přehled bez omáčky" : (acted ? "// zbytečné vyřazuju" : hint);
+    };
+    gsap.set(fill, { scaleX: 0 });
+    win.addEventListener("click", function (e) {
+      var l = e.target.closest(".q-line");
+      if (!l || !win.classList.contains("is-ready")) return;
+      acted = true;
+      setLine(l, l.classList.contains("q-no"));
+      gsap.fromTo(l.querySelector(".q-mark"), { scale: 1.8 }, { scale: 1, duration: 0.35, ease: "back.out(3)" });
+      if (navigator.vibrate) navigator.vibrate(8);
+      sync();
+    });
+    return { ready: function () { win.classList.add("is-ready"); sync(); } };
+  }
+
   /* ---------------- Dekorativní okna s kódem (web.html): řádky se jednou "napíšou" ----------------
      Řádky mají v CSS width: fit-content, takže gsap.from(width: 0) píše přesně do konce textu
      (steps = počet znaků, jako na úvodní stránce). Po doběhnutí se inline width smaže. data-gap
@@ -1109,11 +1149,13 @@
   if (!reduceMotion) {
     gsap.utils.toArray("[data-type-code]").forEach(function (win) {
       var tl = gsap.timeline({ scrollTrigger: { trigger: win, start: "top 85%", once: true } });
+      var qs = win.querySelector(".q-line") ? buildQueries(win) : null;
+      if (qs) tl.eventCallback("onComplete", qs.ready);
       if (win.classList.contains("code-win--chat")) {
         var chat = buildChat(win);
         tl.eventCallback("onComplete", function () { gsap.delayedCall(0.5, chat.start); });
       }
-      var first = true, k = win.classList.contains("code-win--chat") ? 0.45 : 1; /* chat píše rychleji: čeká se na tlačítka */
+      var first = true, k = win.classList.contains("code-win--chat") ? 0.45 : (win.querySelector(".q-line") ? 0.5 : 1); /* chat a dotazy píšou rychleji: čeká se na interakci */
       win.querySelectorAll(".code-line").forEach(function (line) {
         var n = line.textContent.trim().length;
         if (!n) return;
@@ -1171,7 +1213,27 @@
     var todoItems = gsap.utils.toArray(".todo-log .todo-item");
     if (todoLog && todoItems.length) {
       todoItems.forEach(function (it) { it.classList.remove("is-done"); });
-      stepsWithWindow(todoLog, todoItems.length, 0.6, function (i) { todoItems[i].classList.add("is-done"); });
+      var todoSeq = stepsWithWindow(todoLog, todoItems.length, 0.6, function (i) { todoItems[i].classList.add("is-done"); });
+      /* ručně: klepnutí na úkol ho odškrtne / vrátí; první zásah přebírá řízení (zruší časovanou sekvenci i krokování scrollem).
+         Hlavička okna slouží jako nápověda a na konci jako potvrzení. */
+      var todoHead = todoLog.querySelector(".git-cmd .tok-comment"), todoActed = false;
+      var todoHeadTxt = todoHead ? todoHead.textContent : "";
+      var todoMouse = window.matchMedia("(hover:hover) and (pointer:fine)").matches;
+      var todoSync = function () {
+        if (!todoHead) return;
+        var all = todoItems.every(function (it) { return it.classList.contains("is-done"); });
+        todoHead.textContent = all && todoActed ? "// kampaň připravena ✓" : (todoActed ? todoHeadTxt : (todoMouse ? "// klikni na úkol" : "// klepni na úkol"));
+      };
+      todoLog.classList.add("is-tap");
+      todoSync();
+      todoLog.addEventListener("click", function (e) {
+        var it = e.target.closest(".todo-item");
+        if (!it) return;
+        todoSeq.cancel(); todoActed = true;
+        it.classList.toggle("is-done");
+        if (navigator.vibrate) navigator.vibrate(8);
+        todoSync();
+      });
     }
   }
 
