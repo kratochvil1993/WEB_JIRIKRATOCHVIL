@@ -1207,7 +1207,8 @@
     [["jiri.js", false], ["foto.raw", true]].forEach(function (t, i) {
       var b = document.createElement("button");
       b.type = "button"; b.tabIndex = -1; b.className = "code-win__tab" + (i === 0 ? " is-on" : ""); b.setAttribute("data-foto", t[1] ? "1" : "");
-      if (t[1]) b.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true"><path d="M2 5.2c0-.7.5-1.2 1.2-1.2h1.4l.9-1.3h5l.9 1.3h1.4c.7 0 1.2.5 1.2 1.2v6.1c0 .7-.5 1.2-1.2 1.2H3.2c-.7 0-1.2-.5-1.2-1.2z"/><circle cx="8" cy="8.3" r="2.4"/></svg>';
+      b.innerHTML = t[1] ? '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true"><path d="M2 5.2c0-.7.5-1.2 1.2-1.2h1.4l.9-1.3h5l.9 1.3h1.4c.7 0 1.2.5 1.2 1.2v6.1c0 .7-.5 1.2-1.2 1.2H3.2c-.7 0-1.2-.5-1.2-1.2z"/><circle cx="8" cy="8.3" r="2.4"/></svg>'
+        : '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 4.5 2 8l3.5 3.5M10.5 4.5 14 8l-3.5 3.5"/></svg>';
       b.appendChild(document.createTextNode(t[0]));
       tabs.appendChild(b);
     });
