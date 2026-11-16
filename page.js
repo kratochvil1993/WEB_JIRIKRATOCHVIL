@@ -1159,7 +1159,7 @@
     function say(html, cb) {
       var d = document.createElement("div"); d.className = "code-line"; d.innerHTML = html; log.appendChild(d);
       var n = d.textContent.trim().length;
-      gsap.from(d, { width: 0, duration: Math.max(0.25, n * 0.021), ease: "steps(" + n + ")", clearProps: "width", onComplete: cb });
+      gsap.from(d, { width: 0, duration: Math.max(0.16, n * 0.011), ease: "steps(" + n + ")", clearProps: "width", onComplete: cb });
       gsap.to(log, { scrollTop: log.scrollHeight, duration: 0.3, overwrite: "auto" });
     }
     function play(items, done) { /* [[html, pauza před řádkem], ...] po řadě, pak done */
@@ -1167,7 +1167,7 @@
       (function next() {
         if (i >= items.length) { if (done) done(); return; }
         var it = items[i++];
-        gsap.delayedCall(it[1] || 0.15, function () { say(it[0], next); });
+        gsap.delayedCall((it[1] || 0.15) * 0.6, function () { say(it[0], next); });
       })();
     }
     function propose(revised) {
@@ -1185,11 +1185,11 @@
     okBtn.addEventListener("click", function () {
       var p = props[idx % props.length];
       answer([[me('<span class="tok-ok">✓ schváleno</span>'), 0.05], [agent("commit " + p.hash + " ✓"), 0.25]],
-        function () { idx++; gsap.delayedCall(0.8, propose, [false]); });
+        function () { idx++; gsap.delayedCall(0.5, propose, [false]); });
     });
     redoBtn.addEventListener("click", function () {
       answer([[me("ne, přepiš."), 0.05], [agent("rozumím, přepisuju…"), 0.3]],
-        function () { gsap.delayedCall(0.7, propose, [true]); });
+        function () { gsap.delayedCall(0.45, propose, [true]); });
     });
     return { start: function () { var c = log.querySelector(".code-caret"); if (c) c.remove(); propose(false); } };
   }
@@ -1329,9 +1329,9 @@
       if (qs) tl.eventCallback("onComplete", qs.ready);
       if (win.classList.contains("code-win--chat")) {
         var chat = buildChat(win);
-        tl.eventCallback("onComplete", function () { gsap.delayedCall(0.5, chat.start); });
+        tl.eventCallback("onComplete", function () { gsap.delayedCall(0.3, chat.start); });
       }
-      var first = true, k = win.classList.contains("code-win--chat") ? 0.45 : (win.querySelector(".q-line") ? 0.5 : 1); /* chat a dotazy píšou rychleji: čeká se na interakci */
+      var first = true, k = win.classList.contains("code-win--chat") ? 0.32 : (win.querySelector(".q-line") ? 0.5 : 1); /* chat a dotazy píšou rychleji: čeká se na interakci */
       win.querySelectorAll(".code-line").forEach(function (line) {
         var n = line.textContent.trim().length;
         if (!n) return;

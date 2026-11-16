@@ -1964,7 +1964,8 @@ html.modal-open{overflow:hidden;}
 .code-win__name{margin-left:.45rem;font-size:.68rem;color:rgba(255,255,255,.38);}
 .code-win__body{padding:.75rem 1rem .85rem;}
 .code-win .code-line{white-space:pre;overflow:hidden;width:fit-content;max-width:100%;}
-.code-win .code-line.indent{padding-left:1.4em;}
+/* margin, ne padding: řádek při psaní začíná na width:0 a padding by ho držel široký -> z okraje prosvitla kapka prvního písmene */
+.code-win .code-line.indent{margin-left:1.4em;}
 .code-win .tok-kw{color:var(--magenta);}
 .code-win .tok-fn,.code-win .tok-tag{color:var(--purple);}
 .code-win .tok-var{color:#fff;}
