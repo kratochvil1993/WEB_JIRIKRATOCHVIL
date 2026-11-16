@@ -1041,6 +1041,67 @@
     });
   }
 
+  /* ---------------- Chat agent ↔ já (web.html, agent.log): po úvodním dialogu si zkusíte revizi sami ----------------
+     Agent navrhne změnu (zpráva + řádek diffu) a pod oknem jsou dvě tlačítka: "schválit" (commit ✓, další návrh)
+     a "přepsat" (agent přepisuje a navrhne znovu). Řádky se píšou stejně jako v úvodu (width + steps), starší
+     odjíždějí nahoru (.chat-log má pevnou výšku, aby okno neskákalo). Dekorativní jako ostatní okna
+     (aria-hidden, tlačítka tabindex -1); s reduced-motion se nevytváří a zůstane jen hotový dialog. */
+  function buildChat(win) {
+    var body = win.querySelector(".code-win__body");
+    var log = document.createElement("div"); log.className = "chat-log";
+    Array.prototype.slice.call(body.querySelectorAll(".code-line")).forEach(function (l) { log.appendChild(l); });
+    body.appendChild(log);
+    var bar = document.createElement("div"); bar.className = "chat-actions";
+    bar.innerHTML = '<button type="button" class="chat-btn chat-btn--ok" tabindex="-1">schválit</button><button type="button" class="chat-btn" tabindex="-1">přepsat</button>';
+    body.appendChild(bar);
+    win.classList.add("is-live"); /* hned při načtení rezervuje výšku, ať okno při psaní neposkakuje */
+    var okBtn = bar.children[0], redoBtn = bar.children[1];
+    var agent = function (t) { return '<span class="chat-who chat-agent">agent</span> <span class="tok-punc">›</span> ' + t; };
+    var me = function (t) { return '<span class="chat-who chat-me">já</span>    <span class="tok-punc">›</span> ' + t; };
+    var props = [
+      { msg: "lazy loading fotek, commit?", diff: '+ &lt;img loading="lazy"&gt;', hash: "4d1e9a" },
+      { msg: "rychlejší fonty, commit?", diff: "+ font-display: swap;", hash: "b82c07" },
+      { msg: "větší tlačítko, commit?", diff: "+ min-height: 44px;", hash: "e5a310" }
+    ];
+    var idx = 0, busy = true;
+    function say(html, cb) {
+      var d = document.createElement("div"); d.className = "code-line"; d.innerHTML = html; log.appendChild(d);
+      var n = d.textContent.trim().length;
+      gsap.from(d, { width: 0, duration: Math.max(0.25, n * 0.021), ease: "steps(" + n + ")", clearProps: "width", onComplete: cb });
+      gsap.to(log, { scrollTop: log.scrollHeight, duration: 0.3, overwrite: "auto" });
+    }
+    function play(items, done) { /* [[html, pauza před řádkem], ...] po řadě, pak done */
+      var i = 0;
+      (function next() {
+        if (i >= items.length) { if (done) done(); return; }
+        var it = items[i++];
+        gsap.delayedCall(it[1] || 0.15, function () { say(it[0], next); });
+      })();
+    }
+    function propose(revised) {
+      var p = props[idx % props.length];
+      var items = revised ? [[agent("přepsáno, commit?"), 0.1]]
+                          : [[agent(p.msg), 0.1], ['  <span class="tok-ok">' + p.diff + "</span>", 0.05]];
+      play(items, function () { busy = false; bar.classList.add("is-on"); });
+    }
+    function answer(items, next) {
+      if (busy) return;
+      busy = true; bar.classList.remove("is-on");
+      if (navigator.vibrate) navigator.vibrate(8);
+      play(items, next);
+    }
+    okBtn.addEventListener("click", function () {
+      var p = props[idx % props.length];
+      answer([[me('<span class="tok-ok">✓ schváleno</span>'), 0.05], [agent("commit " + p.hash + " ✓"), 0.25]],
+        function () { idx++; gsap.delayedCall(0.8, propose, [false]); });
+    });
+    redoBtn.addEventListener("click", function () {
+      answer([[me("ne, přepiš."), 0.05], [agent("rozumím, přepisuju…"), 0.3]],
+        function () { gsap.delayedCall(0.7, propose, [true]); });
+    });
+    return { start: function () { var c = log.querySelector(".code-caret"); if (c) c.remove(); propose(false); } };
+  }
+
   /* ---------------- Dekorativní okna s kódem (web.html): řádky se jednou "napíšou" ----------------
      Řádky mají v CSS width: fit-content, takže gsap.from(width: 0) píše přesně do konce textu
      (steps = počet znaků, jako na úvodní stránce). Po doběhnutí se inline width smaže. data-gap
@@ -1048,13 +1109,17 @@
   if (!reduceMotion) {
     gsap.utils.toArray("[data-type-code]").forEach(function (win) {
       var tl = gsap.timeline({ scrollTrigger: { trigger: win, start: "top 85%", once: true } });
-      var first = true;
+      if (win.classList.contains("code-win--chat")) {
+        var chat = buildChat(win);
+        tl.eventCallback("onComplete", function () { gsap.delayedCall(0.5, chat.start); });
+      }
+      var first = true, k = win.classList.contains("code-win--chat") ? 0.45 : 1; /* chat píše rychleji: čeká se na tlačítka */
       win.querySelectorAll(".code-line").forEach(function (line) {
         var n = line.textContent.trim().length;
         if (!n) return;
-        var gap = first ? parseFloat(win.getAttribute("data-type-delay") || "0.5") : parseFloat(line.getAttribute("data-gap") || "0.15");
+        var gap = (first ? parseFloat(win.getAttribute("data-type-delay") || "0.5") : parseFloat(line.getAttribute("data-gap") || "0.15")) * k;
         first = false;
-        tl.from(line, { width: 0, duration: Math.max(0.3, n * 0.032), ease: "steps(" + n + ")", clearProps: "width" }, ">+" + gap);
+        tl.from(line, { width: 0, duration: Math.max(0.3 * k, n * 0.032 * k), ease: "steps(" + n + ")", clearProps: "width" }, ">+" + gap);
       });
     });
   }
@@ -1145,10 +1210,11 @@
     ];
     var vfLastFlash = -1;
     var vfCur = -1, vfBtn = null, vfHint = null, vfActed = false;
+    var vfMouse = window.matchMedia("(hover:hover) and (pointer:fine)").matches;
     var vfHintSync = function () { /* nápověda: "klepni" dokud uživatel nezačal ovládat sám, na 5/5 vždy "znovu" */
       if (!vfHint) return;
       var last = vfCur === vfSteps.length - 1;
-      vfHint.textContent = last ? "znovu" : "klepni";
+      vfHint.textContent = last ? "znovu" : (vfMouse ? "klikni" : "klepni");
       vfHint.classList.toggle("is-off", vfActed && !last);
     };
     var vfShow = function (i) {
@@ -1172,14 +1238,15 @@
     vfF.textContent = "f/2.8"; vfS.textContent = "1/125"; vfISO.textContent = "ISO 200";
     gsap.set(vf, { "--ev": -1.4, "--blur": 12 }); /* na začátku rozostřená a podexponovaná fotka */
     var vfSeq = stepsWithWindow(vf, vfSteps.length, 1.0, vfShow);
-    /* Spoušť (jen pod 1200 px, kde okno neposouvá scroll): sekvence doběhne sama, pak ji klepnutí na spoušť
-       posouvá po snímcích; po 5/5 je z ní "znovu" a vrátí hledáček na začátek. */
+    /* Spoušť (všude): sekvence doběhne sama (pod 1200 px časovaně, nad ním podle scrollu), pak ji klepnutí na
+       spoušť posouvá po snímcích; po 5/5 je z ní "znovu" a vrátí hledáček na začátek. Ruční zásah (spoušť / tah)
+       přebírá řízení: vfSeq.cancel() vypne i krokování scrollem, ať ho scroll nepřebije. */
     vfBtn = document.createElement("button");
     vfBtn.type = "button"; vfBtn.className = "vf-shutter"; vfBtn.tabIndex = -1;
     vfBtn.innerHTML = '<i class="vf-shutter-dot"></i><svg class="vf-shutter-redo" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/></svg>';
     vf.appendChild(vfBtn);
     vfHint = document.createElement("span");
-    vfHint.className = "vf-hint"; vfHint.textContent = "klepni";
+    vfHint.className = "vf-hint"; vfHint.textContent = vfMouse ? "klikni" : "klepni";
     vf.appendChild(vfHint);
     var vfBuzz = function () { if (navigator.vibrate) navigator.vibrate(8); }; /* Android: cvaknutí spouště; iOS Safari to nepodporuje */
     var vfStep = function (dir) { /* ruční posun (spoušť / swipe): přeruší časovanou sekvenci, dokola */
@@ -1190,11 +1257,11 @@
     };
     vfBtn.addEventListener("click", function () { vfStep(1); });
 
-    /* Dotyk na hledáčku: krátké klepnutí = autofocus (čtvereček skočí pod prst a fotka se krátce "dozaostří"),
+    /* Dotyk / myš na hledáčku: krátké klepnutí = autofocus (čtvereček skočí pod prst a fotka se krátce "dozaostří"),
        vodorovný tah = předchozí / další snímek. touch-action:pan-y v CSS nechává svislý scroll stránky. */
     var vfDown = null;
     vf.addEventListener("pointerdown", function (e) {
-      if (wideMq.matches || e.target.closest(".vf-shutter")) return;
+      if (e.target.closest(".vf-shutter")) return;
       vfDown = { x: e.clientX, y: e.clientY, t: e.timeStamp };
     });
     vf.addEventListener("pointercancel", function () { vfDown = null; });

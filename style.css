@@ -1977,6 +1977,16 @@ html.modal-open{overflow:hidden;}
 .code-win .chat-me{color:#fff;font-weight:700;}
 .code-caret{display:inline-block;width:.55em;height:1.05em;margin-left:.25em;vertical-align:-.15em;background:var(--purple);}
 .code-win--chat{margin-top:1.4rem;font-size:.7rem;}
+/* interaktivní chat (page.js buildChat): log s pevnou výškou 6 řádků (starší odjíždějí nahoru) + řádek tlačítek */
+.code-win--chat.is-live .chat-log{height:10.5em;overflow:hidden;}
+.chat-actions{display:flex;gap:.5rem;align-items:center;height:2.3rem;margin-top:.35rem;opacity:0;pointer-events:none;transition:opacity .3s ease;}
+.chat-actions.is-on{opacity:1;pointer-events:auto;}
+.chat-btn{font:inherit;font-size:.68rem;min-height:2rem;padding:.25rem .95rem;border-radius:999px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.04);
+  color:rgba(255,255,255,.88);cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:border-color .2s ease,background .2s ease,transform .15s ease;}
+.chat-btn:hover{border-color:rgba(255,255,255,.6);}
+.chat-btn:active{transform:scale(.95);}
+.chat-btn--ok{background:var(--purple);border-color:var(--purple);color:#04121a;font-weight:700;}
+.chat-btn--ok:hover{border-color:#fff;}
 .code-win--aside{margin-top:2rem;max-width:26rem;}
 /* široký displej: sekce (.sub-split) je dvousloupcová mřížka, okno je sticky v pravém sloupci. Drží
    se pod navigací, dokud sekce trvá, a na konci sekce zůstane dole (sticky se vždy zastaví v rámci
@@ -2041,8 +2051,8 @@ html.modal-open{overflow:hidden;}
 .vf-needle{position:absolute;top:0;left:calc(50% + var(--ev,0) * 40%);width:0;height:0;margin-left:-5px;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--purple);filter:drop-shadow(0 0 4px rgba(var(--purple-rgb),.7));}
 .vf-bottom{color:#fff;font-weight:600;}
 .vf-flash{position:absolute;z-index:3;inset:0;background:#fff;opacity:0;pointer-events:none;}
-/* Spoušť (page.js ji vytváří; jen pod 1200 px, nad tím okno posouvá scroll): tap = další snímek, po 5/5 "znovu" */
-.vf-shutter{display:none;position:absolute;z-index:4;right:.85rem;top:50%;transform:translateY(-50%);width:2.9rem;height:2.9rem;padding:0;
+/* Spoušť (page.js ji vytváří; na všech šířkách): tap = další snímek, po 5/5 "znovu" */
+.vf-shutter{position:absolute;z-index:4;right:.85rem;top:50%;transform:translateY(-50%);width:2.9rem;height:2.9rem;padding:0;
   border-radius:50%;border:2px solid rgba(255,255,255,.85);background:rgba(6,12,18,.35);color:#fff;cursor:pointer;
   align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:background .25s ease,border-color .25s ease;}
 .vf-shutter-dot{width:1.95rem;height:1.95rem;border-radius:50%;background:#fff;transition:transform .15s ease,opacity .25s ease;}
@@ -2057,14 +2067,12 @@ html.modal-open{overflow:hidden;}
 .vf-shutter::after{animation-delay:.35s;}
 .vf-shutter.is-last::before,.vf-shutter.is-last::after{border-color:rgba(var(--purple-rgb),.85);}
 @keyframes vfPulse{0%{transform:scale(1);opacity:.6;}70%,100%{transform:scale(1.55);opacity:0;}}
-.vf-hint{display:none;position:absolute;z-index:4;right:.55rem;width:3.5rem;top:calc(50% + 2.25rem);text-align:center;
+.vf-hint{position:absolute;z-index:4;right:.55rem;width:3.5rem;top:calc(50% + 2.25rem);text-align:center;
   font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.8);pointer-events:none;transition:opacity .4s ease;}
 .vf-hint.is-off{opacity:0;}
-@media (max-width:1199.98px){
-  .vf-shutter{display:flex;}
-  .vf-hint{display:block;}
-  .viewfinder{touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;} /* tah vodorovně = snímky, svisle scrolluje stránka */
-}
+.vf-shutter{display:flex;}
+.viewfinder{touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;} /* tah vodorovně = snímky, svisle scrolluje stránka */
+@media (hover:hover) and (pointer:fine){.viewfinder{cursor:crosshair;}.vf-shutter{cursor:pointer;}}
 /* hero: políčko autofokusu, které při každé nové fotce "zaostří" (page.js) */
 .af-box{
   position:absolute;left:50%;top:40%;width:30%;aspect-ratio:1;margin:-15% 0 0 -15%;z-index:20;opacity:0;pointer-events:none;color:rgba(255,255,255,.85);
