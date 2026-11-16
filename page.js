@@ -1067,7 +1067,7 @@
      zaregistrované a rozhoduje se až při spuštění (podle šířky), guard `now` brání dvojímu přehrání. */
   var wideMq = window.matchMedia("(min-width: 1200px)");
   function stepsWithWindow(winEl, n, gap, show) {
-    var now = -1;
+    var now = -1, calls = [];
     function go(i) { if (i > now) { now = i; show(i); } }
     for (var i = 0; i < n; i++) {
       (function (i) {
@@ -1080,9 +1080,11 @@
       trigger: winEl, start: "top 78%", once: true,
       onEnter: function () {
         if (wideMq.matches) return;
-        for (var i = 0; i < n; i++) gsap.delayedCall(0.35 + i * gap, go, [i]);
+        for (var i = 0; i < n; i++) calls.push(gsap.delayedCall(0.35 + i * gap, go, [i]));
       }
     });
+    /* ruční převzetí (hledáček): zruší zbytek časované sekvence, ať nepřebije kroky, které uživatel zvolil sám */
+    return { cancel: function () { calls.forEach(function (c) { c.kill(); }); now = n; } };
   }
 
   /* Git log (web.html): commit naskočí s krokem. Bez animací jsou všechny vidět hned. */
@@ -1142,8 +1144,19 @@
       { cap: "hotovo, pochlub se", f: "f/1.8", s: "1/250", iso: "ISO 100", ev: 0, blur: 0 }
     ];
     var vfLastFlash = -1;
+    var vfCur = -1, vfBtn = null, vfHint = null, vfActed = false;
+    var vfHintSync = function () { /* nápověda: "klepni" dokud uživatel nezačal ovládat sám, na 5/5 vždy "znovu" */
+      if (!vfHint) return;
+      var last = vfCur === vfSteps.length - 1;
+      vfHint.textContent = last ? "znovu" : "klepni";
+      vfHint.classList.toggle("is-off", vfActed && !last);
+    };
     var vfShow = function (i) {
       var d = vfSteps[i];
+      vfCur = i;
+      if (vfBtn) vfBtn.classList.toggle("is-last", i === vfSteps.length - 1);
+      vfHintSync();
+      if (vfFocus) gsap.to(vfFocus, { x: 0, y: 0, duration: 0.4, ease: "power2.out", overwrite: "auto" }); /* nový snímek = ostření zpět na obličej */
       vfCount.textContent = (i + 1) + "/" + vfSteps.length;
       vfCap.textContent = d.cap; vfF.textContent = d.f; vfS.textContent = d.s; vfISO.textContent = d.iso;
       gsap.fromTo([vfCount, vfCap, vfF, vfS, vfISO], { opacity: 0.2 }, { opacity: 1, duration: 0.45, ease: "power1.out" });
@@ -1158,7 +1171,50 @@
     vfCount.textContent = "0/" + vfSteps.length; vfCap.textContent = "připraveno";
     vfF.textContent = "f/2.8"; vfS.textContent = "1/125"; vfISO.textContent = "ISO 200";
     gsap.set(vf, { "--ev": -1.4, "--blur": 12 }); /* na začátku rozostřená a podexponovaná fotka */
-    stepsWithWindow(vf, vfSteps.length, 1.0, vfShow);
+    var vfSeq = stepsWithWindow(vf, vfSteps.length, 1.0, vfShow);
+    /* Spoušť (jen pod 1200 px, kde okno neposouvá scroll): sekvence doběhne sama, pak ji klepnutí na spoušť
+       posouvá po snímcích; po 5/5 je z ní "znovu" a vrátí hledáček na začátek. */
+    vfBtn = document.createElement("button");
+    vfBtn.type = "button"; vfBtn.className = "vf-shutter"; vfBtn.tabIndex = -1;
+    vfBtn.innerHTML = '<i class="vf-shutter-dot"></i><svg class="vf-shutter-redo" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/></svg>';
+    vf.appendChild(vfBtn);
+    vfHint = document.createElement("span");
+    vfHint.className = "vf-hint"; vfHint.textContent = "klepni";
+    vf.appendChild(vfHint);
+    var vfBuzz = function () { if (navigator.vibrate) navigator.vibrate(8); }; /* Android: cvaknutí spouště; iOS Safari to nepodporuje */
+    var vfStep = function (dir) { /* ruční posun (spoušť / swipe): přeruší časovanou sekvenci, dokola */
+      vfSeq.cancel();
+      vfActed = true;
+      vfBuzz();
+      vfShow((vfCur + dir + vfSteps.length) % vfSteps.length);
+    };
+    vfBtn.addEventListener("click", function () { vfStep(1); });
+
+    /* Dotyk na hledáčku: krátké klepnutí = autofocus (čtvereček skočí pod prst a fotka se krátce "dozaostří"),
+       vodorovný tah = předchozí / další snímek. touch-action:pan-y v CSS nechává svislý scroll stránky. */
+    var vfDown = null;
+    vf.addEventListener("pointerdown", function (e) {
+      if (wideMq.matches || e.target.closest(".vf-shutter")) return;
+      vfDown = { x: e.clientX, y: e.clientY, t: e.timeStamp };
+    });
+    vf.addEventListener("pointercancel", function () { vfDown = null; });
+    vf.addEventListener("pointerup", function (e) {
+      if (!vfDown) return;
+      var dx = e.clientX - vfDown.x, dy = e.clientY - vfDown.y, dt = e.timeStamp - vfDown.t;
+      vfDown = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) { vfStep(dx < 0 ? 1 : -1); return; }
+      if (Math.abs(dx) < 10 && Math.abs(dy) < 10 && dt < 500) {
+        var r = vf.getBoundingClientRect(), fr = vfFocus.getBoundingClientRect();
+        var curX = gsap.getProperty(vfFocus, "x"), curY = gsap.getProperty(vfFocus, "y");
+        var baseX = fr.left + fr.width / 2 - curX, baseY = fr.top + fr.height / 2 - curY; /* kde čtvereček sedí bez posunu */
+        var mx = Math.max(r.left + 34, Math.min(r.right - 34, e.clientX)); /* ne přes rohy a dolní lištu */
+        var my = Math.max(r.top + 40, Math.min(r.bottom - r.height * 0.34, e.clientY));
+        vfActed = true; vfHintSync(); vfBuzz();
+        gsap.fromTo(vfFocus, { scale: 1.7, opacity: 0.5 }, { x: mx - baseX, y: my - baseY, scale: 1, opacity: 1, duration: 0.45, ease: "back.out(2)", overwrite: "auto" });
+        var tgt = vfSteps[Math.max(vfCur, 0)].blur;
+        gsap.fromTo(vf, { "--blur": tgt + 4 }, { "--blur": tgt, duration: 0.6, ease: "power2.out", overwrite: "auto" });
+      }
+    });
   }
 
   /* ---------------- Karty: záře za kurzorem a jemný náklon ---------------- */

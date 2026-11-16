@@ -2041,6 +2041,30 @@ html.modal-open{overflow:hidden;}
 .vf-needle{position:absolute;top:0;left:calc(50% + var(--ev,0) * 40%);width:0;height:0;margin-left:-5px;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--purple);filter:drop-shadow(0 0 4px rgba(var(--purple-rgb),.7));}
 .vf-bottom{color:#fff;font-weight:600;}
 .vf-flash{position:absolute;z-index:3;inset:0;background:#fff;opacity:0;pointer-events:none;}
+/* Spoušť (page.js ji vytváří; jen pod 1200 px, nad tím okno posouvá scroll): tap = další snímek, po 5/5 "znovu" */
+.vf-shutter{display:none;position:absolute;z-index:4;right:.85rem;top:50%;transform:translateY(-50%);width:2.9rem;height:2.9rem;padding:0;
+  border-radius:50%;border:2px solid rgba(255,255,255,.85);background:rgba(6,12,18,.35);color:#fff;cursor:pointer;
+  align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:background .25s ease,border-color .25s ease;}
+.vf-shutter-dot{width:1.95rem;height:1.95rem;border-radius:50%;background:#fff;transition:transform .15s ease,opacity .25s ease;}
+.vf-shutter:active .vf-shutter-dot{transform:scale(.86);}
+.vf-shutter-redo{position:absolute;width:1.3rem;height:1.3rem;fill:currentColor;opacity:0;transition:opacity .25s ease;}
+.vf-shutter.is-last{border-color:var(--purple);background:rgba(6,12,18,.55);}
+.vf-shutter.is-last .vf-shutter-dot{opacity:0;}
+.vf-shutter.is-last .vf-shutter-redo{opacity:1;}
+/* jemný pulz jako za grafikou v hero (.sub-pulse): dva azurové prstence se po sobě rozšíří a zmizí, pořád dokola */
+.vf-shutter::before,.vf-shutter::after{content:"";position:absolute;inset:-2px;border-radius:50%;pointer-events:none;
+  border:1.5px solid rgba(var(--purple-rgb),.6);opacity:0;animation:vfPulse 2.8s ease-out infinite;}
+.vf-shutter::after{animation-delay:.35s;}
+.vf-shutter.is-last::before,.vf-shutter.is-last::after{border-color:rgba(var(--purple-rgb),.85);}
+@keyframes vfPulse{0%{transform:scale(1);opacity:.6;}70%,100%{transform:scale(1.55);opacity:0;}}
+.vf-hint{display:none;position:absolute;z-index:4;right:.55rem;width:3.5rem;top:calc(50% + 2.25rem);text-align:center;
+  font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.8);pointer-events:none;transition:opacity .4s ease;}
+.vf-hint.is-off{opacity:0;}
+@media (max-width:1199.98px){
+  .vf-shutter{display:flex;}
+  .vf-hint{display:block;}
+  .viewfinder{touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;} /* tah vodorovně = snímky, svisle scrolluje stránka */
+}
 /* hero: políčko autofokusu, které při každé nové fotce "zaostří" (page.js) */
 .af-box{
   position:absolute;left:50%;top:40%;width:30%;aspect-ratio:1;margin:-15% 0 0 -15%;z-index:20;opacity:0;pointer-events:none;color:rgba(255,255,255,.85);
