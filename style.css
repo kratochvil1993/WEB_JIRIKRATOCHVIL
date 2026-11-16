@@ -2013,6 +2013,7 @@ html.modal-open{overflow:hidden;}
 .code-win .q-term,.code-win .q-mark{transition:color .3s ease;}
 .code-win .q-mark{display:inline-block;}
 /* interaktivní dotazy (page.js buildQueries): po dopsání je klikací celý řádek, dole ukazatel správně zařazených */
+.code-win .q-line{padding-top:.12em;padding-bottom:.12em;} /* svislý padding vždy, ať se rozestup po dopsání nezmění */
 .code-win.is-ready .q-line{width:calc(100% + .8rem);max-width:none;margin:0 -.4rem;padding:.12em .4rem;border-radius:6px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-user-select:none;user-select:none;transition:background .2s ease;}
 .code-win.is-ready .q-line:hover{background:rgba(255,255,255,.06);}
 /* o-mne.html hero okno (page.js buildHeroTabs): záložky v liště, hledáček s portrétem přes tělo okna, klikací řádky */
@@ -2244,7 +2245,6 @@ html.modal-open{overflow:hidden;}
 .cta-chat__bar{display:flex;align-items:center;gap:.7rem;height:3.7rem;padding:.4rem .4rem .4rem 1.15rem;border-radius:999px;
   background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);transition:border-color .3s ease,box-shadow .3s ease,background .3s ease;}
 .cta-chat__q{display:flex;align-items:center;flex:1;min-width:0;font-size:1rem;white-space:nowrap;overflow:hidden;color:var(--fg-dim);}
-.cta-chat__caret{display:block;flex:none;width:2px;height:1.15em;margin-right:4px;background:var(--purple);animation:ctaCaret 1.1s steps(1) infinite;}
 .cta-chat__txt{overflow:hidden;text-overflow:ellipsis;}
 .cta-chat__go{flex:none;display:flex;align-items:center;gap:.45rem;height:100%;padding:0 1.15rem 0 1.25rem;border-radius:999px;font-weight:700;font-size:.95rem;color:#041016;
   background:linear-gradient(135deg,var(--purple),var(--accent2));transition:transform .2s ease,box-shadow .3s ease;}
@@ -2255,4 +2255,4 @@ html.modal-open{overflow:hidden;}
 .cta-chat:active .cta-chat__go{transform:scale(.94);}
 .cta-chat:focus-visible{outline:none;}
 .cta-chat:focus-visible .cta-chat__bar{outline:2px solid #fff;outline-offset:4px;}
-@media (prefers-reduced-motion:reduce){.cta-chat__caret,.cta-chat__typing i{animation:none;}.cta-chat__bar,.cta-chat__go,.cta-chat__go svg,.cta-chat__msg{transition:none;}}
+@media (prefers-reduced-motion:reduce){.cta-chat__typing i{animation:none;}.cta-chat__bar,.cta-chat__go,.cta-chat__go svg,.cta-chat__msg{transition:none;}}

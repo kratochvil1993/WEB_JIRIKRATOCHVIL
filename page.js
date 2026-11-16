@@ -1333,7 +1333,7 @@
      na řádku = pauza před ním (střídání mluvčích v chatu). Bez animací vidět hotový text. */
   if (!reduceMotion) {
     gsap.utils.toArray("[data-type-code]").forEach(function (win) {
-      var tl = gsap.timeline({ scrollTrigger: { trigger: win, start: "top 85%", once: true } });
+      var tl = gsap.timeline({ scrollTrigger: { trigger: win, start: win.classList.contains("code-win--aside") ? "top 60%" : "top 85%", once: true } });
       var ht = win.querySelector(".hero-foto") ? buildHeroTabs(win) : null;
       if (ht) tl.eventCallback("onComplete", ht.ready);
       var qs = win.querySelector(".q-line") ? buildQueries(win) : null;
