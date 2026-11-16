@@ -1562,6 +1562,12 @@ footer::after{
 .sub-grid .feature-card .tags{margin-top:.8rem;}
 @media (min-width:600px){.sub-grid{grid-template-columns:repeat(2,1fr);}}
 @media (min-width:1100px){.sub-grid{grid-template-columns:repeat(4,1fr);}}
+@media (min-width:1100px){.sub-grid.sub-grid--3{grid-template-columns:repeat(3,1fr);}}
+.sub-grid .ref-meta{margin:0 0 .6rem;font-size:.85rem;font-weight:600;color:var(--purple);}
+.sub-grid .ref-links{margin:.9rem 0 0;display:flex;flex-wrap:wrap;gap:.35rem 1.1rem;}
+.sub-grid .ref-links a{font-weight:600;font-size:.92rem;color:var(--fg);text-decoration:underline;text-decoration-color:rgba(var(--magenta-rgb),.5);text-underline-offset:.2em;}
+.sub-grid .ref-links .bi{width:.8em;height:.8em;margin-left:.2em;vertical-align:-.05em;}
+.sub-grid .ref-links a:hover,.sub-grid .ref-links a:focus-visible{text-decoration-color:var(--purple);}
 .sub-grid .card-wide{grid-column:1/-1;padding:1.6rem 1.5rem;}
 .sub-grid .card-wide p{max-width:46rem;}
 .sub-grid .card-wide{border-color:rgba(var(--magenta-rgb),.28);}
