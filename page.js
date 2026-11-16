@@ -569,6 +569,26 @@
           .to({}, { duration: 0.6 });   /* stav se vrátí až za otevřeným modalem */
         return;
       }
+      var chat = e.currentTarget && e.currentTarget.classList && e.currentTarget.classList.contains("cta-chat") ? e.currentTarget : null;
+      if (chat && !reduceMotion) {   /* o-mne: zpráva se "odešle", objeví se "píše…" a odpověď, pak se otevře modal */
+        if (chat._run) return;
+        chat._run = true;
+        var cTxt = chat.querySelector(".cta-chat__txt");
+        var cMe = chat.querySelector(".cta-chat__msg--me");
+        var cDots = chat.querySelector(".cta-chat__typing");
+        var cRep = chat.querySelector(".cta-chat__reply");
+        var cGo = chat.querySelector(".cta-chat__go");
+        gsap.timeline({ onComplete: function () { gsap.set([cTxt, cMe, cDots, cRep, cGo], { clearProps: "all" }); chat._run = false; } })
+          .fromTo(cGo, { scale: 1 }, { scale: 0.94, duration: 0.08, yoyo: true, repeat: 1, ease: "power1.inOut" }, 0)
+          .to(cTxt, { opacity: 0, duration: 0.12 }, 0.05)
+          .fromTo(cMe, { opacity: 0, y: 10, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.22, ease: "power2.out" }, 0.08)
+          .fromTo(cDots, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.18, ease: "power1.out" }, 0.32)
+          .to(cDots, { opacity: 0, duration: 0.1 }, 0.64)
+          .fromTo(cRep, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.2, ease: "power2.out" }, 0.64)
+          .add(function () { showContact(); }, 1.0)
+          .to({}, { duration: 0.6 });   /* stav se vrátí až za otevřeným modalem */
+        return;
+      }
       showContact();
     };
     var showContact = function () {

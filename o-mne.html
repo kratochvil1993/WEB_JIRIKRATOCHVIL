@@ -316,15 +316,20 @@
     <div class="container">
       <h2 class="reveal-wipe">Pojďme se <span class="gradient-text">poznat.</span></h2>
       <p class="reveal">Napište pár vět o tom, co plánujete. Ozvu se a řekneme si, jestli a jak můžu pomoct.</p>
-      <a href="kontakt" data-open-contact class="pill-btn reveal">
-              <span class="pill-btn__icon pill-btn__icon--left" aria-hidden="true">
-                <svg viewBox="0 0 40 40" fill="none"><path d="M7 20h26" stroke="currentColor" stroke-width="3" stroke-linecap="round" /><path d="M22 9l11 11-11 11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>
-              </span>
-              <span class="pill-btn__label">Napsat mi</span>
-              <span class="pill-btn__icon pill-btn__icon--right" aria-hidden="true">
-                <svg viewBox="0 0 40 40" fill="none"><path d="M7 20h26" stroke="currentColor" stroke-width="3" stroke-linecap="round" /><path d="M22 9l11 11-11 11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>
-              </span>
-            </a>
+      <a href="kontakt" data-open-contact class="cta-chat reveal">
+        <span class="cta-chat__thread" aria-hidden="true">
+          <span class="cta-chat__row"><span class="cta-chat__msg cta-chat__msg--him">Dobrý den, jsem Jiří.</span></span>
+          <span class="cta-chat__row cta-chat__row--me"><span class="cta-chat__msg cta-chat__msg--me">Dobrý den, ozývám se.</span></span>
+          <span class="cta-chat__row cta-chat__row--him">
+            <span class="cta-chat__msg cta-chat__msg--him cta-chat__typing"><i></i><i></i><i></i></span>
+            <span class="cta-chat__msg cta-chat__msg--him cta-chat__reply">Rád se ozvu.</span>
+          </span>
+        </span>
+        <span class="cta-chat__bar">
+          <span class="cta-chat__q" aria-hidden="true"><i class="cta-chat__caret"></i><span class="cta-chat__txt">Napište zprávu…</span></span>
+          <span class="cta-chat__go">Napište mi<svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" /><path d="M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+        </span>
+      </a>
     </div>
   </section>
 </main>
