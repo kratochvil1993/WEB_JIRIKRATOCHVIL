@@ -5,6 +5,13 @@
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var isMobile = window.matchMedia("(max-width: 991px)").matches;
   var lowPower = reduceMotion || isMobile;
+  /* podtržení klíčových slov (.hl) se rozjíždí jen s povoleným pohybem, jinak je hned vidět */
+  if (!reduceMotion) document.documentElement.classList.add("hl-anim");
+  function hlToggle(els, on) {
+    els.forEach(function (el) {
+      el.querySelectorAll(".hl").forEach(function (h) { h.classList.toggle("is-on", on); });
+    });
+  }
   /* Mobil BEZ reduced-motion: dostává lehké efekty bez pinování (písmena hera,
      scrubované nadpisy, parallax grafiky, sticky stack karet, dotykové
      reakce). Jen transform/opacity — žádný pin, žádný velký blur. */
@@ -1288,8 +1295,9 @@
       ? { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.8, ease: "power2.out", onComplete: function () { gsap.set(el, { clearProps: "filter" }); } }
       : { y: 0, opacity: 1, duration: 0.8, ease: "power2.out" };
   }
-  function epicInit(els) { els.forEach(function (el) { gsap.set(el, epicFrom(el)); }); }
+  function epicInit(els) { hlToggle(els, false); els.forEach(function (el) { gsap.set(el, epicFrom(el)); }); }
   function epicIn(els) {
+    hlToggle(els, true);
     els.forEach(function (el, i) {
       var vars = epicTo(el);
       vars.delay = i * 0.12;
@@ -1454,6 +1462,7 @@
       var autoplayInterval = null;
       function enterEl(el) {
         gsap.to(el, { y: 0, opacity: 1, scale: 1, rotate: 0, duration: 0.9, ease: "power3.out", overwrite: "auto" });
+        hlToggle([el], true);
         if (el === graphic) {
           drawSymbolIn(symbolEntries); drawAccentsIn(accentDots);
           /* gated on isMobile (not the broader lowPower/reduceMotion flag): a visitor
@@ -1474,6 +1483,7 @@
          (dřív už při `bottom 12%`) působil jako trhání. */
       function leaveEl(el, gentle) {
         var hide = el === graphic ? { y: 28, opacity: 0, scale: 0.94, rotate: -2 } : { y: 28, opacity: 0 };
+        hlToggle([el], false);
         if (gentle) {
           hide.duration = 0.35; hide.ease = "power2.in"; hide.overwrite = "auto";
           gsap.to(el, hide);

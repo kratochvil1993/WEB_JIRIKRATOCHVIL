@@ -38,6 +38,9 @@
   gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
   ScrollTrigger.config({ ignoreMobileResize: true });
 
+  /* podtržení klíčových slov (.hl) se rozjíždí jen s povoleným pohybem, jinak je hned vidět */
+  if (!reduceMotion) document.documentElement.classList.add("hl-anim");
+
   /* ---------------- Plynulý scroll (Lenis) – jen desktop s myší ----------------
      Vyhlazuje kolečko myši, scroll zůstává nativní (sticky, ScrollTrigger i kotvy fungují dál).
      Skript Lenis se stahuje dynamicky až po `load`. Vypnuto na dotyku/mobilu (iOS Safari tam nativní scroll nechceme měnit), při reduced-motion
@@ -1187,6 +1190,9 @@
       start: "top 90%",
       once: true,
       onEnter: function (batch) {
+        batch.forEach(function (el) {
+          el.querySelectorAll(".hl").forEach(function (h) { h.classList.add("is-on"); });
+        });
         gsap.to(batch, {
           opacity: 1, y: 0, duration: 0.9, ease: "power2.out",
           stagger: Math.min(0.09, 0.5 / Math.max(batch.length, 1)), /* celé odkrytí max ~0,5 s, i když se při skoku v okně sejde spousta prvků */
