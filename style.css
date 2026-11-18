@@ -1748,7 +1748,7 @@ footer::after{
 .step::before{transform:scale(var(--pop,1));}
 .step::after{transform:scaleY(var(--line,1));transform-origin:top;}
 /* první odstavec úvodní sekce jako výrazný úvod */
-#proc .sub-narrow > p:first-of-type{font-size:clamp(1.25rem,1.1rem + .6vw,1.5rem);color:#fff;line-height:1.55;}
+#proc .sub-narrow > p.sec-lead{font-size:clamp(1.25rem,1.1rem + .6vw,1.5rem);color:#fff;line-height:1.55;}
 
 /* Pulz za grafikou v hero (page.js): obal drží velikost grafiky, prstence jsou za ní */
 .sub-hero-gfxwrap{position:relative;}
