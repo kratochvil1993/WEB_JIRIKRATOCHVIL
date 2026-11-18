@@ -502,7 +502,7 @@
      jistička níž (setTimeout 1600 ms) by heroTl dokončila a useklá by psaní. */
   var miniLines = mobileFx ? gsap.utils.toArray("#hero .hero-mini-code .code-line") : [];
   if (miniLines.length) {
-    gsap.from(miniLines, { width: 0, duration: 0.8, ease: "steps(24)", stagger: 0.5, delay: 1.0 });
+    gsap.from(miniLines, { width: 0, duration: 0.7, ease: "steps(24)", stagger: 0.4, delay: 0.15 });
   }
   /* desktop (deskFx): nadpis se při načtení rozletí po písmenech (viz deskTitle níž), proto ho heroTl
      nechává být; prázdný tween drží stejné časování ostatních prvků jako s původním fade-upem. */
