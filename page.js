@@ -44,7 +44,7 @@
   /* ---------------- Plynulý scroll (Lenis) – jen desktop s myší ----------------
      Vyhlazuje kolečko myši, scroll zůstává nativní (sticky, ScrollTrigger i kotvy fungují dál).
      Skript Lenis se stahuje dynamicky až po `load`. Vypnuto na dotyku/mobilu (iOS Safari tam nativní scroll nechceme měnit), při reduced-motion
-     a na slabém hardware. Na homepage (script.js) záměrně není. */
+     a na slabém hardware. Stejný blok je zrcadlený v script.js (homepage, kvůli skoku obsahu na konci pinu). */
   var lenis = null;
   var lenisEase = function (t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }; /* power2.inOut */
   var startLenis = function () {

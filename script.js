@@ -76,6 +76,39 @@
      scroll again. */
   ScrollTrigger.config({ ignoreMobileResize: true });
 
+  /* ---------------- Plynulý scroll (Lenis) – jen desktop s myší ----------------
+     Zrcadlí blok v page.js. Na homepage je tu kvůli pinům: nativní scroll běží na compositoru, ale pin
+     (position:fixed) přepíná hlavní vlákno až o snímek později, takže při rychlém scrollu obsah na startu
+     a hlavně na konci pinu „povyskočí" o posun jednoho snímku (změřeno CDP screencastem). Lenis řídí scroll
+     z JS ve stejném snímku jako ScrollTrigger, takže obraz sedí. Vypnuto na dotyku/mobilu, při reduced-motion
+     a na slabém hardware (tam zůstává nativní scroll). Skript se stahuje až po `load`. */
+  var lenis = null;
+  var lenisEase = function (t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }; /* power2.inOut */
+  var startLenis = function () {
+    lenis = new Lenis({ autoRaf: false, lerp: 0.1, smoothWheel: true, syncTouch: false, anchors: false });
+    lenis.on("scroll", ScrollTrigger.update);
+    gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
+    new MutationObserver(function () {
+      var c = document.documentElement.classList;
+      if (c.contains("modal-open") || c.contains("nav-open")) lenis.stop(); else lenis.start();
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  };
+  if (!lowPower && !weakHardware && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    var lenisScript = document.createElement("script");
+    lenisScript.src = "/assets/vendor/lenis/lenis-1.3.20.min.js";
+    lenisScript.onload = function () { startLenis(); };
+    var loadLenis = function () { document.head.appendChild(lenisScript); };
+    if (document.readyState === "complete") loadLenis(); else window.addEventListener("load", loadLenis);
+  }
+  /* skok na pozici: přes Lenis (když běží), jinak GSAP ScrollTo */
+  var scrollToPos = function (target, dur, done) {
+    if (lenis) {
+      lenis.scrollTo(target, { duration: dur, easing: lenisEase, onComplete: done });
+    } else {
+      gsap.to(window, { duration: dur, scrollTo: { y: target }, ease: "power2.inOut", onComplete: done });
+    }
+  };
+
   /* ---------------- Navbar blur on scroll ---------------- */
   var navbar = document.getElementById("mainNav");
   ScrollTrigger.create({
@@ -326,7 +359,7 @@
       b.addEventListener("click", function () { toTopBtn.click(); });
     });
     toTopBtn.addEventListener("click", function () {
-      gsap.to(window, { duration: lowPower ? 0.01 : 1, scrollTo: { y: 0 }, ease: "power2.inOut" });
+      scrollToPos(0, lowPower ? 0.01 : 1);
     });
   }
 
@@ -365,12 +398,7 @@
          threshold; landing at/just-under progress 0 never crosses it,
          leaving the pinned text/graphic hidden until the visitor
          scrolled again by hand. */
-      gsap.to(window, {
-        duration: lowPower ? 0.01 : 0.6,
-        scrollTo: { y: y + 24 },
-        ease: "power2.inOut",
-        onComplete: function () { history.pushState(null, "", id); }
-      });
+      scrollToPos(y + 24, lowPower ? 0.01 : 0.6, function () { history.pushState(null, "", id); });
     });
   });
 
