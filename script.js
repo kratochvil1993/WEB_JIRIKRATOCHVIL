@@ -93,7 +93,12 @@
       if (c.contains("modal-open") || c.contains("nav-open")) lenis.stop(); else lenis.start();
     }).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
   };
-  if (!lowPower && !weakHardware && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+  var lenisWanted = !lowPower && !weakHardware && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  /* anticipatePin zapíná pin o kus dřív podle rychlosti scrollu – kompenzace zpoždění nativního (compositor)
+     scrollu. S Lenisem žádné zpoždění není a předčasný pin byl vidět jako skok obsahu o 40–90 px nahoru
+     v okamžiku připnutí (změřeno). Proto 0 tam, kde poběží Lenis, jinak 1. */
+  var pinAnticipate = lenisWanted ? 0 : 1;
+  if (lenisWanted) {
     var lenisScript = document.createElement("script");
     lenisScript.src = "/assets/vendor/lenis/lenis-1.3.20.min.js";
     lenisScript.onload = function () { startLenis(); };
@@ -1671,7 +1676,7 @@
       end: "+=1600",
       pin: true,
       invalidateOnRefresh: true,
-      anticipatePin: 1,
+      anticipatePin: pinAnticipate,
       onEnter: function (self) { showAll(self); pulse(); },
       onEnterBack: function (self) { showAll(self); pulse(); },
       onLeaveBack: function () { if (!preview) hideAnimated(); },
@@ -1861,7 +1866,7 @@
       end: "+=100%",
       pin: true,
       pinSpacing: false, /* žádný extra prázdný scroll: sekce Web najede přesně tam, kde pin hera končí */
-      anticipatePin: 1,
+      anticipatePin: pinAnticipate,
       onUpdate: function (self) {
         if (heroScrollTl) gsap.to(heroScrollTl, { progress: self.progress, duration: 0.6, ease: "power3.out", overwrite: true });
       }
@@ -2026,7 +2031,7 @@
       end: "+=1400",
       pin: true,
       invalidateOnRefresh: true,
-      anticipatePin: 1,
+      anticipatePin: pinAnticipate,
       onEnter: function (self) { valuesShow(self); pulse(); },
       onEnterBack: function (self) { valuesShow(self); pulse(); },
       onUpdate: function (self) {
