@@ -942,8 +942,8 @@
   /* ---------------- Pinned scrollytelling: section 2 (web/e-shop) a 3 (portrét) ----------------
      Text se odhaluje přes onEnter/onLeave (jistý jednorázový tween, nezávislý na scrubu),
      grafika vpravo má navíc jemný scrub parallax rotace/scale během pinu. */
-  function revealIn(targets) {
-    gsap.to(targets, { y: 0, opacity: 1, stagger: 0.15, duration: 0.7, ease: "power2.out", overwrite: "auto" });
+  function revealIn(targets, delay) {
+    gsap.to(targets, { y: 0, opacity: 1, stagger: 0.15, duration: 0.7, delay: delay || 0, ease: "power2.out", overwrite: "auto" });
   }
   function revealOut(targets) {
     gsap.to(targets, { y: -30, opacity: 0, stagger: 0.08, duration: 0.5, ease: "power2.in", overwrite: "auto" });
@@ -1973,28 +1973,40 @@
      sections (revealIn/stagger), but without pin: true — the section (3 info
      cards + full form) runs taller than the viewport, so locking scroll here
      would trap visitors with the submit button off-screen. */
-  /* Zrcadlo rozpadu nadpisu v hero: písmena "Kontaktujte mě" se při scrollu
-     (scrub) slétnou z náhodných pozic do slova. Jen desktop. */
+  /* Zrcadlo rozpadu nadpisu v hero: písmena "Kontaktujte mě" se slétnou z náhodných
+     pozic do slova. Jen desktop. Je to časová animace spuštěná scrollem (ne scrub):
+     scrub trval jen ~325 px scrollu, takže jedno švihnutí kolečkem ji proletělo.
+     Karty a formulář naběhnou až po nadpisu (revealIn s delay). */
   var contactTitle = document.querySelector("#contact h2");
-  if (contactTitle && !lowPower) {
+  var contactTitleFx = !!contactTitle && !lowPower;
+  if (contactTitleFx) {
     gsap.from(splitChars(contactTitle), {
-      x: function () { return gsap.utils.random(-260, 260); },
-      y: function () { return gsap.utils.random(-180, 180); },
-      rotation: function () { return gsap.utils.random(-120, 120); },
-      scale: function () { return gsap.utils.random(0.3, 1.8); },
+      x: function () { return gsap.utils.random(-170, 170); },
+      y: function () { return gsap.utils.random(-120, 120); },
+      rotation: function () { return gsap.utils.random(-70, 70); },
+      scale: function () { return gsap.utils.random(0.5, 1.6); },
       opacity: 0,
-      ease: "power2.out",
-      stagger: { amount: 0.5, from: "random" },
-      scrollTrigger: { trigger: contactTitle, start: "top 95%", end: "top 50%", scrub: 0.6 }
+      duration: 1.3,
+      ease: "power3.out",
+      stagger: { amount: 0.7, from: "random" },
+      scrollTrigger: { trigger: contactTitle, start: "top 88%", toggleActions: "play none none reverse" }
     });
   }
   var contactEls = gsap.utils.toArray("#contact .fade-el");
+  /* nadpis (h2) řídí animace písmen výše — z fade seznamu ho vyřadíme */
+  if (contactTitleFx) contactEls = contactEls.filter(function (el) { return el !== contactTitle; });
   gsap.set(contactEls, { y: 40, opacity: 0 });
+  function contactReveal() {
+    /* eyebrow hned, zbytek (karty, formulář) až když se nadpis složí */
+    revealIn(contactEls.slice(0, 1));
+    revealIn(contactEls.slice(1), contactTitleFx ? 0.9 : 0);
+    if (!lowPower) pulse();
+  }
   ScrollTrigger.create({
-    trigger: "#contact",
-    start: "top 70%",
-    onEnter: function () { revealIn(contactEls); if (!lowPower) pulse(); },
-    onEnterBack: function () { revealIn(contactEls); if (!lowPower) pulse(); }
+    trigger: contactTitle || "#contact",
+    start: contactTitle ? "top 88%" : "top 75%",
+    onEnter: contactReveal,
+    onEnterBack: contactReveal
   });
 
   /* Trigger off the footer itself, not each column: a per-column trigger
