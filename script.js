@@ -40,6 +40,12 @@
   var fewCores = !!(navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
   document.documentElement.classList.toggle("weak-hw", fewCores);
 
+  /* Vzkaz v konzoli pro ty, kdo otevřou devtools (stejný text jako v page.js na podstránkách); [perf] řádek pod ním je diagnostika. */
+  try {
+    console.log("%c</>", "color:#0ef;font-size:34px;font-weight:800;font-family:monospace");
+    console.log("%cKoukáte pod kapotu? Bez frameworku, jen HTML, CSS a JS. Pokud hledáte někoho, kdo to dotáhne, napište mi: info@jirikratochvil.eu", "color:#0ac8e0;font-size:12px");
+  } catch (_) {}
+
   /* Visible in the browser console for anyone (dev, or a visitor asked to
      "check what mode you're getting") diagnosing performance — the three
      tiers above collapse into one boolean each, so without this the actual
