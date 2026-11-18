@@ -1540,9 +1540,9 @@ footer::after{
 .contact-card p{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.5rem;}
 .copy-btn{
   display:inline-flex;align-items:center;justify-content:center;
-  width:34px;height:34px;flex:0 0 auto;
+  width:28px;height:28px;flex:0 0 auto;
   border-radius:50%;border:1px solid rgba(255,255,255,.18);
-  background:rgba(255,255,255,.04);color:var(--fg-dim);font-size:.95rem;cursor:pointer;
+  background:rgba(255,255,255,.04);color:var(--fg-dim);font-size:.8rem;cursor:pointer;
   transition:border-color .2s ease,color .2s ease,background .2s ease;
 }
 .copy-btn:hover,.copy-btn:focus-visible{border-color:var(--magenta);color:var(--purple);background:rgba(var(--magenta-rgb),.12);}
@@ -2066,32 +2066,8 @@ html.modal-open{overflow:hidden;}
 .code-win .q-line{padding-top:.12em;padding-bottom:.12em;} /* svislý padding vždy, ať se rozestup po dopsání nezmění */
 .code-win.is-ready .q-line{width:calc(100% + .8rem);max-width:none;margin:0 -.4rem;padding:.12em .4rem;border-radius:6px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-user-select:none;user-select:none;transition:background .2s ease;}
 .code-win.is-ready .q-line:hover{background:rgba(255,255,255,.06);}
-/* o-mne.html hero okno (page.js buildHeroTabs): záložky v liště, hledáček s portrétem přes tělo okna, klikací řádky */
+/* o-mne.html hero okno: lišta s dvěma názvy (jiri.js vlevo, foto.raw vpravo), tělo = kód, přes něj fotka za šikmým řezem (.hcut, page.js) */
 .code-win--hero{position:relative;}
-.code-win--hero .code-win__body{transition:opacity .35s ease;}
-.code-win__tabs{display:flex;gap:.2rem;margin:-.33rem 0 -.33rem .3rem;}
-.code-win__tab{position:relative;display:inline-flex;align-items:center;gap:.38rem;font:inherit;font-size:.76rem;padding:.38rem .7rem;border:0;border-radius:7px;background:transparent;color:rgba(255,255,255,.38);
-  cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:color .25s ease,background .25s ease,box-shadow .25s ease;}
-.code-win__tab svg{width:.95em;height:.95em;flex:none;}
-.code-win__tab.is-on{color:rgba(var(--purple-rgb),.95);background:rgba(var(--purple-rgb),.1);box-shadow:inset 0 0 0 1px rgba(var(--purple-rgb),.5);}
-.code-win__tab:not(.is-on):hover{color:rgba(255,255,255,.75);}
-.code-win--hero .hero-foto{position:absolute;left:0;right:0;bottom:0;top:2.5rem;width:auto;max-width:none;min-height:0;aspect-ratio:auto;margin:0;padding:.8rem 1rem .7rem;
-  border:0;border-radius:0;box-shadow:none;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s;}
-.code-win--hero.is-foto .hero-foto{opacity:1;visibility:visible;transition:opacity .35s ease;}
-.code-win--hero.is-foto .code-win__body{opacity:0;pointer-events:none;}
-.hero-foto .vf-photo{object-position:50% 22%;transform:none;filter:none;} /* bez zvětšení 1,08× a blur(0)/brightness filtru: na retině by z 1200 px zdroje dělaly rozmazaný obraz */
-/* selektivní ostření (page.js focusAt): rozmazaná kopie dole, ostrá nahoře odkrytá kruhovou maskou kolem --fx/--fy */
-.hero-foto .vf-base{filter:blur(3px) brightness(.92);transform:scale(1.04);}
-.hero-foto .vf-sharp{
-  -webkit-mask-image:radial-gradient(circle at calc(var(--fx,44) * 1%) calc(var(--fy,41) * 1%),#000 calc(var(--r,1200) * .5px),transparent calc(var(--r,1200) * 1.15px));
-  mask-image:radial-gradient(circle at calc(var(--fx,44) * 1%) calc(var(--fy,41) * 1%),#000 calc(var(--r,1200) * .5px),transparent calc(var(--r,1200) * 1.15px));}
-.hero-foto{cursor:crosshair;}
-.hero-foto .hero-foto__hint{z-index:3;bottom:3.3rem;}
-.hero-foto .vf-shade{background:linear-gradient(180deg,rgba(6,12,18,.55) 0%,rgba(6,12,18,0) 30%,rgba(6,12,18,0) 62%,rgba(6,12,18,.6) 100%);}
-.hero-foto__focus{position:absolute;z-index:2;left:44%;top:41%;margin:-1.1rem 0 0 -1.1rem;}
-.code-win--hero.is-ready [data-go]{width:calc(100% + .8rem);max-width:none;margin-left:-.4rem;margin-right:-.4rem;padding-left:.4rem;padding-right:.4rem;border-radius:6px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:background .2s ease;}
-.code-win--hero.is-ready [data-go].indent{padding-left:calc(1.4em + .4rem);}
-.code-win--hero.is-ready [data-go]:hover{background:rgba(255,255,255,.06);}
 .q-meter{display:flex;align-items:center;gap:.7rem;margin-top:.6rem;opacity:0;transition:opacity .5s ease;}
 .is-ready .q-meter{opacity:1;}
 .q-meter-bar{flex:0 0 5.5rem;height:.4rem;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;}
@@ -2367,3 +2343,84 @@ html.is-home body.logo-lines #hero .cut-lines{z-index:-1;}
 html.is-home body.logo-lines #hero .cut-lines i{
   background:linear-gradient(180deg,rgba(var(--purple-rgb),.15) 0%,rgba(var(--purple-rgb),.15) 40%,rgba(var(--purple-rgb),0) 100%);
 }
+
+/* ===== o-mne.html: tahací řez kód | světlo, uptime, tagy v kartách, boční značky, patička ===== */
+:root{--mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;}
+/* o-mne.html hero okno: kód | světlo. Řez 13° (jako v logu) jde tahat. --dx = výška·tan13°/2 v % šířky, počítá JS podle skutečného rozměru. */
+.hcut{--p:120%;--dx:8%;position:absolute;left:0;right:0;bottom:0;top:var(--lid,2.4rem);overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:ew-resize;}
+.hcut__photo{position:absolute;inset:0;pointer-events:none;background:#06101a;
+  clip-path:polygon(calc(var(--p) + var(--dx)) 0,100% 0,100% 100%,calc(var(--p) - var(--dx)) 100%);}
+/* fotka je větší než okno a posunutá tak, aby obličej (≈51 % / 39 % zdroje) ležel vpravo od řezu */
+.hcut__photo img{position:absolute;left:80%;top:46%;width:135%;height:auto;max-width:none;transform:translate(-51%,-39%);-webkit-user-drag:none;}
+.hcut__line{position:absolute;left:var(--p);top:-8%;height:116%;width:2px;margin-left:-1px;pointer-events:none;
+  transform:rotate(13deg);background:linear-gradient(var(--purple),var(--accent2));box-shadow:0 0 16px rgba(var(--purple-rgb),.55);}
+.hcut__grip{position:absolute;left:var(--p);top:50%;width:2.4rem;height:2.4rem;margin:-1.2rem 0 0 -1.2rem;padding:0;border:0;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;color:#04141a;cursor:ew-resize;
+  background:linear-gradient(135deg,var(--purple),var(--accent2));box-shadow:0 0 26px rgba(var(--purple-rgb),.4),0 4px 14px rgba(0,0,0,.4);transition:transform .2s ease;}
+.hcut__grip svg{width:1.05rem;height:1.05rem;}
+.hcut:hover .hcut__grip,.hcut.is-drag .hcut__grip{transform:scale(1.1);}
+.hcut__hint{position:absolute;right:.8rem;bottom:.8rem;padding:.2rem .75rem;border-radius:999px;font-size:.68rem;opacity:0;
+  background:rgba(4,14,20,.8);border:1px solid rgba(var(--purple-rgb),.35);color:var(--purple);pointer-events:none;transition:opacity .35s ease;white-space:nowrap;}
+.hcut.is-hint .hcut__hint{opacity:1;}
+.hcut.is-used .hcut__hint{opacity:0;}
+.code-win__name2{margin-left:auto;font-size:.68rem;color:rgba(255,255,255,.38);}
+
+/* o-mne.html: uptime, živé počítadlo let (sticky vpravo u "Moje cesta") */
+.uptime{margin:1.6rem 0 0;width:fit-content;max-width:100%;padding:.75rem 1rem .85rem;border-radius:14px;font-family:var(--mono);font-size:.78rem;line-height:1.9;
+  background:rgba(10,16,22,.6);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.55);}
+.uptime__cmd{color:rgba(255,255,255,.4);} .uptime__cmd b{color:var(--purple);font-weight:700;}
+.uptime__row{display:flex;gap:.8rem;white-space:nowrap;}
+.uptime__k{width:3.2em;color:rgba(255,255,255,.4);}
+.uptime__v{color:#fff;font-variant-numeric:tabular-nums;}
+.uptime__v i{font-style:normal;color:rgba(255,255,255,.4);}
+.uptime__v .t{color:var(--purple);}
+.uptime__v .n{display:inline-block;min-width:2ch;text-align:right;}
+@media (max-width:399.98px){.uptime{font-size:.72rem;padding:.7rem .8rem;}}
+@media (min-width:1200px){.sub-split > .uptime{grid-column:2;grid-row:1 / span 8;align-self:start;justify-self:start;position:sticky;top:7rem;margin-top:0;}}
+
+/* o-mne.html: karty "Na čem pracuju" – tagy (styl .tag z podstránek), odkaz drží u dna karty */
+.sub-grid.cols-3 .feature-card{display:flex;flex-direction:column;}
+.sub-grid.cols-3 .feature-card .ref-links{margin-top:auto;padding-top:.9rem;margin-bottom:0;}
+
+/* Boční šikmé značky sekcí (o-mne.html): řez 13° z loga, od 1200 px; JS v page.js, markup <nav class="sec-index"> */
+.sec-index{position:fixed;right:14px;top:50%;z-index:6;display:none;flex-direction:column;gap:6px;transform:translateY(-50%);opacity:0;pointer-events:none;transition:opacity .4s ease;}
+.sec-index.is-show{opacity:1;pointer-events:auto;}
+@media (min-width:1200px){.sec-index{display:flex;}}
+.sec-index a{position:relative;display:block;width:30px;height:34px;}
+.sec-index i{position:absolute;left:50%;top:50%;width:1.5px;height:18px;background:rgba(255,255,255,.3);transform:translate(-50%,-50%) rotate(13deg);transition:height .35s cubic-bezier(.4,0,.2,1),background .3s ease,box-shadow .3s ease;}
+.sec-index a:hover i,.sec-index a:focus-visible i{background:rgba(255,255,255,.75);}
+.sec-index a.is-on i{height:32px;background:var(--purple);box-shadow:0 0 10px rgba(var(--purple-rgb),.5);}
+.sec-index a::after{content:attr(data-t);position:absolute;right:calc(100% + 6px);top:50%;transform:translateY(-50%) translateX(6px);padding:.2rem .6rem;border-radius:999px;
+  font-family:var(--mono);font-size:.68rem;white-space:nowrap;color:#fff;background:rgba(4,14,20,.88);border:1px solid rgba(255,255,255,.1);opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;}
+.sec-index a:hover::after,.sec-index a:focus-visible::after{opacity:1;transform:translateY(-50%);}
+.sec-index a:focus-visible{outline:2px solid var(--purple);outline-offset:-4px;border-radius:6px;}
+
+/* poznámka v patičce (o-mne.html) */
+.footer-note{margin:.9rem 0 0;font-family:var(--mono);font-size:.72rem;color:rgba(255,255,255,.4);}
+
+/* ===== foceni.html: portrét, který jde zaostřit klikem (sekce "Proč to dělám", sticky vpravo) ===== */
+/* Pod fotkou je rozmazaná kopie (.vf-base), nahoře ostrá (.vf-sharp) odkrytá kruhovou maskou kolem --fx/--fy (%) s poloměrem --r (px).
+   Výchozí stav = nedotčený originál (--r přes celou fotku); klik sevře kruh, přeskočí na nové místo a znovu se rozšíří (page.js). */
+.focus-demo{cursor:crosshair;}
+.focus-demo .vf-photo{object-position:50% 50%;transform:none;filter:none;} /* bez zvětšení 1,08× a filtru: na retině by z menšího zdroje dělaly rozmazaný obraz */
+.focus-demo .vf-base{filter:blur(3px) brightness(.92);transform:scale(1.04);}
+.focus-demo .vf-sharp{
+  -webkit-mask-image:radial-gradient(circle at calc(var(--fx,44) * 1%) calc(var(--fy,42) * 1%),#000 calc(var(--r,1200) * .5px),transparent calc(var(--r,1200) * 1.15px));
+  mask-image:radial-gradient(circle at calc(var(--fx,44) * 1%) calc(var(--fy,42) * 1%),#000 calc(var(--r,1200) * .5px),transparent calc(var(--r,1200) * 1.15px));}
+.focus-demo .vf-shade{background:linear-gradient(180deg,rgba(6,12,18,.55) 0%,rgba(6,12,18,0) 30%,rgba(6,12,18,0) 62%,rgba(6,12,18,.6) 100%);}
+.focus-demo .vf-focus{position:absolute;z-index:2;left:44%;top:42%;margin:-1.1rem 0 0 -1.1rem;}
+.focus-demo .vf-caption{z-index:3;bottom:2.6rem;opacity:0;pointer-events:none;}
+
+/* Patička: "baterka" na obřím příjmení, stejně jako .sub-ghost v hero (jen myš, bez reduced-motion). JS (page.js / script.js) píše
+   --gx/--gy jen na .footer-ghost a data-text s jeho textem; mask-image rodiče (rozplývání do tmy) platí i pro ::after. */
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+  .footer-ghost{--gx:-999px;--gy:-999px;}
+  .footer-ghost::after{
+    content:attr(data-text);
+    position:absolute;inset:0;
+    color:transparent;-webkit-text-stroke:1.5px rgba(var(--purple-rgb),.85);
+    -webkit-mask-image:radial-gradient(circle 280px at var(--gx) var(--gy),#000 0%,transparent 100%);
+    mask-image:radial-gradient(circle 280px at var(--gx) var(--gy),#000 0%,transparent 100%);
+  }
+}
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) and (max-width:767.98px){.footer-ghost::after{-webkit-text-stroke-width:1px;}}

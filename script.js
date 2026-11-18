@@ -368,6 +368,54 @@
     });
   });
 
+  /* ---------------- Side section index (≥1200 px) ----------------
+     Slanted 13° ticks fixed on the right (markup <nav id="secIndex">, styles in style.css; mirrors the block in
+     page.js). Clicks go through the anchor handler above. Section starts come from the pin's ScrollTrigger.start
+     where a section is pinned (its live rect lies while pinned), otherwise from the document position. Active =
+     last section that starts above 45 % of the viewport; shown after the first half screen until the last
+     section (#contact) has left. */
+  (function () {
+    var nav = document.getElementById("secIndex");
+    if (!nav) return;
+    var mq = window.matchMedia("(min-width: 1200px)");
+    var links = [].slice.call(nav.querySelectorAll("a"));
+    var secs = links.map(function (a) { return document.querySelector(a.getAttribute("href")); });
+    var ticking = false;
+    function startOf(el) {
+      var st = ScrollTrigger.getAll().filter(function (s) { return s.pin === el; })[0];
+      return st ? st.start : el.getBoundingClientRect().top + window.scrollY;
+    }
+    function upd() {
+      ticking = false;
+      if (!mq.matches) return;
+      var vh = window.innerHeight, y = window.scrollY, on = -1;
+      secs.forEach(function (s, i) { if (s && startOf(s) <= y + vh * 0.45) on = i; });
+      links.forEach(function (a, i) { a.classList.toggle("is-on", i === on); });
+      nav.classList.toggle("is-show", y > vh * 0.4 && secs[secs.length - 1].getBoundingClientRect().bottom > vh * 0.4);
+    }
+    window.addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(upd); } }, { passive: true });
+    window.addEventListener("resize", upd);
+    ScrollTrigger.addEventListener("refresh", upd);
+    upd();
+  })();
+
+  /* Patička: obrysové příjmení se prosvětluje okolo kurzoru (jako .sub-ghost v hero; jen myš, bez reduced-motion).
+     Proměnné se píšou jen na .footer-ghost, ne na :root. Styl: konec style.css. Zrcadleno v page.js. */
+  (function () {
+    var ghost = document.querySelector(".footer-ghost"), foot = document.querySelector("footer");
+    if (!ghost || !foot || reduceMotion || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    ghost.setAttribute("data-text", ghost.textContent.trim());
+    foot.addEventListener("mousemove", function (e) {
+      var r = ghost.getBoundingClientRect();
+      ghost.style.setProperty("--gx", (e.clientX - r.left) + "px");
+      ghost.style.setProperty("--gy", (e.clientY - r.top) + "px");
+    });
+    foot.addEventListener("mouseleave", function () {
+      ghost.style.setProperty("--gx", "-999px");
+      ghost.style.setProperty("--gy", "-999px");
+    });
+  })();
+
   /* ---------------- Custom cursor ---------------- */
   var cursor = document.getElementById("cursor");
   if (cursor && !isMobile) {

@@ -135,7 +135,7 @@
   <section class="sub-section" style="padding-top:1.5rem;">
     <div class="container sub-narrow">
       <div class="legal">
-        <div class="legal-block reveal">
+        <div class="legal-block reveal" id="spravce">
           <h2>Správce osobních údajů</h2>
           <div class="feature-card legal-card">
             <p>Jiří Kratochvíl<br>
@@ -146,32 +146,32 @@
           </div>
         </div>
 
-        <div class="legal-block reveal">
+        <div class="legal-block reveal" id="udaje">
           <h2>Jaké údaje zpracováváme</h2>
           <p>Prostřednictvím kontaktního formuláře zpracováváme údaje, které nám sami poskytnete: jméno, e-mailovou adresu, nepovinně telefonní číslo a obsah vaší zprávy.</p>
         </div>
 
-        <div class="legal-block reveal">
+        <div class="legal-block reveal" id="ucel">
           <h2>Účel zpracování</h2>
           <p>Údaje slouží výhradně k tomu, abychom vás mohli kontaktovat zpět a vyřídit váš dotaz nebo poptávku týkající se tvorby webu, e-shopu nebo fotografických služeb.</p>
         </div>
 
-        <div class="legal-block reveal">
+        <div class="legal-block reveal" id="pravni-zaklad">
           <h2>Právní základ</h2>
           <p>Zpracování je založeno na vašem souhlasu uděleném zaškrtnutím políčka v kontaktním formuláři a na oprávněném zájmu vyřídit vaši poptávku.</p>
         </div>
 
-        <div class="legal-block reveal">
+        <div class="legal-block reveal" id="uchovani">
           <h2>Doba uchování</h2>
           <p>Osobní údaje z kontaktního formuláře uchováváme po dobu nezbytnou k vyřízení vaší poptávky, nejdéle však 24 měsíců od posledního kontaktu, pokud mezi námi nevznikne obchodní vztah vyžadující delší archivaci dle zákona.</p>
         </div>
 
-        <div class="legal-block reveal">
+        <div class="legal-block reveal" id="treti-strany">
           <h2>Předávání třetím stranám</h2>
           <p>Osobní údaje nepředáváme třetím stranám s výjimkou poskytovatelů technické infrastruktury (např. Netlify, hosting a zpracování formuláře), kteří data zpracovávají v souladu s GDPR.</p>
         </div>
 
-        <div class="legal-block reveal">
+        <div class="legal-block reveal" id="prava">
           <h2>Vaše práva</h2>
           <p>Máte právo na přístup ke svým osobním údajům, jejich opravu či výmaz, omezení zpracování, přenositelnost údajů a právo vznést námitku proti zpracování. Svá práva můžete uplatnit e-mailem na info@jirikratochvil.eu.</p>
           <p>Pokud se domníváte, že vaše údaje zpracováváme v rozporu se zákonem, máte právo podat stížnost u Úřadu pro ochranu osobních údajů (uoou.cz).</p>
@@ -182,7 +182,7 @@
           <p>Web používá Google Tag Manager a Google Analytics k měření návštěvnosti. Tyto nástroje se načítají hned při otevření stránky, ale bez vašeho souhlasu běží v režimu bez cookies (Google Consent Mode v2) — neukládají do prohlížeče žádné analytické ani reklamní cookies a Googlu odesílají jen omezené anonymní údaje bez identifikace vašeho zařízení. Analytické a reklamní cookies se aktivují teprve po vašem souhlasu v cookie liště. Souhlas můžete kdykoli odvolat vymazáním cookies a položky „cookieConsent“ z úložiště webu ve vašem prohlížeči. Technické cookies mohou být využity i bez souhlasu, a to pouze pro zajištění základní funkčnosti formuláře a ochrany proti spamu.</p>
         </div>
 
-        <div class="legal-block reveal">
+        <div class="legal-block reveal" id="kontakt">
           <h2>Kontakt</h2>
           <p>V případě dotazů ke zpracování osobních údajů nás kontaktujte na e-mailu <a href="mailto:info@jirikratochvil.eu">info@jirikratochvil.eu</a> nebo telefonu <a href="tel:+420728544881">+420 728 544 881</a>.</p>
         </div>
@@ -221,9 +221,22 @@
       <span class="footer-legal"><a href="gdpr">GDPR</a> &middot; <a href="sitemap">Sitemap</a> &middot; <a href="#" id="cookie-settings">Cookies</a></span>
       <button type="button" class="footer-top">Nahoru <svg class="bi" aria-hidden="true"><use href="#bi-arrow-up"/></svg></button>
     </div>
+    <p class="footer-note">// bez frameworku, jen HTML, CSS a JS · view-source vítán</p>
   </div>
   <div class="footer-ghost" aria-hidden="true">KRATOCHVÍL</div>
 </footer>
+
+<nav class="sec-index" id="secIndex" aria-label="Obsah stránky">
+  <a href="#spravce" data-t="Správce" aria-label="Správce osobních údajů"><i></i></a>
+  <a href="#udaje" data-t="Jaké údaje" aria-label="Jaké údaje zpracováváme"><i></i></a>
+  <a href="#ucel" data-t="Účel zpracování" aria-label="Účel zpracování"><i></i></a>
+  <a href="#pravni-zaklad" data-t="Právní základ" aria-label="Právní základ"><i></i></a>
+  <a href="#uchovani" data-t="Doba uchování" aria-label="Doba uchování"><i></i></a>
+  <a href="#treti-strany" data-t="Třetí strany" aria-label="Předávání třetím stranám"><i></i></a>
+  <a href="#prava" data-t="Vaše práva" aria-label="Vaše práva"><i></i></a>
+  <a href="#cookies" data-t="Cookies" aria-label="Cookies"><i></i></a>
+  <a href="#kontakt" data-t="Kontakt" aria-label="Kontakt"><i></i></a>
+</nav>
 
 <button id="toTop" class="to-top" aria-label="Nahoru">
   <svg class="to-top-ring" viewBox="0 0 46 46" aria-hidden="true" focusable="false">

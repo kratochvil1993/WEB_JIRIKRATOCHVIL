@@ -193,32 +193,28 @@
           </div>
         </div>
         <div class="col-lg-5">
-          <aside class="code-win code-win--hero sub-hero-graphic" data-type-code data-type-delay="1.5" aria-hidden="true">
-            <div class="code-win__bar"><i></i><i></i><i></i><span class="code-win__name">jiri.js</span></div>
+          <aside class="code-win code-win--hero sub-hero-graphic" data-type-code data-type-speed="0.4" data-type-delay="3.2" aria-hidden="true">
+            <div class="code-win__bar"><i></i><i></i><i></i><span class="code-win__name">jiri.js</span><span class="code-win__name2">foto.raw</span></div>
             <div class="code-win__body">
               <div class="code-line"><span class="tok-kw">const</span> <span class="tok-var">jiri</span> <span class="tok-op">=</span> <span class="tok-punc">{</span></div>
               <div class="code-line indent"><span class="tok-var">mesto</span><span class="tok-punc">:</span> <span class="tok-str">"Plzeň"</span><span class="tok-punc">,</span></div>
-              <div class="code-line indent" data-go="web"><span class="tok-var">weby</span><span class="tok-punc">:</span> <span class="tok-str">"od 2015"</span><span class="tok-punc">,</span></div>
-              <div class="code-line indent" data-go="web"><span class="tok-var">eshopy</span><span class="tok-punc">:</span> <span class="tok-str">"Shoptet"</span><span class="tok-punc">,</span></div>
-              <div class="code-line indent" data-go="marketing"><span class="tok-var">reklama</span><span class="tok-punc">:</span> <span class="tok-str">"Google Ads"</span><span class="tok-punc">,</span></div>
-              <div class="code-line indent" data-go="foceni"><span class="tok-var">foceni</span><span class="tok-punc">:</span> <span class="tok-str">"portréty"</span><span class="tok-punc">,</span></div>
+              <div class="code-line indent"><span class="tok-var">weby</span><span class="tok-punc">:</span> <span class="tok-str">"od 2015"</span><span class="tok-punc">,</span></div>
+              <div class="code-line indent"><span class="tok-var">eshopy</span><span class="tok-punc">:</span> <span class="tok-str">"Shoptet"</span><span class="tok-punc">,</span></div>
+              <div class="code-line indent"><span class="tok-var">reklama</span><span class="tok-punc">:</span> <span class="tok-str">"Google Ads"</span><span class="tok-punc">,</span></div>
+              <div class="code-line indent"><span class="tok-var">foceni</span><span class="tok-punc">:</span> <span class="tok-str">"portréty"</span><span class="tok-punc">,</span></div>
               <div class="code-line indent"><span class="tok-var">foceni_od</span><span class="tok-punc">:</span> <span class="tok-str"><span class="tok-str">2017</span></span><span class="tok-punc">,</span></div>
               <div class="code-line indent"><span class="tok-var">tym</span><span class="tok-punc">:</span> <span class="tok-str">"jeden člověk"</span><span class="tok-punc">,</span></div>
               <div class="code-line indent"><span class="tok-var">pristup</span><span class="tok-punc">:</span> <span class="tok-str">"napřímo"</span><span class="tok-punc">,</span></div>
               <div class="code-line indent"><span class="tok-var">ai</span><span class="tok-punc">:</span> <span class="tok-str">"pomáhá, ručím já"</span><span class="tok-punc">,</span></div>
               <div class="code-line indent"><span class="tok-var">kontakt</span><span class="tok-punc">:</span> <span class="tok-str">"zavolat i napsat"</span></div>
               <div class="code-line"><span class="tok-punc">};</span></div>
-              <div class="code-line q-note" data-go="contact"><span class="tok-comment">// napište mi</span><span class="code-caret"></span></div>
+              <div class="code-line q-note"><span class="tok-comment">// napište mi</span><span class="code-caret"></span></div>
             </div>
-            <div class="viewfinder hero-foto" aria-hidden="true">
-              <img class="vf-photo vf-base" data-src="assets/images/20180920-IMG_4016.webp" width="1200" height="800" alt="" decoding="async">
-              <img class="vf-photo vf-sharp" data-src="assets/images/20180920-IMG_4016.webp" width="1200" height="800" alt="" decoding="async">
-              <div class="vf-shade"></div><div class="vf-grid"></div>
-              <i class="vf-corner vf-tl"></i><i class="vf-corner vf-tr"></i><i class="vf-corner vf-bl"></i><i class="vf-corner vf-br"></i>
-              <div class="vf-top"><span class="vf-count">1/1</span><span class="vf-mode">portrét</span></div>
-              <span class="vf-focus hero-foto__focus"></span>
-              <div class="vf-bottom"><span class="vf-f">f/1.8</span><span class="vf-s">1/250</span><span class="vf-iso">ISO 100</span></div>
-              <div class="vf-flash"></div>
+            <div class="hcut" id="hcut" aria-hidden="true">
+              <div class="hcut__photo"><img src="assets/images/20180904-IMG_3311.webp" width="1200" height="800" alt="" decoding="async"></div>
+              <i class="hcut__line"></i>
+              <button type="button" class="hcut__grip" tabindex="-1" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M5.5 4L2 8l3.5 4M10.5 4L14 8l-3.5 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <span class="hcut__hint">táhni</span>
             </div>
           </aside>
         </div>
@@ -241,6 +237,11 @@
       <p class="eyebrow reveal">Moje cesta</p>
       <h2 class="reveal-wipe">Jak jsem se <span class="gradient-text">k tomu dostal</span></h2>
       <p class="reveal">S weby pracuju od roku 2015. Začínal jsem na backendu, postupně jsem se přesunul k frontendu, e-shopům a online marketingu a od roku 2017 k tomu fotím portréty.</p>
+      <div class="uptime reveal" aria-hidden="true" id="uptime">
+        <div class="uptime__cmd"><b>$</b> uptime</div>
+        <div class="uptime__row"><span class="uptime__k">weby</span><span class="uptime__v" data-since="2015-01-01">od 2015</span></div>
+        <div class="uptime__row"><span class="uptime__k">foto</span><span class="uptime__v" data-since="2017-01-01">od 2017</span></div>
+      </div>
       <ol class="steps">
         <li class="step reveal">
           <div>
@@ -276,18 +277,21 @@
           <div class="icon"><svg class="bi" aria-hidden="true"><use href="#bi-rocket-takeoff-fill"/></svg></div>
           <h3>Weby &amp; e-shopy</h3>
           <p>Od zadání po spuštění. E-shopy stavím hlavně na Shoptetu, weby píšu na míru.</p>
+          <div class="tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">Shoptet</span></div>
           <p class="ref-links"><a href="web">Jak pracuji na webech &rarr;</a></p>
         </div>
         <div class="feature-card reveal">
           <div class="icon"><svg class="bi" aria-hidden="true"><use href="#bi-graph-up-arrow"/></svg></div>
           <h3>Online marketing</h3>
           <p>Správa Google Ads a měření, aby bylo vidět, co reklama opravdu přináší.</p>
+          <div class="tags"><span class="tag">Google Ads</span><span class="tag">GA4</span><span class="tag">Tag Manager</span></div>
           <p class="ref-links"><a href="marketing">Jak pracuji na reklamě &rarr;</a></p>
         </div>
         <div class="feature-card reveal">
           <div class="icon"><svg class="bi" aria-hidden="true"><use href="#bi-camera"/></svg></div>
           <h3>Portrétní fotografie</h3>
           <p>Přátelské a neformální focení v Plzni a okolí, ve městě i v přírodě.</p>
+          <div class="tags"><span class="tag">Město</span><span class="tag">Příroda</span><span class="tag">Glamour</span></div>
           <p class="ref-links"><a href="foceni">Jak focení probíhá &rarr;</a></p>
         </div>
       </div>
@@ -370,9 +374,17 @@
       <span class="footer-legal"><a href="gdpr">GDPR</a> &middot; <a href="sitemap">Sitemap</a> &middot; <a href="#" id="cookie-settings">Cookies</a></span>
       <button type="button" class="footer-top">Nahoru <svg class="bi" aria-hidden="true"><use href="#bi-arrow-up"/></svg></button>
     </div>
+    <p class="footer-note">// bez frameworku, jen HTML, CSS a JS · view-source vítán</p>
   </div>
   <div class="footer-ghost" aria-hidden="true">KRATOCHVÍL</div>
 </footer>
+
+<nav class="sec-index" id="secIndex" aria-label="Sekce stránky">
+  <a href="#kdo" data-t="Kdo jsem" aria-label="Kdo jsem"><i></i></a>
+  <a href="#cesta" data-t="Moje cesta" aria-label="Moje cesta"><i></i></a>
+  <a href="#co-delam" data-t="Co dělám" aria-label="Co dělám"><i></i></a>
+  <a href="#pristup" data-t="Jak pracuju" aria-label="Jak pracuju"><i></i></a>
+</nav>
 
 <button id="toTop" class="to-top" aria-label="Nahoru">
   <svg class="to-top-ring" viewBox="0 0 46 46" aria-hidden="true" focusable="false">

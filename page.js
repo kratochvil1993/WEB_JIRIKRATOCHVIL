@@ -1221,101 +1221,200 @@
     return { start: function () { var c = log.querySelector(".code-caret"); if (c) c.remove(); propose(false); } };
   }
 
-  /* ---------------- Hero okno na o-mne.html: záložky jiri.js ⇄ foto.raw + řádky jako rozcestník ----------------
-     Záložka foto.raw překlopí okno na malý hledáček s portrétem (výška okna se nemění, hledáček leží přes tělo
-     okna); záblesk a "zaostření" jako ve hledáčku na foceni. Po dopsání kódu jsou řádky klikací (data-go):
-     weby/eshopy → web, reklama → marketing, foceni → foceni, poslední řádek otevře kontaktní modal.
-     Dekorativní (aria-hidden, tlačítka tabindex -1); s reduced-motion se nevytváří. */
-  function buildHeroTabs(win) {
-    var bar = win.querySelector(".code-win__bar"), name = bar.querySelector(".code-win__name");
-    var foto = win.querySelector(".hero-foto"), flash = foto.querySelector(".vf-flash"), focus = foto.querySelector(".vf-focus");
-    var mouse = window.matchMedia("(hover:hover) and (pointer:fine)").matches;
-    var tabs = document.createElement("div"); tabs.className = "code-win__tabs";
-    [["jiri.js", false], ["foto.raw", true]].forEach(function (t, i) {
-      var b = document.createElement("button");
-      b.type = "button"; b.tabIndex = -1; b.className = "code-win__tab" + (i === 0 ? " is-on" : ""); b.setAttribute("data-foto", t[1] ? "1" : "");
-      b.innerHTML = t[1] ? '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true"><path d="M2 5.2c0-.7.5-1.2 1.2-1.2h1.4l.9-1.3h5l.9 1.3h1.4c.7 0 1.2.5 1.2 1.2v6.1c0 .7-.5 1.2-1.2 1.2H3.2c-.7 0-1.2-.5-1.2-1.2z"/><circle cx="8" cy="8.3" r="2.4"/></svg>'
-        : '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 4.5 2 8l3.5 3.5M10.5 4.5 14 8l-3.5 3.5"/></svg>';
-      b.appendChild(document.createTextNode(t[0]));
-      tabs.appendChild(b);
+  /* ---------------- o-mne.html: tahací řez kód | světlo, uptime, boční značky; vzkaz v konzoli ----------------
+     Každý blok je samostatný IIFE a hlídá si, že jeho prvek na stránce je (kromě vzkazu v konzoli). */
+  function clampN(v, a, b) { return Math.min(b, Math.max(a, v)); }
+
+  /* Hero okno jiri.js má přes tělo fotku (.hcut) za šikmým řezem 13° (jako v logu), který jde tahat myší i
+     prstem (jen vodorovně, svislý scroll zůstává nativní); klepnutí na okno řez posune. Po ~2,4 s řez přijede
+     zprava (po ~1,2 s, jakmile je fotka načtená), s reduced-motion je hned na místě. --dx (vodorovný posun řezu = výška·tan13°/2 v % šířky) a --lid
+     (výška lišty) se měří z DOM. Dekorativní: aria-hidden, tlačítko tabindex -1. */
+  (function () {
+    var box = document.getElementById("hcut");
+    if (!box) return;
+    var bar = box.closest(".code-win").querySelector(".code-win__bar");
+    var p = 120, used = false, auto = null, tw = null, drag = false, st = null, offset = 0, MIN = 26, MAX = 94, START = 68;
+
+    function size() {
+      box.style.setProperty("--lid", bar.offsetHeight + "px");
+      var r = box.getBoundingClientRect();
+      if (r.width) box.style.setProperty("--dx", (r.height / r.width * Math.tan(13 * Math.PI / 180) * 50).toFixed(2) + "%");
+    }
+    function set(v, free) { p = free ? v : clampN(v, MIN, MAX); box.style.setProperty("--p", p + "%"); }
+    function pct(e) { var r = box.getBoundingClientRect(); return (e.clientX - r.left) / r.width * 100; }
+    function use() {
+      if (!used) { used = true; box.classList.add("is-used"); }
+      if (auto) { auto.kill(); auto = null; }
+      if (tw) { tw.kill(); tw = null; }
+    }
+    function glide(to) {
+      use();
+      if (reduceMotion) { set(to); return; }
+      var o = { v: p };
+      tw = gsap.to(o, { v: clampN(to, MIN, MAX), duration: 0.45, ease: "power3.out", onUpdate: function () { set(o.v); } });
+    }
+
+    box.addEventListener("pointerdown", function (e) {
+      if (e.button > 0 || p > 100) return;
+      use();
+      var touch = e.pointerType === "touch";
+      st = { x: e.clientX, y: e.clientY, touch: touch, id: e.pointerId, moved: false };
+      if (!touch) { drag = true; offset = 0; box.classList.add("is-drag"); try { box.setPointerCapture(e.pointerId); } catch (_) {} set(pct(e)); }
     });
-    name.parentNode.replaceChild(tabs, name);
-    var note = win.querySelector(".q-note .tok-comment");
-    if (note) note.textContent = mouse ? "// napište mi · klikni na řádek" : "// napište mi · klepni na řádek";
-    /* Selektivní ostření: pod fotkou je rozmazaná kopie (.vf-base), nahoře ostrá (.vf-sharp) odkrytá maskou kolem bodu
-       (--fx/--fy v %, --r = poloměr v px). Klik/ťuknutí na fotku posune políčko autofokusu a ostrost: kruh se na starém místě
-       sevře, přeskočí na nové a znovu se rozšíří ("hledání zaostření"). */
-    var focusTl = null, hint = null, hintGone = false;
-    var R_ALL = 1200, R_FOCUS = 170; /* R_ALL = maska přes celou fotku (originál bez efektu), R_FOCUS = ostrý kruh po kliknutí */
-    var resetFocus = function () {
-      if (focusTl) focusTl.kill();
-      gsap.set(foto, { "--fx": 44, "--fy": 41, "--r": R_ALL });
-      gsap.set(focus, { left: "44%", top: "41%" });
-    };
-    resetFocus();
-    var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
-    var hideHint = function () {
-      if (!hint || hintGone) return;
-      hintGone = true; gsap.to(hint, { opacity: 0, duration: 0.4, overwrite: true });
-    };
-    var focusAt = function (fx, fy) {
-      if (focusTl) focusTl.kill();
-      focusTl = gsap.timeline();
-      focusTl.to(foto, { "--r": 55, duration: 0.18, ease: "power2.in" })
-             .set(foto, { "--fx": fx, "--fy": fy })
-             .to(foto, { "--r": R_FOCUS, duration: 0.55, ease: "power2.out" });
-      gsap.to(focus, { left: fx + "%", top: fy + "%", duration: 0.45, delay: 0.1, ease: "back.out(1.6)", overwrite: "auto" });
-      gsap.fromTo(focus, { scale: 1.5, opacity: 0.5 }, { scale: 1, opacity: 1, duration: 0.35, delay: 0.1, ease: "power3.out" });
-    };
-    foto.addEventListener("click", function (e) {
-      if (!win.classList.contains("is-foto")) return;
-      var r = foto.getBoundingClientRect();
-      focusAt(clamp((e.clientX - r.left) / r.width * 100, 10, 90), clamp((e.clientY - r.top) / r.height * 100, 24, 68));
-      if (navigator.vibrate) navigator.vibrate(8);
-      hideHint();
-    });
-    /* Portrét se stahuje až když ho někdo chce: data-src → src při najetí/dotyku na záložku (předběhnutí) nebo při přepnutí.
-       Fotka je jinak jen skrytá a prohlížeč by ji stáhl hned při načtení stránky (~44 kB navíc, horší LCP). */
-    var fotoLoaded = false;
-    var loadFoto = function () {
-      if (fotoLoaded) return;
-      fotoLoaded = true;
-      Array.prototype.forEach.call(foto.querySelectorAll("img[data-src]"), function (im) { im.src = im.getAttribute("data-src"); im.removeAttribute("data-src"); });
-    };
-    var fotoTab = tabs.querySelector("[data-foto='1']");
-    ["pointerenter", "touchstart", "focus"].forEach(function (ev) { fotoTab.addEventListener(ev, loadFoto, { passive: true, once: true }); });
-    var show = function (isFoto) {
-      if (win.classList.contains("is-foto") === isFoto) return;
-      if (isFoto) loadFoto();
-      win.classList.add("tabs-used");
-      foto.style.top = bar.offsetHeight + "px";
-      win.classList.toggle("is-foto", isFoto);
-      Array.prototype.forEach.call(tabs.children, function (b) { b.classList.toggle("is-on", !!b.getAttribute("data-foto") === isFoto); });
-      if (navigator.vibrate) navigator.vibrate(8);
-      if (isFoto) {
-        gsap.fromTo(flash, { opacity: 0.5 }, { opacity: 0, duration: 0.5, ease: "power2.out" });
-        gsap.fromTo(focus, { scale: 1.7, opacity: 0.4 }, { scale: 1, opacity: 1, duration: 0.45, ease: "power3.out", delay: 0.1 });
-        resetFocus(); /* při každém otevření záložky je fotka originál, bez efektu, dokud na ni uživatel neklikne */
-        if (!hint && !hintGone) { /* nápověda, dokud si to uživatel nevyzkouší */
-          hint = document.createElement("span");
-          hint.className = "vf-caption hero-foto__hint";
-          hint.textContent = mouse ? "klikni a zaostři" : "klepni a zaostři";
-          foto.appendChild(hint);
-          gsap.fromTo(hint, { opacity: 0 }, { opacity: 1, duration: 0.5, delay: 0.9 });
-          gsap.to(hint, { opacity: 0, duration: 0.5, delay: 5.5, onComplete: function () { hintGone = true; } });
+    box.addEventListener("pointermove", function (e) {
+      if (!st || e.pointerId !== st.id) return;
+      if (!drag && st.touch) {
+        var dx = e.clientX - st.x, dy = e.clientY - st.y;
+        if (Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(dy)) {
+          drag = true; offset = p - pct(e); box.classList.add("is-drag");
+          try { box.setPointerCapture(e.pointerId); } catch (_) {}
         }
       }
-    };
-    tabs.addEventListener("click", function (e) { var b = e.target.closest(".code-win__tab"); if (b) show(!!b.getAttribute("data-foto")); });
-    win.addEventListener("click", function (e) {
-      var l = e.target.closest("[data-go]");
-      if (!l || !win.classList.contains("is-ready") || win.classList.contains("is-foto")) return;
-      var go = l.getAttribute("data-go");
-      if (go === "contact") { var c = document.querySelector("[data-open-contact]"); if (c) c.click(); }
-      else window.location.href = go;
+      if (drag) { st.moved = true; set(pct(e) + offset); }
     });
-    return { ready: function () { win.classList.add("is-ready"); } };
-  }
+    function end(e, cancelled) {
+      if (!st || e.pointerId !== st.id) return;
+      var tap = !cancelled && st.touch && !st.moved, x = pct(e);
+      drag = false; st = null; box.classList.remove("is-drag");
+      if (tap) glide(x);
+    }
+    box.addEventListener("pointerup", function (e) { end(e, false); });
+    box.addEventListener("pointercancel", function (e) { end(e, true); });
+
+    size();
+    window.addEventListener("resize", size);
+    if ("ResizeObserver" in window) new ResizeObserver(size).observe(box);
+
+    function sweep() {
+      if (used) return;
+      size();
+      if (reduceMotion) { set(START); return; }
+      var o = { v: p };
+      auto = gsap.to(o, { v: START, duration: 1.1, ease: "power3.inOut", onUpdate: function () { set(o.v, true); },
+        onComplete: function () { auto = null; box.classList.add("is-hint"); setTimeout(function () { box.classList.remove("is-hint"); }, 5000); } });
+    }
+    /* fotka přijede hned, jak hero doletí (~1,2 s); kdyby se ještě nenačetla, řez počká, ať nevyjede prázdný */
+    var img = box.querySelector("img");
+    function whenLoaded(fn) {
+      if (!img || img.complete) { fn(); return; }
+      img.addEventListener("load", fn, { once: true });
+      img.addEventListener("error", fn, { once: true });
+    }
+    if (reduceMotion) sweep(); else gsap.delayedCall(1.2, function () { whenLoaded(sweep); });
+  })();
+
+  /* Uptime: kolik let už to dělám (data-since = začátek). S reduced-motion bez sekund a bez tikání. */
+  (function () {
+    var vals = [].slice.call(document.querySelectorAll("#uptime .uptime__v"));
+    if (!vals.length) return;
+    function dim(y, m) { return new Date(y, m + 1, 0).getDate(); }
+    function pad(n) { return (n < 10 ? "0" : "") + n; }
+    function n(v) { return '<span class="n">' + v + "</span>"; }
+    function render() {
+      var now = new Date();
+      vals.forEach(function (el) {
+        var s = el.getAttribute("data-since").split("-");
+        var y = now.getFullYear() - (+s[0]), mo = now.getMonth() - (+s[1] - 1), d = now.getDate() - (+s[2]);
+        if (d < 0) { mo--; d += dim(now.getFullYear(), now.getMonth() - 1); }
+        if (mo < 0) { y--; mo += 12; }
+        var html = n(y) + " let <i>·</i> " + n(mo) + " měs <i>·</i> " + n(d) + " d";
+        if (!reduceMotion) html += ' <i>·</i> <span class="t">' + pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":" + pad(now.getSeconds()) + "</span>";
+        el.innerHTML = html;
+      });
+    }
+    render();
+    if (!reduceMotion) setInterval(render, 1000);
+  })();
+
+  /* Boční šikmé značky sekcí: aktivní = poslední sekce, jejíž vršek je nad 45 % výšky okna; vidět jen
+     od první po poslední sekci. Kliknutí řeší obecná obsluha kotev výše. */
+  (function () {
+    var nav = document.getElementById("secIndex");
+    if (!nav) return;
+    var links = [].slice.call(nav.querySelectorAll("a"));
+    var secs = links.map(function (a) { return document.querySelector(a.getAttribute("href")); });
+    var ticking = false;
+    function upd() {
+      ticking = false;
+      var vh = window.innerHeight, on = -1;
+      secs.forEach(function (s, i) { if (s && s.getBoundingClientRect().top <= vh * 0.45) on = i; });
+      links.forEach(function (a, i) { a.classList.toggle("is-on", i === on); });
+      var first = secs[0].getBoundingClientRect(), last = secs[secs.length - 1].getBoundingClientRect();
+      nav.classList.toggle("is-show", first.top < vh * 0.6 && last.bottom > vh * 0.4);
+    }
+    window.addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(upd); } }, { passive: true });
+    window.addEventListener("resize", upd);
+    upd();
+  })();
+
+  /* foceni.html, "Proč to dělám": portrét (.focus-demo, sticky vpravo vedle textu), který jde zaostřit klikem/klepnutím.
+     Výchozí stav je nedotčený originál; klik sevře ostrý kruh na starém místě, přeskočí na nové a znovu se rozšíří
+     ("hledání zaostření"), políčko autofokusu se přesune za ním. Nápověda se ukáže, když okno přijede do záběru,
+     a zmizí po prvním použití. S reduced-motion se kruh a políčko přepnou bez animace. Dekorativní (aria-hidden). */
+  (function () {
+    var foto = document.querySelector(".focus-demo");
+    if (!foto) return;
+    var focus = foto.querySelector(".vf-focus"), flash = foto.querySelector(".vf-flash"), hint = foto.querySelector(".vf-caption");
+    var mouse = window.matchMedia("(hover:hover) and (pointer:fine)").matches;
+    var R_ALL = 1200, R_FOCUS = 170, FX = 44, FY = 42; /* R_ALL = maska přes celou fotku (originál), R_FOCUS = ostrý kruh po kliknutí */
+    var tl = null, used = false;
+    hint.textContent = mouse ? "klikni a zaostři" : "klepni a zaostři";
+    gsap.set(foto, { "--fx": FX, "--fy": FY, "--r": R_ALL });
+
+    function hideHint() { gsap.to(hint, { opacity: 0, duration: 0.4, overwrite: true }); }
+    function focusAt(fx, fy) {
+      if (tl) tl.kill();
+      if (reduceMotion) {
+        gsap.set(foto, { "--fx": fx, "--fy": fy, "--r": R_FOCUS });
+        gsap.set(focus, { left: fx + "%", top: fy + "%" });
+        return;
+      }
+      tl = gsap.timeline();
+      tl.to(foto, { "--r": 55, duration: 0.18, ease: "power2.in" })
+        .set(foto, { "--fx": fx, "--fy": fy })
+        .to(foto, { "--r": R_FOCUS, duration: 0.55, ease: "power2.out" });
+      gsap.to(focus, { left: fx + "%", top: fy + "%", duration: 0.45, delay: 0.1, ease: "back.out(1.6)", overwrite: "auto" });
+      gsap.fromTo(focus, { scale: 1.5, opacity: 0.5 }, { scale: 1, opacity: 1, duration: 0.35, delay: 0.1, ease: "power3.out" });
+    }
+    foto.addEventListener("click", function (e) {
+      var r = foto.getBoundingClientRect();
+      focusAt(clampN((e.clientX - r.left) / r.width * 100, 10, 90), clampN((e.clientY - r.top) / r.height * 100, 24, 68));
+      if (navigator.vibrate) navigator.vibrate(8);
+      used = true; hideHint();
+    });
+
+    ScrollTrigger.create({ trigger: foto, start: "top 75%", once: true, onEnter: function () {
+      if (reduceMotion) { if (!used) gsap.set(hint, { opacity: 1 }); return; }
+      gsap.fromTo(flash, { opacity: 0.5 }, { opacity: 0, duration: 0.5, ease: "power2.out" });
+      gsap.fromTo(focus, { scale: 1.7, opacity: 0.4 }, { scale: 1, opacity: 1, duration: 0.45, ease: "power3.out", delay: 0.1 });
+      if (used) return;
+      gsap.fromTo(hint, { opacity: 0 }, { opacity: 1, duration: 0.5, delay: 0.9 });
+      gsap.to(hint, { opacity: 0, duration: 0.5, delay: 6.5 });
+    } });
+  })();
+
+  /* Patička: obrysové příjmení se prosvětluje okolo kurzoru (jako .sub-ghost v hero; jen myš, bez reduced-motion).
+     Proměnné se píšou jen na .footer-ghost, ne na :root. Styl: konec style.css. Zrcadleno v script.js. */
+  (function () {
+    var ghost = document.querySelector(".footer-ghost"), foot = document.querySelector("footer");
+    if (!ghost || !foot || reduceMotion || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    ghost.setAttribute("data-text", ghost.textContent.trim());
+    foot.addEventListener("mousemove", function (e) {
+      var r = ghost.getBoundingClientRect();
+      ghost.style.setProperty("--gx", (e.clientX - r.left) + "px");
+      ghost.style.setProperty("--gy", (e.clientY - r.top) + "px");
+    });
+    foot.addEventListener("mouseleave", function () {
+      ghost.style.setProperty("--gx", "-999px");
+      ghost.style.setProperty("--gy", "-999px");
+    });
+  })();
+
+  /* Vzkaz v konzoli pro ty, kdo otevřou devtools (všechny podstránky). */
+  try {
+    console.log("%c</>", "color:#0ef;font-size:34px;font-weight:800;font-family:monospace");
+    console.log("%cKoukáte pod kapotu? Bez frameworku, jen HTML, CSS a JS. Pokud hledáte někoho, kdo to dotáhne, napište mi: info@jirikratochvil.eu", "color:#0ac8e0;font-size:12px");
+  } catch (_) {}
 
   /* ---------------- Hledané dotazy (marketing.html): vyřazování zbytečných dotazů ----------------
      S JS a pohybem začíná okno "nevytříděné" (všechny dotazy ✓) a po dopsání lze klepnutím/kliknutím dotaz vyřadit
@@ -1364,8 +1463,6 @@
   if (!reduceMotion) {
     gsap.utils.toArray("[data-type-code]").forEach(function (win) {
       var tl = gsap.timeline({ scrollTrigger: { trigger: win, start: win.classList.contains("code-win--aside") ? "top 60%" : "top 85%", once: true } });
-      var ht = win.querySelector(".hero-foto") ? buildHeroTabs(win) : null;
-      if (ht) tl.eventCallback("onComplete", ht.ready);
       var qs = win.querySelector(".q-line") ? buildQueries(win) : null;
       if (qs) tl.eventCallback("onComplete", qs.ready);
       if (win.classList.contains("code-win--chat")) {
@@ -1475,7 +1572,7 @@
   /* ---------------- Hledáček u postupu (foceni.html): počítadlo snímků, popisek, expozice, záblesk ----------------
      V HTML je hotový stav (5/5), takže bez JS / s reduced-motion zůstane vidět; tady se vrátí na začátek
      a postupuje, jak scroll dojíždí ke krokům (#postup-1..5). */
-  var vf = document.querySelector(".viewfinder:not(.hero-foto)"); /* hero-foto = portrét v okně na o-mne.html, bez kroků */
+  var vf = document.querySelector("#postup .viewfinder"); /* ne ten zaostřovací nahoře v "Proč to dělám" (.focus-demo) */
   if (vf && !reduceMotion) {
     var vfCount = vf.querySelector(".vf-count"), vfCap = vf.querySelector(".vf-caption"),
         vfF = vf.querySelector(".vf-f"), vfS = vf.querySelector(".vf-s"), vfISO = vf.querySelector(".vf-iso"),
