@@ -2309,24 +2309,28 @@ html.modal-open{overflow:hidden;}
 /* ---------- Motiv loga (zkouška na web.html, body.logo-lines) ----------
    Z loga </> jsou převzaté tři věci: šikmý řez (≈13° od svislice, "/" se sklání doprava),
    tenké čáry. Vše jen azurová hairline s nízkou průhledností, nic neblokuje klikání. */
-/* (1) dělítko mezi sekcemi: čára přerušená řezem jako v logu — krátký levý kousek, šikmý řez, dlouhý pravý kousek,
-   který se do ztracena rozplývá. Čára i řez mají stejnou sílu. S JS se při vstupu sekce vykreslí zleva (třídu .cut-in dává page.js). */
+/* (1) dělítko mezi sekcemi: čára přerušená řezem jako v logu — řez vpravo (stejná strana jako čáry v hero a CTA), vedle něj
+   krátký kousek čáry, vlevo dlouhý kousek, který se k textu do ztracena rozplývá. Čára i řez mají stejnou sílu.
+   S JS se při vstupu sekce vykreslí zprava od řezu (třídu .cut-in dává page.js), bez JS / s omezeným pohybem je hned celé. */
 body.logo-lines .sub-section + .sub-section::before{
   content:"";position:absolute;top:-11px;left:50%;transform:translateX(-50%);
   width:min(100% - 24px,516px);height:22px;pointer-events:none;
   background:
-    linear-gradient(90deg,rgba(var(--purple-rgb),.45),rgba(var(--purple-rgb),.45)) 0 50%/46px 1px no-repeat,
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 22'%3E%3Cpath d='M8.2 1L3.8 21' stroke='%230ef' stroke-width='1.4' stroke-linecap='round' fill='none' stroke-opacity='.55'/%3E%3C/svg%3E") 50px 50%/12px 22px no-repeat,
-    linear-gradient(90deg,rgba(var(--purple-rgb),.45),rgba(var(--purple-rgb),.07) 70%,transparent) 66px 50%/calc(100% - 66px) 1px no-repeat;
+    linear-gradient(90deg,rgba(var(--purple-rgb),.45),rgba(var(--purple-rgb),.45)) 100% 50%/46px 1px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 22'%3E%3Cpath d='M8.2 1L3.8 21' stroke='%230ef' stroke-width='1.4' stroke-linecap='round' fill='none' stroke-opacity='.55'/%3E%3C/svg%3E") right 50px center/12px 22px no-repeat,
+    linear-gradient(90deg,transparent,rgba(var(--purple-rgb),.07) 30%,rgba(var(--purple-rgb),.45)) 0 50%/calc(100% - 66px) 1px no-repeat;
 }
 @media (min-width:768px){body.logo-lines .sub-section + .sub-section::before{width:min(100% - 24px,696px);}}
 @media (min-width:992px){body.logo-lines .sub-section + .sub-section::before{width:min(100% - 24px,936px);}}
 @media (min-width:1200px){body.logo-lines .sub-section + .sub-section::before{width:1116px;}}
 @media (min-width:1400px){body.logo-lines .sub-section + .sub-section::before{width:1296px;}}
 @media (prefers-reduced-motion:no-preference){
-  html.js body.logo-lines .sub-section + .sub-section::before{clip-path:inset(0 100% 0 0);transition:clip-path 1.3s cubic-bezier(.2,.7,.2,1);}
+  html.js body.logo-lines .sub-section + .sub-section::before{clip-path:inset(0 0 0 100%);transition:clip-path 1.3s cubic-bezier(.2,.7,.2,1);}
   html.js body.logo-lines .sub-section + .sub-section.cut-in::before{clip-path:inset(0 0 0 0);}
 }
+
+/* stránky bez dělítek mezi sekcemi (kontakt, faq: obsah je souvislý blok, dělítko tam jen ruší) */
+body.logo-lines.no-dividers .sub-section + .sub-section::before{display:none;}
 
 /* (2) diagonální čáry v pozadí hera (3 samostatné prvky .cut-lines i, aby se daly při scrollu rozjet,
    viz page.js) a závěrečné výzvy (statické, SVG pozadí). Úhel = řez z loga, z pravého horního rohu dolů (nezasahují do obřího nápisu). */
