@@ -701,6 +701,21 @@
      Amplitudy jsou schválně malé — ladí se číslem v `amp` / `ampM`. */
   var amp = { x: 34, y: 24, rot: 12, fade: 0.12, blur: 4, dist: 300 }; /* dist = kolik px scrollu trvá, než je rozpad hotový */
   var ampM = { x: 22, y: 16, rot: 8, fade: 0.2, dist: 170, smooth: 0.45 }; /* dist = px scrollu do hotového rozpadu, smooth = vyhlazení (s) */
+
+  /* Motiv loga (web.html): tři šikmé čáry visí v hero z pravého horního rohu a při odscrollování se po ose řezu
+     (šikmo doprava nahoru, zpátky do rohu, každá jinou rychlostí) stáhnou a zeslábnou; dráha (amp.dist), křivka (power2.out) i vyhlazení (scrub 0.5)
+     jsou stejné jako u rozpadu nadpisu a odjezdu grafiky, ať jdou ruku v ruce; scrub, vratné. Jen desktop bez omezení pohybu, jinde zůstávají statické. */
+  var cutLines = hero ? hero.querySelectorAll(".cut-lines i") : [];
+  if (cutLines.length && !reduceMotion && !isMobile) {
+    var cutDist = [240, 340, 170], cutRad = 13 * Math.PI / 180;
+    cutLines.forEach(function (el, i) {
+      gsap.set(el, { rotation: 13, transformOrigin: "50% 0" });
+      gsap.to(el, {
+        x: Math.sin(cutRad) * cutDist[i], y: -Math.cos(cutRad) * cutDist[i], opacity: 0, ease: "power2.out", immediateRender: false,
+        scrollTrigger: { trigger: hero, start: "top top", end: "+=" + amp.dist, scrub: 0.5 }
+      });
+    });
+  }
   /* Mobil: rozpad je plynulá funkce scrollu (0 → dist px) bez vlastního stavu — nemá co uváznout a nic
      nepřepíná skokem. Hrubě hlášený scroll nechodí do animace přímo: cílový postup se jen dotahuje
      vyhlazeným tweenem (ruční smoothing, ne `scrub`), takže se škubání prstu / zpožděné eventy slijí. */
