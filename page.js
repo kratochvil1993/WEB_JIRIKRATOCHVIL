@@ -331,6 +331,9 @@
       setRing({ progress: 0 });
       ScrollTrigger.create({ start: 0, end: "max", onUpdate: setRing, onRefresh: setRing });
     }
+    document.querySelectorAll(".footer-top").forEach(function (b) {
+      b.addEventListener("click", function () { toTopBtn.click(); });
+    });
     toTopBtn.addEventListener("click", function () {
       scrollToPos(0, reduceMotion ? 0.01 : 0.8);
     });

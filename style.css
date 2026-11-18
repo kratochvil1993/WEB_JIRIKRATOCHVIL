@@ -58,6 +58,8 @@ textarea{resize:vertical;}
 .gy-5{--bs-gutter-y:3rem;}
 @media (min-width:768px){
   .col-md-4{flex:0 0 auto;width:33.33333333%;}
+  .col-md-5{flex:0 0 auto;width:41.66666667%;}
+  .col-md-7{flex:0 0 auto;width:58.33333333%;}
   .col-md-6{flex:0 0 auto;width:50%;}
 }
 @media (min-width:992px){
@@ -1260,7 +1262,7 @@ html.hero-pre #hero .pill-btn{visibility:hidden;}
 footer{
   position:relative;
   overflow:hidden;
-  padding:3.5rem 0 2.5rem;
+  padding:3.5rem 0 0;
   color:var(--fg-dim);
 }
 footer::before{
@@ -1278,7 +1280,15 @@ footer::after{
   pointer-events:none;
   background:radial-gradient(60% 120% at 50% 0%, rgba(var(--magenta-rgb),.16), transparent 70%);
 }
-.footer-contact{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0 1.1rem;font-size:.95rem;}
+.footer-mail{
+  display:inline-block;color:var(--fg);font-weight:700;letter-spacing:-.02em;
+  font-size:clamp(1.3rem,5.6vw,2.15rem);line-height:1.2;
+  background:linear-gradient(var(--purple),var(--purple)) 0 100%/0 2px no-repeat;
+  padding-bottom:.18em;
+  transition:background-size .45s cubic-bezier(.4,0,.2,1),color .2s ease;
+}
+.footer-mail:hover{color:var(--purple);background-size:100% 2px;}
+.footer-contact{display:flex;flex-direction:column;gap:.5rem;margin:.8rem 0 1.4rem;font-size:.95rem;}
 .footer-contact a{display:inline-flex;align-items:center;gap:.6rem;color:var(--fg);}
 .footer-contact a:hover{color:var(--magenta);}
 .footer-contact .bi{color:var(--purple);font-size:1rem;}
@@ -1286,7 +1296,7 @@ footer::after{
   font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;
   color:var(--fg-dim);opacity:.65;margin:0 0 .9rem;
 }
-.footer-nav ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55rem;}
+.footer-nav ul{list-style:none;margin:0;padding:0;display:grid;grid-auto-flow:column;grid-template-rows:repeat(3,auto);grid-auto-columns:minmax(0,1fr);gap:.55rem 1.5rem;}
 .footer-nav a{color:var(--fg-dim);font-size:.92rem;}
 .footer-nav a:hover{color:var(--purple);}
 .social-ico{
@@ -1300,6 +1310,40 @@ footer::after{
   transition:border-color .2s ease,color .2s ease;
 }
 .social-ico:hover{border-color:var(--magenta);color:var(--fg);}
+/* Spodní lišta: copyright · právní odkazy · nahoru */
+.footer-bottom{
+  position:relative;z-index:1;
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.6rem 1.5rem;
+  margin-top:2.75rem;padding-top:1.1rem;
+  border-top:1px solid rgba(255,255,255,.1);
+  font-size:.85rem;
+}
+.footer-bottom a{color:var(--fg-dim);}
+.footer-bottom a:hover{color:var(--purple);}
+.footer-top{
+  display:inline-flex;align-items:center;gap:.45rem;padding:0;border:0;background:none;
+  color:var(--fg-dim);font:inherit;cursor:pointer;transition:color .2s ease;
+}
+.footer-top .bi{transition:transform .25s cubic-bezier(.4,0,.2,1);}
+.footer-top:hover{color:var(--purple);}
+@media (max-width:991.98px){.footer-top{display:none;}}
+.footer-top:hover .bi{transform:translateY(-3px);}
+/* Obří obrysové příjmení pod lištou (jako .sub-ghost); dole se rozplývá do tmy */
+.footer-ghost{
+  position:relative;z-index:0;
+  height:.64em;overflow:hidden;margin-top:1rem;
+  font-size:min(19rem,calc(94vw / (var(--n,10) * .66)));
+  --n:10;
+  font-weight:900;line-height:.8;letter-spacing:-.04em;
+  text-align:center;white-space:nowrap;pointer-events:none;user-select:none;
+  color:transparent;-webkit-text-stroke:1.5px rgba(var(--purple-rgb),.2);
+  -webkit-mask-image:linear-gradient(#000 25%,transparent 100%);
+  mask-image:linear-gradient(#000 25%,transparent 100%);
+}
+@media (max-width:767.98px){
+  .footer-bottom{flex-direction:column;align-items:flex-start;}
+  .footer-ghost{-webkit-text-stroke-width:1px;}
+}
 
 /* ---------- Go to top button ---------- */
 .to-top{

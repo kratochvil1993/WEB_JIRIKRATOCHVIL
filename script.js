@@ -316,6 +316,9 @@
         onRefresh: setRing
       });
     }
+    document.querySelectorAll(".footer-top").forEach(function (b) {
+      b.addEventListener("click", function () { toTopBtn.click(); });
+    });
     toTopBtn.addEventListener("click", function () {
       gsap.to(window, { duration: lowPower ? 0.01 : 1, scrollTo: { y: 0 }, ease: "power2.inOut" });
     });
