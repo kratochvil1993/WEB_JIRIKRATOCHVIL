@@ -2347,3 +2347,11 @@ body.logo-lines .sub-cta::after{
   body.logo-lines .cut-lines i:nth-child(3){animation-delay:.9s;}
   @keyframes cutDraw{from{clip-path:inset(0 0 100% 0);}to{clip-path:inset(0 0 0 0);}}
 }
+
+/* Homepage: stejné tři čáry jako v hero podstránek, ale slabší (úvod má částice a glow) a pod obsahem hera
+   (#hero je kontext vrstvení, z-index:-1 = nad pozadím sekce, pod textem a grafikou). Dráhu při scrollu
+   jim dává časová osa hera v script.js (buildHeroScroll), ne page.js. */
+html.is-home body.logo-lines #hero .cut-lines{z-index:-1;}
+html.is-home body.logo-lines #hero .cut-lines i{
+  background:linear-gradient(180deg,rgba(var(--purple-rgb),.15) 0%,rgba(var(--purple-rgb),.15) 40%,rgba(var(--purple-rgb),0) 100%);
+}

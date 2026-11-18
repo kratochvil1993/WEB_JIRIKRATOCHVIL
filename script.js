@@ -1750,6 +1750,18 @@
       .to(heroFx, { burst: 1, ease: "none", duration: 0.5 }, 0)
       .to(heroFx, { burst: 0, ease: "none", duration: 0.5 }, 0.5);
 
+    /* motiv loga: tři šikmé čáry z pravého horního rohu se stáhnou zpátky do rohu po ose řezu (13°),
+       každá jinou rychlostí; stejné jako na podstránkách (page.js), ale na časové ose hera.
+       Mimo .container, takže je nezasáhne jeho zoom ani zmizení. */
+    var cutLines = document.querySelectorAll("#hero .cut-lines i");
+    if (cutLines.length) {
+      var cutDist = [240, 340, 170], cutRad = 13 * Math.PI / 180;
+      gsap.set(cutLines, { rotation: 13, transformOrigin: "50% 0" });
+      cutLines.forEach(function (el, i) {
+        tl.to(el, { x: Math.sin(cutRad) * cutDist[i], y: -Math.cos(cutRad) * cutDist[i], opacity: 0, ease: "power2.out", duration: 0.4 }, 0);
+      });
+    }
+
     heroScrollTl = tl;
     /* hned srovnat s aktuální pozicí (reload uprostřed stránky), bez vyhlazení */
     tl.progress(heroPin.progress);
