@@ -1945,7 +1945,7 @@ html.modal-open{overflow:hidden;}
 /* ---------- Desktopový nav: skleněná kapsle + kluzká bublina + rolování textu ----------
    ≥992 px: nahoře průhledná lišta jako dřív; po odscrollování se samotný .container (logo + odkazy) zúží do
    vycentrované skleněné kapsle (blur a rám přešly z lišty na kapsli). Bublina .nav-pill (JS) jezdí za
-   položkou pod kurzorem, v klidu odpočívá za aktivní. Text odkazů se při hoveru vyroluje (.nl-roll).
+   položkou pod kurzorem, v klidu odpočívá za aktivní. Text odkazů se nerolí; nahoře při hoveru zazáří azurově.
    Pod 992 px se nic z toho neuplatní (mobilní fullscreen menu). */
 .nav-pill{display:none;}
 @media (min-width:992px){
@@ -1990,13 +1990,12 @@ html.modal-open{overflow:hidden;}
   .navbar-custom .nl-roll{display:block;overflow:hidden;line-height:1.5;}
   .navbar-custom .nl-roll-in{display:block;position:relative;transition:transform .4s cubic-bezier(.22,1,.36,1);}
   .navbar-custom .nl-roll-in::after{content:attr(data-t);position:absolute;left:0;top:100%;}
-  .navbar-custom .nav-link:hover .nl-roll-in,
-  .navbar-custom .nav-link:focus-visible .nl-roll-in{transform:translateY(-100%);}
+  /* hover: žádné rolování textu; nahoře (bez kapsle) se odkaz podbarví azurovou, v kapsli to dělá bublina */
+  .navbar-custom:not(.scrolled) .nav-link:hover,
+  .navbar-custom:not(.scrolled) .nav-link:focus-visible{color:var(--purple);}
 }
 @media (min-width:992px) and (prefers-reduced-motion:reduce){
   .nav-pill{transition:opacity .15s ease;}
-  .navbar-custom .nav-link:hover .nl-roll-in,
-  .navbar-custom .nav-link:focus-visible .nl-roll-in{transform:none;}
   .navbar-custom .container{transition:none;}
 }
 
