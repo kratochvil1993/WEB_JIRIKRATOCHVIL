@@ -2073,9 +2073,9 @@
       rotation: function () { return gsap.utils.random(-70, 70); },
       scale: function () { return gsap.utils.random(0.5, 1.6); },
       opacity: 0,
-      duration: 1.3,
+      duration: 0.9,
       ease: "power3.out",
-      stagger: { amount: 0.7, from: "random" },
+      stagger: { amount: 0.4, from: "random" },
       scrollTrigger: { trigger: contactTitle, start: "top 88%", toggleActions: "play none none reverse" }
     });
   }
@@ -2086,7 +2086,8 @@
   function contactReveal() {
     /* eyebrow hned, zbytek (karty, formulář) až když se nadpis složí */
     revealIn(contactEls.slice(0, 1));
-    revealIn(contactEls.slice(1), contactTitleFx ? 0.9 : 0);
+    /* rychleji než pinované sekce: karty + formulář je hodně obsahu a scroll tu nepinuje */
+    gsap.to(contactEls.slice(1), { y: 0, opacity: 1, stagger: 0.07, duration: 0.5, delay: contactTitleFx ? 0.3 : 0, ease: "power2.out", overwrite: "auto" });
     if (!lowPower) pulse();
   }
   ScrollTrigger.create({
