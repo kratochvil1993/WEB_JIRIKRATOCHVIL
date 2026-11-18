@@ -716,6 +716,15 @@
       });
     });
   }
+  /* Motiv loga: dělítko mezi sekcemi se při vstupu sekce vykreslí zleva (CSS transition na .cut-in).
+     Bez JS / s omezeným pohybem je hned celé. */
+  if (!reduceMotion) {
+    document.querySelectorAll(".logo-lines .sub-section + .sub-section").forEach(function (s) {
+      var show = function () { s.classList.add("cut-in"); };
+      if (s.getBoundingClientRect().top < window.innerHeight * 0.88) { show(); return; }
+      ScrollTrigger.create({ trigger: s, start: "top 88%", once: true, onEnter: show });
+    });
+  }
   /* Mobil: rozpad je plynulá funkce scrollu (0 → dist px) bez vlastního stavu — nemá co uváznout a nic
      nepřepíná skokem. Hrubě hlášený scroll nechodí do animace přímo: cílový postup se jen dotahuje
      vyhlazeným tweenem (ruční smoothing, ne `scrub`), takže se škubání prstu / zpožděné eventy slijí. */
