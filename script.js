@@ -1643,7 +1643,7 @@
       end: "+=1600",
       pin: true,
       invalidateOnRefresh: true,
-      anticipatePin: 1,
+      anticipatePin: 0,
       onEnter: function (self) { showAll(self); pulse(); },
       onEnterBack: function (self) { showAll(self); pulse(); },
       onLeaveBack: function () { if (!preview) hideAnimated(); },
@@ -1833,7 +1833,7 @@
       end: "+=100%",
       pin: true,
       pinSpacing: false, /* žádný extra prázdný scroll: sekce Web najede přesně tam, kde pin hera končí */
-      anticipatePin: 1,
+      anticipatePin: 0,
       onUpdate: function (self) {
         if (heroScrollTl) gsap.to(heroScrollTl, { progress: self.progress, duration: 0.6, ease: "power3.out", overwrite: true });
       }
@@ -1998,7 +1998,7 @@
       end: "+=1400",
       pin: true,
       invalidateOnRefresh: true,
-      anticipatePin: 1,
+      anticipatePin: 0,
       onEnter: function (self) { valuesShow(self); pulse(); },
       onEnterBack: function (self) { valuesShow(self); pulse(); },
       onUpdate: function (self) {
