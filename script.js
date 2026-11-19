@@ -43,7 +43,7 @@
   /* Vzkaz v konzoli pro ty, kdo otevřou devtools (stejný text jako v page.js na podstránkách); [perf] řádek pod ním je diagnostika. */
   try {
     console.log("%c</>", "color:#0ef;font-size:34px;font-weight:800;font-family:monospace");
-    console.log("%cKoukáte pod kapotu? Bez frameworku, jen HTML, CSS a JS. Pokud hledáte někoho, kdo to dotáhne, napište mi: info@jirikratochvil.eu", "color:#0ac8e0;font-size:12px");
+    console.log("%cKoukáš pod kapotu? Bez frameworku, jen HTML, CSS a JS. Pokud hledáš někoho, kdo to dotáhne, napiš mi: info@jirikratochvil.eu", "color:#0ac8e0;font-size:12px");
   } catch (_) {}
 
   /* Visible in the browser console for anyone (dev, or a visitor asked to
@@ -2060,7 +2060,7 @@
      sections (revealIn/stagger), but without pin: true — the section (3 info
      cards + full form) runs taller than the viewport, so locking scroll here
      would trap visitors with the submit button off-screen. */
-  /* Zrcadlo rozpadu nadpisu v hero: písmena "Kontaktujte mě" se slétnou z náhodných
+  /* Zrcadlo rozpadu nadpisu v hero: písmena "Kontaktuj mě" se slétnou z náhodných
      pozic do slova. Jen desktop. Je to časová animace spuštěná scrollem (ne scrub):
      scrub trval jen ~325 px scrollu, takže jedno švihnutí kolečkem ji proletělo.
      Karty a formulář naběhnou až po nadpisu (revealIn s delay). */

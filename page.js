@@ -1413,7 +1413,7 @@
   /* Vzkaz v konzoli pro ty, kdo otevřou devtools (všechny podstránky). */
   try {
     console.log("%c</>", "color:#0ef;font-size:34px;font-weight:800;font-family:monospace");
-    console.log("%cKoukáte pod kapotu? Bez frameworku, jen HTML, CSS a JS. Pokud hledáte někoho, kdo to dotáhne, napište mi: info@jirikratochvil.eu", "color:#0ac8e0;font-size:12px");
+    console.log("%cKoukáš pod kapotu? Bez frameworku, jen HTML, CSS a JS. Pokud hledáš někoho, kdo to dotáhne, napiš mi: info@jirikratochvil.eu", "color:#0ac8e0;font-size:12px");
   } catch (_) {}
 
   /* ---------------- Hledané dotazy (marketing.html): vyřazování zbytečných dotazů ----------------
