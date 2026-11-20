@@ -1888,10 +1888,17 @@ html.modal-open{overflow:hidden;}
 .contact-modal__close{
   position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  font-size:1.6rem;line-height:1;color:var(--fg);
+  font-size:0;line-height:0;color:var(--fg);padding:0;
   background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);
   transition:background .2s ease,border-color .2s ease,color .2s ease;
 }
+/* křížek kreslený CSS (glyf × sedí v písmu nad středem) */
+.contact-modal__close::before,.contact-modal__close::after{
+  content:"";position:absolute;left:50%;top:50%;width:16px;height:2px;margin:-1px 0 0 -8px;
+  border-radius:1px;background:currentColor;
+}
+.contact-modal__close::before{transform:rotate(45deg);}
+.contact-modal__close::after{transform:rotate(-45deg);}
 .contact-modal__close:hover,.contact-modal__close:focus-visible{border-color:var(--magenta);color:var(--purple);background:rgba(var(--magenta-rgb),.12);}
 /* telefon nahoře */
 .modal-phone{
