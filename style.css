@@ -2430,3 +2430,29 @@ html.is-home body.logo-lines #hero .cut-lines i{
   }
 }
 @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) and (max-width:767.98px){.footer-ghost::after{-webkit-text-stroke-width:1px;}}
+
+/* ===== Stav dostupnosti "● ONLINE" (kontakt, modal, o-mne uptime) =====
+   Po–Pá 8–18 online (pulzující tečka), jinak offline; logika v page.js/script.js (data-status).
+   Azurová jako zbytek palety (zelená byla zkoušena a vyměněna); offline = šedá. Bez JS skryté. */
+:root{--status-on:var(--purple);--status-on-rgb:var(--purple-rgb);}
+.status{display:inline-flex;align-items:center;gap:.7rem;margin:0 0 1.1rem;font-family:var(--mono);font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#fff;visibility:hidden;}
+.status.is-set{visibility:visible;}
+.status__dot{position:relative;display:inline-block;flex:none;width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.32);}
+.status__dot::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1.5px solid rgba(var(--status-on-rgb),.7);opacity:0;pointer-events:none;}
+[data-state="on"] > .status__dot{background:var(--status-on);box-shadow:0 0 0 4px rgba(var(--status-on-rgb),.16),0 0 10px rgba(var(--status-on-rgb),.5);}
+[data-state="off"] > .status__txt{color:rgba(255,255,255,.55);}
+.status__note{font-weight:400;letter-spacing:.04em;text-transform:none;color:var(--fg-dim);}
+.status__note:empty{display:none;}
+.status__note::before{content:"·";margin-right:.7rem;color:rgba(255,255,255,.3);}
+.status--modal{margin:.15rem 0 1rem;}
+@media (max-width:399.98px){.status__note{display:none;}}
+.uptime__s{display:inline-flex;align-items:center;gap:.6rem;color:#fff;}
+.uptime__s .status__dot{width:7px;height:7px;}
+.uptime__s .status__dot::after{inset:-4px;}
+@media (prefers-reduced-motion:no-preference){
+  [data-state="on"] > .status__dot::after{animation:statusPulse 2.4s ease-out infinite;}
+}
+@keyframes statusPulse{0%{transform:scale(.5);opacity:.75;}70%,100%{transform:scale(1.7);opacity:0;}}
+.sub-hero .status{display:flex;margin:0 0 1rem;}
+/* v patičce pod telefonem: tečka vycentrovaná nad ikonou telefonu, text zarovnaný s číslem */
+.footer-contact .status--footer{margin:0;padding-left:3.5px;gap:13px;}
