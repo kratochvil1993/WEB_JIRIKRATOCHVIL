@@ -7,6 +7,13 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=()"
+    # CSP: vlastní soubory + GTM/GA4 (kontejner GTM-MPVVNJCG má jen Google tag, žádný Custom HTML).
+    # Inline <script> v HTML jsou povolené jen přes sha256 hash (consent default, třída "js",
+    # "hero-pre" na homepage a console.log pozdrav na web/marketing/foceni) — po JAKÉKOLIV úpravě
+    # inline skriptu přepočítej hash (postup v CLAUDE.md), jinak se skript přestane spouštět.
+    # style-src 'unsafe-inline' je nutné: inline style="" atributy a <style> bloky jsou na většině stránek.
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'sha256-WZRJfWvsnNCPcxzZwvyhovnZGqhZaC+8gPGPRbx6wTk=' 'sha256-1JC8ViriEP9TSlFw2tWJ/uhLr50vzzESxQurcRh92q0=' 'sha256-dY0RRt/imXzLE/WLyQl1r1mbYh14fe1goeZh1aQvKOw=' 'sha256-J/cCLSu5AEjmGM09CVdfSL53fhI+cutxIvehLXi197I=' 'sha256-vNGTrgfd66w3dImFw1nTcCgGkaRR2IRxMR7Y8peYarE=' 'sha256-tgGKIOxSqGoQ+lcg/gcrzHy+69Y7fFVH4hPrsFyZdLo=' 'sha256-LH2usgpxumYtwy2SQE6lyeY9boFnu7+uOA2aLc6f4Bg=' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://www.google.com; connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://www.google.com https://stats.g.doubleclick.net; font-src 'self'; manifest-src 'self'; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 
 # Vendored third-party libs (GSAP) never change in
 # place — a version bump means new files in a new/updated path — so it's safe
