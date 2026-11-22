@@ -732,7 +732,7 @@ html.hero-pre #hero .pill-btn{visibility:hidden;}
   html.hero-pre #hero .hero-mini-code{visibility:hidden;}
 }
 #hero .hero-contact{margin-top:1.8rem;}
-#hero .social-ico,#hero .btn-vcard{font-size:1.05rem;}
+#hero .social-ico{font-size:1.05rem;}
 
 /* Hero graphic: a single panel that types out a code snippet once on load,
    then loops between two code variants (A/B), crossfading between them —
@@ -795,7 +795,7 @@ html.hero-pre #hero .pill-btn{visibility:hidden;}
   border-radius:999px;
   border:1px solid rgba(255,255,255,.15);
   color:var(--fg-dim);
-  font-size:.9rem;
+  font-size:1.05rem;
   font-weight:600;
   transition:border-color .2s ease,color .2s ease;
 }
