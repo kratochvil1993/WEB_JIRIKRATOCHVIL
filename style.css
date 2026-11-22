@@ -2456,3 +2456,14 @@ html.is-home body.logo-lines #hero .cut-lines i{
 .sub-hero .status{display:flex;margin:0 0 1rem;}
 /* v patičce pod telefonem: tečka vycentrovaná nad ikonou telefonu, text zarovnaný s číslem */
 .footer-contact .status--footer{margin:0;padding-left:3.5px;gap:13px;}
+
+/* Kontakt: rozcestník "Co tě zajímá" — boxy místo textových odkazů */
+.rozcestnik-grid{margin-top:1.6rem;text-align:center;}
+.rozcestnik-grid .feature-card{display:block;padding:1.4rem 1.2rem;color:inherit;text-decoration:none;}
+.rozcestnik-grid .feature-card .icon{margin:0 auto .9rem;}
+.rozcestnik-grid .feature-card p{color:var(--fg-dim);}
+.rozcestnik-faq{margin:1.6rem 0 0;font-size:.95rem;color:var(--fg-dim);}
+.rozcestnik-faq a{color:var(--fg);font-weight:600;text-decoration:underline;text-decoration-color:rgba(var(--magenta-rgb),.5);text-underline-offset:.2em;}
+.rozcestnik-faq a:hover,.rozcestnik-faq a:focus-visible{text-decoration-color:var(--purple);}
+@media (min-width:600px){.rozcestnik-grid.sub-grid--3{grid-template-columns:repeat(3,1fr);}} /* tři boxy vedle sebe už od tabletu, 2+1 by nechalo osiřelou kartu */
+@media (max-width:991.98px){.rozcestnik-grid .feature-card{padding:1.1rem .8rem;}}
