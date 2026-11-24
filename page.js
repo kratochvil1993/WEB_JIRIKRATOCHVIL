@@ -359,10 +359,33 @@
     window.addEventListener("mousemove", function (e) {
       gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.15, ease: "power2.out" });
     });
-    document.querySelectorAll("a, button, summary, input, textarea, .feature-card, .pin-graphic-cards").forEach(function (el) {
-      el.addEventListener("mouseenter", function () { cursor.classList.add("hover"); });
-      el.addEventListener("mouseleave", function () { cursor.classList.remove("hover"); });
-    });
+    /* Kontextový kurzor (zrcadlo v script.js): druh prvku pod myší → .hover + data-k (CSS u #cursor). Delegovaně, ať
+       fungují i prvky přidané později. photo = fotka v galerii, copy = copy tlačítko, link/ext = odkaz (↗ ven),
+       hover = ostatní klikací; nav, logo, pilulky (mají vlastní šipku), ikony a tel:/mailto: dostanou jen kroužek. */
+    var curKind = "", curTimer = null;
+    var curSkip = ".nav-link, .brand, .pill-btn, .social-ico, [href^='tel:'], [href^='mailto:']";
+    var cursorKind = function (t) {
+      if (!t || !t.closest) return "";
+      if (t.closest(".copy-btn")) return "copy";
+      if (t.closest(".photo-gallery figure")) return "photo";
+      var a = t.closest("a");
+      if (a) return a.matches(curSkip) ? "hover" : (a.target === "_blank" ? "ext" : "link");
+      return t.closest("button, summary, input, textarea, select, label, .feature-card, .pin-graphic-cards") ? "hover" : "";
+    };
+    var setKind = function (k) {
+      if (k === curKind) return;
+      curKind = k;
+      cursor.classList.toggle("hover", !!k);
+      if (k && k !== "hover") cursor.setAttribute("data-k", k); else cursor.removeAttribute("data-k");
+    };
+    document.addEventListener("mouseover", function (e) { setKind(cursorKind(e.target)); });
+    document.documentElement.addEventListener("mouseleave", function () { setKind(""); });
+    document.addEventListener("click", function (e) {   /* po kliknutí na copy tlačítko krátce „zkopírováno“ */
+      if (!e.target.closest || !e.target.closest(".copy-btn")) return;
+      cursor.setAttribute("data-k", "copied");
+      clearTimeout(curTimer);
+      curTimer = setTimeout(function () { if (curKind === "copy") cursor.setAttribute("data-k", "copy"); }, 1400);
+    }, true);
   }
 
   /* ---------------- Pozadí: samo se pomalu posouvající bloby ----------------
@@ -1341,6 +1364,16 @@
     function render() {
       var now = new Date();
       vals.forEach(function (el) {
+        if (el.hasAttribute("data-coffee")) {   /* káva: šálků od data-coffee × data-per-day za den (vtip, proto „odhad“); mění se jen po šálku, tedy zhruba každých 8 h */
+          var c = el.getAttribute("data-coffee").split("-");
+          var days = (now - new Date(+c[0], +c[1] - 1, +c[2])) / 86400000;
+          var cups = Math.floor(days * (+el.getAttribute("data-per-day") || 3)).toLocaleString("cs-CZ");
+          if (el.getAttribute("data-cups") !== cups) {
+            el.setAttribute("data-cups", cups);
+            el.innerHTML = n(cups) + " šálků <i>(odhad)</i>";
+          }
+          return;
+        }
         var s = el.getAttribute("data-since").split("-");
         var y = now.getFullYear() - (+s[0]), mo = now.getMonth() - (+s[1] - 1), d = now.getDate() - (+s[2]);
         if (d < 0) { mo--; d += dim(now.getFullYear(), now.getMonth() - 1); }
@@ -1703,6 +1736,129 @@
       if (!isMobile && !reduceMotion && !card.classList.contains("card-wide")) gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.5, ease: "power2.out" });
     });
   });
+
+  /* ---------------- 404.html: „terminál“ s chybou ----------------
+     Do příkazů dosadí skutečnou adresu (jen přes textContent, nikdy innerHTML), příkazy „napíše“ po znacích
+     a nakonec ukáže nápovědu: nejpodobnější existující stránku (překlep, přezdívka jako /fotografie,
+     /contact), jinak tři hlavní stránky. S reduced-motion je hned hotovo. */
+  (function () {
+    var win = document.querySelector("[data-404]");
+    if (!win) return;
+    var PAGES = ["web", "marketing", "foceni", "o-mne", "kontakt", "faq", "gdpr", "sitemap"];
+    var ALIAS = {
+      fotografie: "foceni", foto: "foceni", fotky: "foceni", portret: "foceni", portrety: "foceni", portfolio: "foceni", gallery: "foceni",
+      weby: "web", webovky: "web", eshop: "web", "e-shop": "web", eshopy: "web", reference: "web", shoptet: "web",
+      reklama: "marketing", ppc: "marketing", ads: "marketing", "google-ads": "marketing", seo: "marketing",
+      contact: "kontakt", kontakty: "kontakt", napsat: "kontakt", about: "o-mne", "o-nas": "o-mne", jiri: "o-mne", onas: "o-mne",
+      dotazy: "faq", otazky: "faq", mapa: "sitemap", "mapa-stranek": "sitemap", cookies: "gdpr", privacy: "gdpr", "ochrana-udaju": "gdpr"
+    };
+
+    function dist(a, b) { /* Damerau–Levenshtein (záměna sousedních písmen = 1), ať „wbe“ trefí „web“ */
+      var d = [], i, j;
+      for (i = 0; i <= a.length; i++) { d[i] = [i]; }
+      for (j = 1; j <= b.length; j++) { d[0][j] = j; }
+      for (i = 1; i <= a.length; i++) {
+        for (j = 1; j <= b.length; j++) {
+          var c = a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1;
+          d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + c);
+          if (i > 1 && j > 1 && a.charAt(i - 1) === b.charAt(j - 2) && a.charAt(i - 2) === b.charAt(j - 1)) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+        }
+      }
+      return d[a.length][b.length];
+    }
+    function suggest(path) {
+      var best = null, bestD = 99;
+      path.split("/").forEach(function (seg) {
+        seg = seg.replace(/\.html?$/i, "").toLowerCase();
+        try { seg = seg.normalize("NFD").replace(/[̀-ͯ]/g, ""); } catch (e) {}
+        if (!seg) return;
+        if (ALIAS.hasOwnProperty(seg)) { best = ALIAS[seg]; bestD = 0; return; }
+        var max = seg.length <= 3 ? 1 : seg.length <= 6 ? 2 : 3;
+        PAGES.forEach(function (p) {
+          var dd = dist(seg, p);
+          if (dd <= max && dd < bestD) { best = p; bestD = dd; }
+        });
+      });
+      return best;
+    }
+
+    var path = location.pathname || "/";
+    try { path = decodeURIComponent(path); } catch (e) {}
+    var shown = path.length > 26 ? path.slice(0, 25) + "…" : path;
+    var rows = win.querySelectorAll(".t-row");
+    var cmds = win.querySelectorAll("[data-cmd]");
+    var caret = win.querySelector(".code-caret");
+    var hint = win.querySelector("[data-hint]");
+
+    Array.prototype.forEach.call(win.querySelectorAll("[data-p]"), function (el) { el.textContent = shown; });
+    var texts = Array.prototype.map.call(cmds, function (el) {
+      var t = el.getAttribute("data-cmd").replace("{p}", shown);
+      el.textContent = t;
+      return t;
+    });
+
+    var hit = suggest(path);
+    function link(slug) {
+      var a = document.createElement("a");
+      a.href = "/" + slug;
+      a.textContent = "/" + slug;
+      return a;
+    }
+    hint.textContent = "";
+    if (hit) {
+      hint.appendChild(document.createTextNode("nápověda: myslel jsi "));
+      hint.appendChild(link(hit));
+      hint.appendChild(document.createTextNode("?"));
+    } else {
+      hint.appendChild(document.createTextNode("nápověda: zkus "));
+      hint.appendChild(link("web"));
+      hint.appendChild(document.createTextNode(", "));
+      hint.appendChild(link("foceni"));
+      hint.appendChild(document.createTextNode(" nebo "));
+      hint.appendChild(link("kontakt"));
+    }
+
+    if (reduceMotion) return;
+
+    /* řádky 1–5 čekají (visibility, výška okna je tedy hotová od začátku), příkaz 1 se píše, kurzor běží za ním */
+    var i;
+    for (i = 1; i < rows.length; i++) rows[i].classList.add("is-wait");
+    cmds[0].textContent = "";
+    cmds[0].appendChild(caret);
+
+    function typeInto(el, text, done) {
+      var n = 0, node = document.createTextNode("");
+      el.insertBefore(node, caret);
+      (function step() {
+        n++;
+        node.nodeValue = text.slice(0, n);
+        if (n < text.length) setTimeout(step, 34 + Math.random() * 46);
+        else setTimeout(done, 380);
+      })();
+    }
+    function show(k) { rows[k].classList.remove("is-wait"); }
+
+    setTimeout(function () {
+      typeInto(cmds[0], texts[0], function () {
+        show(1);
+        setTimeout(function () {
+          show(2);
+          cmds[1].textContent = "";
+          cmds[1].appendChild(caret);
+          typeInto(cmds[1], texts[1], function () {
+            show(3);
+            setTimeout(function () {
+              show(4);
+              setTimeout(function () {
+                show(5);
+                rows[5].appendChild(caret);
+              }, 260);
+            }, 200);
+          });
+        }, 450);
+      });
+    }, 1000);
+  })();
 
   /* ---------------- Odkrývání obsahu při scrollu ----------------
      Výchozí průhlednost je v CSS (.js .reveal), tady se jen dávkově odkrývá

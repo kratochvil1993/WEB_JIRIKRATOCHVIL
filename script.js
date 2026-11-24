@@ -462,10 +462,31 @@
     window.addEventListener("mousemove", function (e) {
       gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.15, ease: "power2.out" });
     });
-    document.querySelectorAll("a, button, .feature-card, input, textarea").forEach(function (el) {
-      el.addEventListener("mouseenter", function () { cursor.classList.add("hover"); });
-      el.addEventListener("mouseleave", function () { cursor.classList.remove("hover"); });
-    });
+    /* Kontextový kurzor (zrcadlo v page.js — drž oba bloky stejné): druh prvku pod myší → .hover + data-k (CSS u #cursor). */
+    var curKind = "", curTimer = null;
+    var curSkip = ".nav-link, .brand, .pill-btn, .social-ico, [href^='tel:'], [href^='mailto:']";
+    var cursorKind = function (t) {
+      if (!t || !t.closest) return "";
+      if (t.closest(".copy-btn")) return "copy";
+      if (t.closest(".photo-gallery figure")) return "photo";
+      var a = t.closest("a");
+      if (a) return a.matches(curSkip) ? "hover" : (a.target === "_blank" ? "ext" : "link");
+      return t.closest("button, summary, input, textarea, select, label, .feature-card, .pin-graphic-cards") ? "hover" : "";
+    };
+    var setKind = function (k) {
+      if (k === curKind) return;
+      curKind = k;
+      cursor.classList.toggle("hover", !!k);
+      if (k && k !== "hover") cursor.setAttribute("data-k", k); else cursor.removeAttribute("data-k");
+    };
+    document.addEventListener("mouseover", function (e) { setKind(cursorKind(e.target)); });
+    document.documentElement.addEventListener("mouseleave", function () { setKind(""); });
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest || !e.target.closest(".copy-btn")) return;
+      cursor.setAttribute("data-k", "copied");
+      clearTimeout(curTimer);
+      curTimer = setTimeout(function () { if (curKind === "copy") cursor.setAttribute("data-k", "copy"); }, 1400);
+    }, true);
   }
 
   /* ---------------- Hero typewriter + entrance ---------------- */

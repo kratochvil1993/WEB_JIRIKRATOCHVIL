@@ -39,7 +39,16 @@
   body.sub-page > main{flex:1 0 auto;}
   /* Obrysové „404“ nesmí ležet pod textem ani být useknuté patičkou: na desktopu sedí vpravo
      vedle perexu a tlačítek s odstupem od spodku, na mobilu pod tlačítky v rezervě v paddingu hera. */
-  .sub-hero .sub-ghost.error-ghost{left:auto;right:max(15px,calc((100vw - 1140px) / 2 + 15px));bottom:2.5rem;font-size:min(13rem,calc(94vw / 1.98));}
+  .sub-hero .sub-ghost.error-ghost{left:auto;right:max(15px,calc((100vw - 1140px) / 2 + 15px));bottom:8rem;font-size:min(13rem,calc(94vw / 1.98));}
+  /* Terminál s chybou: výška je hotová od začátku (řádky čekají jako visibility:hidden), ať se tlačítka pod ním nehýbou. */
+  .code-win--404{max-width:34rem;margin:1.7rem 0 1.2rem;font-size:.76rem;}
+  .code-win--404 .t-row{white-space:pre-wrap;overflow-wrap:anywhere;color:rgba(255,255,255,.55);}
+  .code-win--404 .t-row.is-wait{visibility:hidden;}
+  .code-win--404 .t-ps{color:var(--purple);font-weight:700;margin-right:.7em;}
+  .code-win--404 .t-cmd,.code-win--404 .t-fatal{color:#fff;}
+  .code-win--404 .t-fatal{font-weight:700;}
+  .code-win--404 .t-hint a{color:var(--purple);text-decoration:underline;text-underline-offset:3px;}
+  .code-win--404 .t-hint a:hover{color:#fff;}
   @media (max-width:991.98px){
     .sub-hero{padding-bottom:9.5rem;}
     .sub-hero .sub-ghost.error-ghost{left:0;right:0;bottom:2rem;}
@@ -71,7 +80,7 @@
 }
 </script>
 </head>
-<body class="sub-page">
+<body class="sub-page logo-lines">
 <svg id="bi-sprite" xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
   <symbol id="bi-arrow-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5"/></symbol>
   <symbol id="bi-envelope" viewBox="0 0 16 16"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/></symbol>
@@ -113,10 +122,23 @@
 <main>
   <section class="sub-hero">
     <div class="sub-ghost error-ghost" aria-hidden="true" style="--n:3">404</div>
+    <div class="cut-lines" aria-hidden="true"><i></i><i></i><i></i></div>
     <div class="container">
       <p class="eyebrow hero-in">Chyba 404</p>
       <h1>Tahle stránka neexistuje</h1>
       <p class="sub-lead hero-in">Odkaz je asi zastaralý, nebo v adrese vznikl překlep. Zkontroluj ji, nebo se vrať na hlavní stránku.</p>
+      <!-- „Terminál“: page.js (blok data-404) doplní skutečnou adresu a napíše příkazy; bez JS zůstane tenhle hotový text. -->
+      <div class="code-win code-win--404 hero-in" data-404>
+        <div class="code-win__bar" aria-hidden="true"><i></i><i></i><i></i><span class="code-win__name">zsh — jirikratochvil.eu</span></div>
+        <div class="code-win__body">
+          <div class="t-row" aria-hidden="true"><span class="t-ps">$</span><span class="t-cmd" data-cmd="git checkout {p}">git checkout /tahle-stranka</span></div>
+          <div class="t-row t-out" aria-hidden="true"><span class="t-fatal">fatal:</span> pathspec '<span data-p>/tahle-stranka</span>' did not match any files</div>
+          <div class="t-row" aria-hidden="true"><span class="t-ps">$</span><span class="t-cmd" data-cmd="git log --all -- {p}">git log --all -- /tahle-stranka</span></div>
+          <div class="t-row t-out" aria-hidden="true">(prázdno, tady nikdy nic nebylo)</div>
+          <div class="t-row t-out t-hint" data-hint>nápověda: zkus <a href="/web">/web</a>, <a href="/foceni">/foceni</a> nebo <a href="/kontakt">/kontakt</a></div>
+          <div class="t-row" aria-hidden="true"><span class="t-ps">$</span><span class="code-caret"></span></div>
+        </div>
+      </div>
       <div class="hero-links hero-in">
         <a href="/" class="pill-btn" style="margin-top:0;">
           <span class="pill-btn__icon pill-btn__icon--left" aria-hidden="true">
