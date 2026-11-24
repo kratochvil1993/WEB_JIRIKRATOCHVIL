@@ -414,6 +414,7 @@
       if (t.closest(".copy-btn")) return "copy";
       if (t.closest(".photo-gallery figure")) return "photo";
       if (t.closest(".vf-shutter")) return "hover";
+      if (t.closest("#postup .viewfinder")) return "label|cvakni";
       if (t.closest(".viewfinder")) return "label|zaostři";
       if (t.closest("#hcut, .sub-hero-graphic[data-graphic='cards']")) return "label|‹ táhni ›";
       var q = t.closest(".code-win.is-ready .q-line");
@@ -1731,17 +1732,23 @@
       vfHint.textContent = last ? "znovu" : (vfMouse ? "klikni" : "klepni");
       vfHint.classList.toggle("is-off", vfActed && !last);
     };
-    var vfShow = function (i) {
+    var vfReturn = null, vfShot = null;
+    var vfShow = function (i, keep) {
       var d = vfSteps[i];
       vfCur = i;
       if (vfBtn) vfBtn.classList.toggle("is-last", i === vfSteps.length - 1);
       vfHintSync();
-      if (vfFocus) gsap.to(vfFocus, { x: 0, y: 0, duration: 0.4, ease: "power2.out", overwrite: "auto" }); /* nový snímek = ostření zpět na obličej */
+      if (vfReturn) { vfReturn.kill(); vfReturn = null; }
+      if (vfFocus) { /* nový snímek = ostření zpět na obličej; po klepnutí až po záblesku, ať je vidět, kam se zaostřilo */
+        if (keep) vfReturn = gsap.to(vfFocus, { x: 0, y: 0, duration: 0.5, delay: 0.9, ease: "power2.inOut", overwrite: "auto" });
+        else gsap.to(vfFocus, { x: 0, y: 0, duration: 0.4, ease: "power2.out", overwrite: "auto" });
+      }
       vfCount.textContent = (i + 1) + "/" + vfSteps.length;
       vfCap.textContent = d.cap; vfF.textContent = d.f; vfS.textContent = d.s; vfISO.textContent = d.iso;
       gsap.fromTo([vfCount, vfCap, vfF, vfS, vfISO], { opacity: 0.2 }, { opacity: 1, duration: 0.45, ease: "power1.out" });
       gsap.to(vf, { "--ev": d.ev, "--blur": d.blur, duration: 0.8, ease: "power2.inOut", overwrite: "auto" }); /* fotka se zaostřuje a dostává správnou expozici */
-      gsap.fromTo(vfFocus, { scale: 1.6, opacity: 0.4 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power3.out" });
+      if (keep) gsap.fromTo(vfFocus, { scale: 1.3, opacity: 1 }, { scale: 1, duration: 0.35, ease: "power3.out", overwrite: false }); /* zaostření "sedne" */
+      else gsap.fromTo(vfFocus, { scale: 1.6, opacity: 0.4 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power3.out" });
       if (gsap.ticker.time - vfLastFlash > 0.35) { /* při skoku přes víc kroků nezáblesknout pětkrát */
         vfLastFlash = gsap.ticker.time;
         gsap.fromTo(vfFlash, { opacity: 0.5 }, { opacity: 0, duration: 0.5, ease: "power2.out" });
@@ -1763,15 +1770,17 @@
     vfHint.className = "vf-hint"; vfHint.textContent = vfMouse ? "klikni" : "klepni";
     vf.appendChild(vfHint);
     var vfBuzz = function () { if (navigator.vibrate) navigator.vibrate(8); }; /* Android: cvaknutí spouště; iOS Safari to nepodporuje */
-    var vfStep = function (dir) { /* ruční posun (spoušť / swipe): přeruší časovanou sekvenci, dokola */
+    var vfStep = function (dir, keep) { /* ruční posun (spoušť / swipe / klepnutí): přeruší časovanou sekvenci, dokola */
       vfSeq.cancel();
+      if (vfShot) { vfShot.kill(); vfShot = null; }
       vfActed = true;
       vfBuzz();
-      vfShow((vfCur + dir + vfSteps.length) % vfSteps.length);
+      vfShow((vfCur + dir + vfSteps.length) % vfSteps.length, keep);
     };
     vfBtn.addEventListener("click", function () { vfStep(1); });
 
-    /* Dotyk / myš na hledáčku: krátké klepnutí = autofocus (čtvereček skočí pod prst a fotka se krátce "dozaostří"),
+    /* Dotyk / myš na hledáčku: krátké klepnutí = zaostři a cvakni (čtvereček skočí pod prst, fotka se krátce "hledá",
+       po ~0,3 s záblesk a další snímek; čtvereček zůstane u klepnutí, než se vrátí na střed),
        vodorovný tah = předchozí / další snímek. touch-action:pan-y v CSS nechává svislý scroll stránky. */
     var vfDown = null;
     vf.addEventListener("pointerdown", function (e) {
@@ -1790,10 +1799,14 @@
         var baseX = fr.left + fr.width / 2 - curX, baseY = fr.top + fr.height / 2 - curY; /* kde čtvereček sedí bez posunu */
         var mx = Math.max(r.left + 34, Math.min(r.right - 34, e.clientX)); /* ne přes rohy a dolní lištu */
         var my = Math.max(r.top + 40, Math.min(r.bottom - r.height * 0.34, e.clientY));
-        vfActed = true; vfHintSync(); vfBuzz();
-        gsap.fromTo(vfFocus, { scale: 1.7, opacity: 0.5 }, { x: mx - baseX, y: my - baseY, scale: 1, opacity: 1, duration: 0.45, ease: "back.out(2)", overwrite: "auto" });
+        vfActed = true; vfHintSync();
+        vfSeq.cancel(); /* ruční zásah: časovaná / scrollová sekvence už nemluví do věci */
+        if (vfShot) { vfShot.kill(); vfShot = null; }
+        if (vfReturn) { vfReturn.kill(); vfReturn = null; }
+        gsap.fromTo(vfFocus, { scale: 1.7, opacity: 0.5 }, { x: mx - baseX, y: my - baseY, scale: 1, opacity: 1, duration: 0.3, ease: "power3.out", overwrite: "auto" });
         var tgt = vfSteps[Math.max(vfCur, 0)].blur;
-        gsap.fromTo(vf, { "--blur": tgt + 4 }, { "--blur": tgt, duration: 0.6, ease: "power2.out", overwrite: "auto" });
+        gsap.fromTo(vf, { "--blur": tgt + 5 }, { "--blur": tgt, duration: 0.3, ease: "power2.out", overwrite: "auto" }); /* "hledá" ostření */
+        vfShot = gsap.delayedCall(0.32, function () { vfShot = null; vfStep(1, true); }); /* zaostřeno → cvak */
       }
     });
   }
