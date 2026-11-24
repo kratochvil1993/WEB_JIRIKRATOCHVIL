@@ -2403,7 +2403,7 @@
       });
     });
   }
-  /* Stav dostupnosti ("● ONLINE"): Po–Pá 8–18 pražského času = online (tečka pulzuje), jinak offline
+  /* Stav dostupnosti ("● ONLINE"): Po–Pá 8–17 pražského času = online (tečka pulzuje), jinak offline
      s poznámkou, kdy se ozvu. Elementy [data-status] (.status__dot/.status__txt/.status__note). Bez JS
      zůstanou skryté (.status je visibility:hidden, dokud nedostane .is-set), takže web nikdy netvrdí
      online natvrdo. Blok je ZRCADLENÝ v script.js a page.js. */
@@ -2416,8 +2416,8 @@
       var wd = "", h = 0;
       fmt.formatToParts(new Date()).forEach(function (p) { if (p.type === "weekday") wd = p.value; else if (p.type === "hour") h = +p.value; });
       var weekend = wd === "Sat" || wd === "Sun";
-      var on = !weekend && h >= 8 && h < 18;
-      var note = on ? "ozvu se co nejdřív" : (weekend || (wd === "Fri" && h >= 18) ? "ozvu se v pondělí" : "ozvu se ráno");
+      var on = !weekend && h >= 8 && h < 17;
+      var note = on ? "ozvu se co nejdřív" : (weekend || (wd === "Fri" && h >= 17) ? "ozvu se v pondělí" : "ozvu se ráno");
       els.forEach(function (el) {
         el.setAttribute("data-state", on ? "on" : "off");
         var t = el.querySelector(".status__txt"), n = el.querySelector(".status__note");
