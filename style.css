@@ -1370,6 +1370,10 @@ footer::after{
 }
 
 /* ---------- Go to top button ---------- */
+/* Zobrazí se po 200 px scrollu (.visible, script.js/page.js). Vjezd je postupný: sklo naskočí s lehkým přeskokem,
+   podklad kroužku se dokreslí po obvodu (2π·22 = 138.23), pak naběhne ukazatel postupu a chevron vyjede zespodu.
+   Skrytí je rychlé, bez zpoždění. Nad patičkou se tlačítko zastaví: JS píše --tt-lift (px, o kolik patička zasahuje
+   do okna) a "translate" je nezávislé na "transform" vjezdu. */
 .to-top{
   position:fixed;
   right:1.5rem;
@@ -1386,13 +1390,13 @@ footer::after{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:1.2rem;
   color:var(--fg-dim);
   z-index:900;
   opacity:0;
   visibility:hidden;
-  transform:translateY(10px);
-  transition:opacity .3s ease,transform .3s ease,visibility .3s,color .2s ease;
+  transform:scale(.7);
+  translate:0 calc(var(--tt-lift,0px) * -1);
+  transition:opacity .2s ease,transform .22s ease,visibility 0s .22s,color .2s ease;
 }
 /* Progress ring: the track replaces the old 1px border, the bar fills
    clockwise from 12 o'clock as the page scrolls (script.js sets
@@ -1405,18 +1409,28 @@ footer::after{
   pointer-events:none;
 }
 .to-top-ring circle{fill:none;stroke-width:2;}
-.ring-track{stroke:rgba(255,255,255,.15);}
-.ring-bar{stroke:var(--ring-blue);stroke-linecap:round;transition:stroke .2s ease;}
+.ring-track{stroke:rgba(255,255,255,.15);stroke-dasharray:138.23px;stroke-dashoffset:138.23px;transition:stroke-dashoffset .2s ease;}
+.ring-bar{stroke:var(--ring-blue);stroke-linecap:round;opacity:0;transition:stroke .2s ease,opacity .15s ease;}
+.tt-ic{position:relative;z-index:1;display:grid;place-items:center;opacity:0;transform:translateY(12px);transition:opacity .15s ease,transform .15s ease;}
+.tt-ic svg{display:block;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
 .to-top.visible{
   opacity:1;
   visibility:visible;
-  transform:translateY(0);
+  transform:none;
+  transition:opacity .25s ease,transform .6s cubic-bezier(.34,1.5,.64,1),visibility 0s,color .2s ease;
 }
+.to-top.visible .ring-track{stroke-dashoffset:0;transition:stroke-dashoffset .75s cubic-bezier(.4,0,.2,1) .08s;}
+.to-top.visible .ring-bar{opacity:1;transition:stroke .2s ease,opacity .3s ease .7s;}
+.to-top.visible .tt-ic{opacity:1;transform:none;transition:opacity .35s ease .32s,transform .5s cubic-bezier(.22,1,.36,1) .32s;}
 .to-top:hover{color:var(--fg);}
 .to-top:hover .ring-bar{stroke:var(--ring-blue-hover);}
+.to-top.visible:hover .tt-ic{transform:translateY(-2px);transition:transform .25s ease;}
 /* Mobil: postup scrollu ukazuje kroužek kolem tlačítka menu v kapsli — tady zůstane jen jeho podklad jako obyčejný
    border (script.js/page.js dál píšou stroke-dashoffset, ale není vidět). Desktop má kroužek jen tady. */
 @media (max-width:991.98px){.ring-bar{display:none;}}
+@media (prefers-reduced-motion:reduce){
+  .to-top,.to-top *{transition-duration:.01s !important;transition-delay:0s !important;}
+}
 
 
 /* Reduced motion / mobile fallback */

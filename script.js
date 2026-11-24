@@ -337,10 +337,10 @@
   var toTopBtn = document.getElementById("toTop");
   if (toTopBtn) {
     ScrollTrigger.create({
-      start: 600,
+      start: 200,
       end: 99999,
       onUpdate: function (self) {
-        toTopBtn.classList.toggle("visible", self.scroll() > 600);
+        toTopBtn.classList.toggle("visible", self.scroll() > 200);
       }
     });
     /* Progress ring: fills clockwise with overall page scroll. "max" (not a
@@ -360,6 +360,18 @@
         onUpdate: setRing,
         onRefresh: setRing
       });
+    }
+    /* nad patičkou se tlačítko zastaví: o kolik patička zasahuje do okna, o tolik se zvedne (CSS "translate") */
+    var ttFoot = document.querySelector("footer");
+    if (ttFoot) {
+      var ttLift = function () {
+        toTopBtn.style.setProperty("--tt-lift", Math.max(0, window.innerHeight - ttFoot.getBoundingClientRect().top) + "px");
+      };
+      window.addEventListener("scroll", ttLift, { passive: true });
+      window.addEventListener("resize", ttLift);
+      window.addEventListener("load", ttLift);
+      if ("ResizeObserver" in window) new ResizeObserver(ttLift).observe(document.body);
+      ttLift();
     }
     document.querySelectorAll(".footer-top").forEach(function (b) {
       b.addEventListener("click", function () { toTopBtn.click(); });
