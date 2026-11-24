@@ -5,6 +5,35 @@
 (function () {
   "use strict";
 
+  /* [debug] v patičce: vývojářský režim (debug.min.js) se stáhne až po kliknutí,
+     nebo hned po načtení, když je v URL ?debug / v sessionStorage zůstal zapnutý.
+     Zrcadleno v script.js a page.js. Spouští se před GSAP, ať nezávisí na animacích. */
+  (function () {
+    var btn = document.getElementById("debugToggle"), busy = false;
+    if (!btn) return;
+    function load() {
+      if (busy) return;
+      busy = true;
+      window.__wdOn = true;
+      btn.setAttribute("aria-pressed", "true");
+      btn.textContent = "[debug \u2026]";
+      var s = document.createElement("script");
+      s.src = "/debug.min.js";
+      s.async = true;
+      s.onerror = function () {
+        busy = false;
+        window.__wdOn = false;
+        btn.setAttribute("aria-pressed", "false");
+        btn.textContent = "[debug]";
+      };
+      document.body.appendChild(s);
+    }
+    btn.addEventListener("click", load, { once: true });
+    var auto = /[?&]debug\b/.test(location.search);
+    try { auto = auto || sessionStorage.getItem("webdebug") === "1"; } catch (e) { /* bez ukládání */ }
+    if (auto) window.addEventListener("load", function () { setTimeout(load, 300); });
+  })();
+
   /* Galerie (foceni.html): pořadí fotek v HTML je sloupec po sloupci pro 3 sloupce (desktop, .col-start).
      Pod 768 px jsou sloupce dva a mají jiné rozložení (.col-start-m) → fotky se přeskládají podle data-m
      (1…n). Bez JS zůstává desktopové pořadí. Běží před GSAP kontrolou, ať to nezávisí na animacích. */

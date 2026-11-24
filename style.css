@@ -2441,6 +2441,8 @@ html.is-home body.logo-lines #hero .cut-lines i{
 
 /* poznámka v patičce (o-mne.html) */
 .footer-note{margin:.9rem 0 0;font-family:var(--mono);font-size:.72rem;color:rgba(255,255,255,.4);}
+#debugToggle{background:none;border:0;padding:0;margin:0 0 0 .5em;font:inherit;color:inherit;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer;}
+#debugToggle:hover,#debugToggle[aria-pressed=true]{color:var(--purple);}
 
 /* ===== foceni.html: portrét, který jde zaostřit klikem (sekce "Proč to dělám", sticky vpravo) ===== */
 /* Pod fotkou je rozmazaná kopie (.vf-base), nahoře ostrá (.vf-sharp) odkrytá kruhovou maskou kolem --fx/--fy (%) s poloměrem --r (px).
