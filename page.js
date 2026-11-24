@@ -356,35 +356,71 @@
   /* ---------------- Custom cursor ---------------- */
   var cursor = document.getElementById("cursor");
   if (cursor && !isMobile) {
+    var curX = 0, curY = 0;
     window.addEventListener("mousemove", function (e) {
+      curX = e.clientX; curY = e.clientY;
       gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.15, ease: "power2.out" });
     });
-    /* Kontextový kurzor (zrcadlo v script.js): druh prvku pod myší → .hover + data-k (CSS u #cursor). Delegovaně, ať
-       fungují i prvky přidané později. photo = fotka v galerii, copy = copy tlačítko, link/ext = odkaz (↗ ven),
-       hover = ostatní klikací; nav, logo, pilulky (mají vlastní šipku), ikony a tel:/mailto: dostanou jen kroužek. */
+    /* Kontextový kurzor (zrcadlo v page.js / script.js — drž oba bloky stejné): druh prvku pod myší → .hover + data-k
+       (CSS u #cursor). Klíč je buď druh (copy, photo, link, ext, text, hover), nebo "label|text" = pilulka s popiskem
+       (data-label, šířka z --cw). photo = fotka v galerii, copy = copy tlačítko, link/ext = odkaz (↗ ven), text = pole
+       formuláře (svislá čárka), label = to, co se po kliknutí/tažení stane (zaostři, táhni, vyřadit, otevřít, napsat…);
+       hover = ostatní klikací; nav, logo, ostatní pilulky (mají vlastní šipku), ikony dostanou jen kroužek. */
     var curKind = "", curTimer = null;
-    var curSkip = ".nav-link, .brand, .pill-btn, .social-ico, [href^='tel:'], [href^='mailto:']";
+    var curSkip = ".nav-link, .brand, .pill-btn, .social-ico";
     var cursorKind = function (t) {
       if (!t || !t.closest) return "";
       if (t.closest(".copy-btn")) return "copy";
       if (t.closest(".photo-gallery figure")) return "photo";
+      if (t.closest(".vf-shutter")) return "hover";
+      if (t.closest(".viewfinder")) return "label|zaostři";
+      if (t.closest("#hcut, .sub-hero-graphic[data-graphic='cards']")) return "label|‹ táhni ›";
+      var q = t.closest(".code-win.is-ready .q-line");
+      if (q) return "label|" + (q.classList.contains("q-no") ? "vrátit" : "vyřadit");
+      var td = t.closest(".todo-log.is-tap .todo-item");
+      if (td) return "label|" + (td.classList.contains("is-done") ? "vrátit" : "hotovo");
+      var f = t.closest("input, textarea");
+      if (f) return /^(checkbox|radio|submit|button|hidden|file)$/i.test(f.type) ? "hover" : "text";
+      var sm = t.closest("summary");
+      if (sm) { var d = sm.parentNode; return "label|" + (d && d.open && !d.classList.contains("is-closing") ? "zavřít" : "otevřít"); }
+      if (t.closest("#toTop")) return "label|nahoru";
+      if (t.closest("[data-open-contact]")) return "label|napsat";
       var a = t.closest("a");
-      if (a) return a.matches(curSkip) ? "hover" : (a.target === "_blank" ? "ext" : "link");
-      return t.closest("button, summary, input, textarea, select, label, .feature-card, .pin-graphic-cards") ? "hover" : "";
+      if (a) {
+        var h = a.getAttribute("href") || "";
+        if (h.indexOf("mailto:") === 0) return "label|napsat";
+        if (h.indexOf("tel:") === 0) return "label|zavolat";
+        return a.matches(curSkip) ? "hover" : (a.target === "_blank" ? "ext" : "link");
+      }
+      return t.closest("button, select, label, .feature-card, .pin-graphic-cards") ? "hover" : "";
     };
     var setKind = function (k) {
       if (k === curKind) return;
       curKind = k;
       cursor.classList.toggle("hover", !!k);
-      if (k && k !== "hover") cursor.setAttribute("data-k", k); else cursor.removeAttribute("data-k");
+      if (k.indexOf("label|") === 0) {
+        var txt = k.slice(6);
+        cursor.setAttribute("data-k", "label");
+        cursor.setAttribute("data-label", txt);
+        cursor.style.setProperty("--cw", Math.round(txt.length * 6.6 + 32) + "px");
+      } else if (k && k !== "hover") {
+        cursor.setAttribute("data-k", k);
+      } else {
+        cursor.removeAttribute("data-k");
+      }
     };
     document.addEventListener("mouseover", function (e) { setKind(cursorKind(e.target)); });
     document.documentElement.addEventListener("mouseleave", function () { setKind(""); });
-    document.addEventListener("click", function (e) {   /* po kliknutí na copy tlačítko krátce „zkopírováno“ */
-      if (!e.target.closest || !e.target.closest(".copy-btn")) return;
-      cursor.setAttribute("data-k", "copied");
-      clearTimeout(curTimer);
-      curTimer = setTimeout(function () { if (curKind === "copy") cursor.setAttribute("data-k", "copy"); }, 1400);
+    document.addEventListener("click", function (e) {
+      var tg = e.target;
+      if (tg.closest && tg.closest(".copy-btn")) {   /* po kliknutí na copy tlačítko krátce „zkopírováno“ */
+        cursor.setAttribute("data-k", "copied");
+        clearTimeout(curTimer);
+        curTimer = setTimeout(function () { if (curKind === "copy") cursor.setAttribute("data-k", "copy"); }, 1400);
+        return;
+      }
+      /* popisek se po kliknutí může změnit (vyřadit ↔ vrátit, otevřít ↔ zavřít): přepočítat z prvku pod kurzorem */
+      setTimeout(function () { setKind(cursorKind(document.elementFromPoint(curX, curY))); }, 60);
     }, true);
   }
 

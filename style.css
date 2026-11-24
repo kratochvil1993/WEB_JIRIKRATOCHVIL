@@ -344,6 +344,10 @@ a:hover{color:var(--purple);}
   background-position:0 0,0 0,100% 0,100% 0,0 100%,0 100%,100% 100%,100% 100%;
   background-size:14px 1.5px,1.5px 14px,14px 1.5px,1.5px 14px,14px 1.5px,1.5px 14px,14px 1.5px,1.5px 14px;}
 #cursor[data-k="photo"]::after{content:"";width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.92);}
+/* label = pilulka s popiskem z data-label (zaostři, ‹ táhni ›, vyřadit, otevřít, napsat…), šířku píše JS do --cw; text = svislá čárka nad polem formuláře */
+#cursor[data-k="label"]{width:var(--cw,80px);height:30px;border-radius:999px;mix-blend-mode:normal;background:rgba(6,16,22,.92);color:#fff;border-color:var(--magenta);}
+#cursor[data-k="label"]::after{content:attr(data-label);}
+#cursor[data-k="text"]{width:3px;height:28px;border-radius:2px;background:var(--magenta);border-color:transparent;}
 @media (hover:none), (pointer:coarse){#cursor{display:none;}}
 
 /* ---------- Navbar ---------- */
@@ -2487,3 +2491,13 @@ html.is-home body.logo-lines #hero .cut-lines i{
 .rozcestnik-faq a:hover,.rozcestnik-faq a:focus-visible{text-decoration-color:var(--purple);}
 @media (min-width:600px){.rozcestnik-grid.sub-grid--3{grid-template-columns:repeat(3,1fr);}} /* tři boxy vedle sebe už od tabletu, 2+1 by nechalo osiřelou kartu */
 @media (max-width:991.98px){.rozcestnik-grid .feature-card{padding:1.1rem .8rem;}}
+
+/* Místa, kde kurzor říká popiskem, co se stane (page.js/script.js): systémový kurzor (ručička, křížek, ew-resize, textový)
+   by se s kroužkem zdvojil, tak se schová. Až na konci souboru, aby přebil dřívější pravidla těchto prvků; kontaktní okno
+   (<dialog>) má svůj systémový kurzor, kroužek je pod ním skrytý, proto tam textová pole vracejí text. */
+@media (hover:hover) and (pointer:fine){
+  .code-win.is-ready .q-line,.todo-log.is-tap .todo-item,.viewfinder,.vf-shutter,.focus-demo,.chat-btn,.faq summary,
+  #hcut,.hcut__grip,.sub-hero-graphic[data-graphic="cards"],.photo-gallery figure{cursor:none;}
+  input:not([type=checkbox]):not([type=radio]):not([type=submit]):not([type=button]):not([type=hidden]),textarea{cursor:none;}
+  .contact-modal input:not([type=checkbox]):not([type=radio]):not([type=submit]):not([type=button]):not([type=hidden]),.contact-modal textarea{cursor:text;}
+}
