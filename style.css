@@ -2523,6 +2523,10 @@ html.is-home body.logo-lines #hero .cut-lines i{
   .brand:hover .logo-split::after,.brand:focus-visible .logo-split::after{transform:rotate(19.3deg) scaleY(1);opacity:.9;}
 }
 
+/* foceni.html #proc: štítky, co fotím */
+#proc .proc-tags{margin-top:1.75rem;}
+#proc .proc-tags .tag{display:inline-block;margin:0 .35rem .35rem 0;padding:.15rem .65rem;border-radius:999px;font-size:.78rem;font-weight:600;color:var(--fg);background:rgba(var(--magenta-rgb),.14);border:1px solid rgba(var(--magenta-rgb),.28);}
+
 /* Místa, kde kurzor říká popiskem, co se stane (page.js/script.js): systémový kurzor (ručička, křížek, ew-resize, textový)
    by se s kroužkem zdvojil, tak se schová. Až na konci souboru, aby přebil dřívější pravidla těchto prvků; kontaktní okno
    (<dialog>) má svůj systémový kurzor, kroužek je pod ním skrytý, proto tam textová pole vracejí text. */
