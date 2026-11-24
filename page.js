@@ -443,7 +443,7 @@
         var txt = k.slice(6);
         cursor.setAttribute("data-k", "label");
         cursor.setAttribute("data-label", txt);
-        cursor.style.setProperty("--cw", Math.round(txt.length * 6.6 + 32) + "px");
+        cursor.style.setProperty("--cw", Math.round((txt.length + 2) * 7 + 24) + "px");
       } else if (k && k !== "hover") {
         cursor.setAttribute("data-k", k);
       } else {
@@ -526,11 +526,11 @@
         var host = btn.closest("dialog") || document.body;
         if (toastEl.parentNode !== host) host.appendChild(toastEl);
         copyText(btn.dataset.copy).then(function () {
-          showToast("Ve schránce: " + btn.dataset.copy);
+          showToast("[ve schránce] " + btn.dataset.copy);
           btn.classList.add("is-copied");
           if (icon) icon.setAttribute("href", "#bi-check2");
           setTimeout(function () { btn.classList.remove("is-copied"); if (icon) icon.setAttribute("href", "#bi-clipboard"); }, 1600);
-        }).catch(function () { showToast("Tohle nevyšlo, zkus to ručně"); });
+        }).catch(function () { showToast("[chyba] tohle nevyšlo, zkus to ručně"); });
       });
     });
   }
@@ -568,7 +568,7 @@
     };
     form.addEventListener("submit", function (e) {
       e.preventDefault();
-      if (btn) { btn.disabled = true; label.textContent = "Posílám…"; }
+      if (btn) { btn.disabled = true; label.textContent = "[posílám…]"; }
       fetch(form.getAttribute("action") || "/", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },

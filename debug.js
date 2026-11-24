@@ -87,7 +87,7 @@
     panel = div("wd-panel", layer);
     var head = div("wd-head", panel);
     var title = document.createElement("span");
-    title.textContent = "</> webdebug";
+    title.textContent = "[debug]";
     var x = document.createElement("button");
     x.type = "button"; x.className = "wd-x"; x.textContent = "✕";
     x.setAttribute("aria-label", "Vypnout debug");
@@ -216,7 +216,7 @@
   function setToggle(v) {
     if (!toggle) return;
     toggle.setAttribute("aria-pressed", v ? "true" : "false");
-    toggle.textContent = v ? "[debug ✓]" : "[debug]";
+    toggle.textContent = v ? "[debug: on]" : "[debug]";
   }
   function save(v) {
     try { sessionStorage.setItem(KEY, v ? "1" : "0"); } catch (e) { /* bez ukládání */ }
