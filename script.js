@@ -172,8 +172,9 @@
         '<a class="nav-foot-item nav-foot-line" href="mailto:info@jirikratochvil.eu"><small>E-mail</small><span>info@jirikratochvil.eu</span></a>' +
       '</div>' +
       '<div class="nav-foot-item nav-foot-socials">' +
-        '<a class="social-ico" href="https://www.instagram.com/ochmi" target="_blank" rel="noopener" aria-label="Instagram"><svg class="bi" aria-hidden="true"><use href="#bi-instagram"/></svg></a>' +
         '<a class="social-ico" href="https://www.linkedin.com/in/ji%C5%99%C3%AD-kratochv%C3%ADl-a61a87208" target="_blank" rel="noopener" aria-label="LinkedIn"><svg class="bi" aria-hidden="true"><use href="#bi-linkedin"/></svg></a>' +
+        '<a class="social-ico" href="https://www.instagram.com/ochmi" target="_blank" rel="noopener" aria-label="Instagram"><svg class="bi" aria-hidden="true"><use href="#bi-instagram"/></svg></a>' +
+        '<a class="social-ico" href="https://www.facebook.com/kratochvil1993" target="_blank" rel="noopener" aria-label="Facebook"><svg class="bi" aria-hidden="true"><use href="#bi-facebook"/></svg></a>' +
       '</div>';
     navMenuEl.appendChild(foot);
     navFootEls = Array.prototype.slice.call(foot.querySelectorAll(".nav-foot-item"));
