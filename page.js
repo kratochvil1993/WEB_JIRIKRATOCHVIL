@@ -526,11 +526,11 @@
         var host = btn.closest("dialog") || document.body;
         if (toastEl.parentNode !== host) host.appendChild(toastEl);
         copyText(btn.dataset.copy).then(function () {
-          showToast("Zkopírováno: " + btn.dataset.copy);
+          showToast("Ve schránce: " + btn.dataset.copy);
           btn.classList.add("is-copied");
           if (icon) icon.setAttribute("href", "#bi-check2");
           setTimeout(function () { btn.classList.remove("is-copied"); if (icon) icon.setAttribute("href", "#bi-clipboard"); }, 1600);
-        }).catch(function () { showToast("Kopírování se nezdařilo"); });
+        }).catch(function () { showToast("Tohle nevyšlo, zkus to ručně"); });
       });
     });
   }
@@ -568,7 +568,7 @@
     };
     form.addEventListener("submit", function (e) {
       e.preventDefault();
-      if (btn) { btn.disabled = true; label.textContent = "Odesílám…"; }
+      if (btn) { btn.disabled = true; label.textContent = "Posílám…"; }
       fetch(form.getAttribute("action") || "/", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },

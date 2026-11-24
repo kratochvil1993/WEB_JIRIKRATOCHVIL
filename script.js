@@ -2451,11 +2451,11 @@
     btn.addEventListener("click", function () {
       var icon = btn.querySelector("use");
       copyText(btn.dataset.copy).then(function () {
-        showToast("Zkopírováno: " + btn.dataset.copy);
+        showToast("Ve schránce: " + btn.dataset.copy);
         btn.classList.add("is-copied");
         if (icon) icon.setAttribute("href", "#bi-check2");
         setTimeout(function () { btn.classList.remove("is-copied"); if (icon) icon.setAttribute("href", "#bi-clipboard"); }, 1600);
-      }).catch(function () { showToast("Kopírování se nezdařilo"); });
+      }).catch(function () { showToast("Tohle nevyšlo, zkus to ručně"); });
     });
   });
 
@@ -2490,7 +2490,7 @@
       e.preventDefault();
       var btn = form.querySelector("button[type=submit]");
       var label = btn && (btn.querySelector(".pill-btn__label") || btn);
-      if (btn) { btn.disabled = true; label.textContent = "Odesílám…"; }
+      if (btn) { btn.disabled = true; label.textContent = "Posílám…"; }
       fetch(form.getAttribute("action") || "/", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
