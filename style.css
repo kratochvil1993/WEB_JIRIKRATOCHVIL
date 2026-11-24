@@ -2506,6 +2506,20 @@ html.is-home body.logo-lines #hero .cut-lines i{
 @media (min-width:600px){.rozcestnik-grid.sub-grid--3{grid-template-columns:repeat(3,1fr);}} /* tři boxy vedle sebe už od tabletu, 2+1 by nechalo osiřelou kartu */
 @media (max-width:991.98px){.rozcestnik-grid .feature-card{padding:1.1rem .8rem;}}
 
+/* Logo v navbaru: dvě půlky (.ls-l / .ls-r), které se při hoveru myší rozjedou podél šikmé mezery v logu (≈19,3° podle pixelů loga) a mezi nimi
+   se rozsvítí azurová čára. Jen myš (hover:hover) a bez reduced-motion; na dotyku zůstává logo celé. filter:brightness(10) je na půlkách, ne na
+   .logo-split — jinak by ho zdědila i čára a přepálila azur do bílé. */
+.logo-split{position:relative;display:block;aspect-ratio:200/145;flex:none;}
+.logo-split img{position:absolute;inset:0;width:100%;height:100%;max-width:none;filter:brightness(10);transition:transform .45s cubic-bezier(.34,1.4,.5,1);}
+.logo-split .ls-l{clip-path:polygon(0 0,62.5% 0,37% 100%,0 100%);}
+.logo-split .ls-r{clip-path:polygon(62.5% 0,100% 0,100% 100%,37% 100%);}
+.logo-split::after{content:"";position:absolute;left:62.5%;top:0;width:1.5px;height:106%;margin-left:-.75px;transform-origin:50% 0;transform:rotate(19.3deg) scaleY(0);background:linear-gradient(var(--purple),rgba(0,238,255,.25));box-shadow:0 0 6px 1px rgba(0,238,255,.55),0 0 16px 3px rgba(0,238,255,.3);opacity:0;transition:transform .35s ease,opacity .35s ease;pointer-events:none;}
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  .brand:hover .ls-l,.brand:focus-visible .ls-l{transform:translate(-2.4%,9%);}
+  .brand:hover .ls-r,.brand:focus-visible .ls-r{transform:translate(2.4%,-9%);}
+  .brand:hover .logo-split::after,.brand:focus-visible .logo-split::after{transform:rotate(19.3deg) scaleY(1);opacity:.9;}
+}
+
 /* Místa, kde kurzor říká popiskem, co se stane (page.js/script.js): systémový kurzor (ručička, křížek, ew-resize, textový)
    by se s kroužkem zdvojil, tak se schová. Až na konci souboru, aby přebil dřívější pravidla těchto prvků; kontaktní okno
    (<dialog>) má svůj systémový kurzor, kroužek je pod ním skrytý, proto tam textová pole vracejí text. */
